@@ -1,0 +1,12 @@
+<div ref="container" class="containerClasses" aria-hidden="true">
+  <div class="vue-slider-rail">
+    <div class="vue-slider-process">
+      <div class="vue-slider-marks">
+        <ng-content select="[marks-slot]"></ng-content>
+      </div>
+      <div class="vue-slider-dots" *ngFor="sliderDots">
+        <ng-content select="[dots-slot]"></ng-content>
+      </div>
+    </div>
+  </div>
+</div>

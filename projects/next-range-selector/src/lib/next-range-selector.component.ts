@@ -1,20 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'next-next-range-selector',
-  template: `
-    <p>
-      next-range-selector works!
-    </p>
-  `,
-  styles: []
+  selector: 'next-range-selector',
+  templateUrl: './next-range-selector.component.html',
+  styleUrls: ['./next-range-selector.component.scss']
 })
 export class NextRangeSelectorComponent implements OnInit {
-
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  value = 10;
+  constructor() {}
+  displayValue = 10;
+  ngOnInit() {}
 }
