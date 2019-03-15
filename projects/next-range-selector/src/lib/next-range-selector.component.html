@@ -1,12 +1,22 @@
-<div ref="container" class="containerClasses" aria-hidden="true">
+<div
+  ref="container"
+  class="vue-slider"
+  aria-hidden="true"
+  (click)="clickHandle($event)"
+>
   <div class="vue-slider-rail">
-    <div class="vue-slider-process">
-      <div class="vue-slider-marks">
-        <ng-content select="[marks-slot]"></ng-content>
-      </div>
-      <div class="vue-slider-dots" *ngFor="sliderDots">
-        <ng-content select="[dots-slot]"></ng-content>
-      </div>
+    <div class="vue-slider-process"></div>
+    <div class="vue-slider-marks">
+      <ng-content select="[marks-slot]"></ng-content>
     </div>
+
+    <ng-content select="[dots-slot]"></ng-content>
   </div>
+  <input
+    class="vue-slider-sr-only"
+    type="range"
+    value="{this.value}"
+    min="{this.min}"
+    max="{this.max}"
+  />
 </div>

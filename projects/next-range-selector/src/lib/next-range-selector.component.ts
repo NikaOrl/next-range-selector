@@ -10,4 +10,8 @@ export class NextRangeSelectorComponent implements OnInit {
   constructor() {}
   displayValue = 10;
   ngOnInit() {}
+
+  clickHandle(e: MouseEvent | TouchEvent) {
+    console.log(e);
+  }
 }
