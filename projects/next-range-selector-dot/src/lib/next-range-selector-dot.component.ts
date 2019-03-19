@@ -1,9 +1,10 @@
-import {Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 
 @Component({
-  selector: 'lib-next-range-selector-dot',
+  selector: 'next-range-selector-dot',
   templateUrl: './next-range-selector-dot.component.html',
   styleUrls: ['./next-range-selector-dot.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class NextRangeSelectorDotComponent {
   @Input() value: number;
