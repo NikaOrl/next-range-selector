@@ -85,6 +85,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   initControl() {
+    console.log('initControl');
     this.control = new Control({
       value: this.value,
       data: this.data,
@@ -173,6 +174,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   private syncValueByPos() {
     let values = this.control.dotsValue;
+    console.log('mewmew', this.control.dotsValue);
     // When included is true, the return value is the value of the nearest mark
     if (this.included && this.control.markList.length > 0) {
       const getRecentValue = (val: Value) => {
@@ -191,16 +193,17 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       };
       values = values.map((val) => getRecentValue(val));
     }
-    // if (
-    //   this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])
-    // ) {
-    //   this.$emit('change', values.length === 1 ? values[0] : [...values]);
-    // }
+    console.log('mewmew2', this.control.dotsValue);
+    if (this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])) {
+      this.onChangeCallback(values.length === 1 ? values[0] : [...values]);
+      // this.value = values.length === 1 ? values[0] : [...values];
+    }
   }
 
   setValueByPos(pos: number) {
     console.log(pos);
     console.log(this.control);
+    console.log('go', this.control.dotsValue);
     const index = this.control.getRecentDot(pos);
     if (this.isDisabledByDotIndex(index)) {
       return false;
@@ -208,6 +211,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.focusDotIndex = index;
     this.control.setDotPos(pos, index);
     this.syncValueByPos();
+
+    console.log('1mew', this.control.dotsValue);
+    console.log('1mew', this.control);
 
     if (this.useKeyboard) {
       this.states.add(SliderState.Focus);
@@ -230,5 +236,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.setScale();
     const pos = this.getPosByEvent(e);
     this.setValueByPos(pos);
+    console.log('hi', this.control.dotsValue);
   }
 }
