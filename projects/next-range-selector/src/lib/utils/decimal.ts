@@ -1,13 +1,13 @@
 type Operator = '+' | '-' | '*' | '/' | '%';
 
 export default class Decimal {
-  num: number;
+  public num: number;
 
   constructor(num: number) {
     this.num = num;
   }
 
-  decimal(num2: number, operator: Operator): this {
+  public decimal(num2: number, operator: Operator): this {
     const num1 = this.num;
     const len1 = this.getDecimalLen(num1);
     const len2 = this.getDecimalLen(num2);
@@ -15,19 +15,17 @@ export default class Decimal {
     switch (operator) {
       case '+':
         base = this.getExponent(len1, len2);
-        this.num =
-          (this.safeRoundUp(num1, base) + this.safeRoundUp(num2, base)) / base;
+        this.num = (this.safeRoundUp(num1, base) + this.safeRoundUp(num2, base)) / base;
         break;
       case '-':
         base = this.getExponent(len1, len2);
-        this.num =
-          (this.safeRoundUp(num1, base) - this.safeRoundUp(num2, base)) / base;
+        this.num = (this.safeRoundUp(num1, base) - this.safeRoundUp(num2, base)) / base;
         break;
       case '*':
         this.num =
           this.safeRoundUp(
             this.safeRoundUp(num1, this.getExponent(len1)),
-            this.safeRoundUp(num2, this.getExponent(len2))
+            this.safeRoundUp(num2, this.getExponent(len2)),
           ) / this.getExponent(len1 + len2);
         break;
       case '/':
@@ -36,34 +34,33 @@ export default class Decimal {
         break;
       case '%':
         base = this.getExponent(len1, len2);
-        this.num =
-          (this.safeRoundUp(num1, base) % this.safeRoundUp(num2, base)) / base;
+        this.num = (this.safeRoundUp(num1, base) % this.safeRoundUp(num2, base)) / base;
         break;
     }
     return this;
   }
 
-  plus(num2: number) {
+  public plus(num2: number) {
     return this.decimal(num2, '+');
   }
 
-  minus(num2: number) {
+  public minus(num2: number) {
     return this.decimal(num2, '-');
   }
 
-  multiply(num2: number) {
+  public multiply(num2: number) {
     return this.decimal(num2, '*');
   }
 
-  divide(num2: number) {
+  public divide(num2: number) {
     return this.decimal(num2, '/');
   }
 
-  remainder(num2: number) {
+  public remainder(num2: number) {
     return this.decimal(num2, '%');
   }
 
-  toNumber(): number {
+  public toNumber(): number {
     return this.num;
   }
 

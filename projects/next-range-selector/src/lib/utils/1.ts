@@ -1,4 +1,4 @@
-import { Direction } from '../1';
+import {Direction} from '../1';
 
 interface IPosObject {
   x: number;
@@ -9,20 +9,16 @@ export const getSize = (value: number | string): string => {
   return typeof value === 'number' ? `${value}px` : value;
 };
 
-export const getPos = (
-  e: MouseEvent | TouchEvent,
-  elem: HTMLElement,
-  isReverse: boolean
-): IPosObject => {
+export const getPos = (e: MouseEvent | TouchEvent, elem: HTMLElement, isReverse: boolean): IPosObject => {
   const event = e instanceof MouseEvent ? e : e.targetTouches[0];
   const rect = elem.getBoundingClientRect();
   const posObj = {
     x: event.pageX - rect.left,
-    y: event.pageY - rect.top
+    y: event.pageY - rect.top,
   };
   return {
     x: isReverse ? elem.offsetWidth - posObj.x : posObj.x,
-    y: isReverse ? elem.offsetHeight - posObj.y : posObj.y
+    y: isReverse ? elem.offsetHeight - posObj.y : posObj.y,
   };
 };
 
@@ -34,7 +30,7 @@ const enum KEY_CODE {
   LEFT,
   UP,
   RIGHT,
-  DOWN
+  DOWN,
 }
 type HandleFunction = (i: number) => number;
 export const getKeyboardHandleFunc = (
@@ -43,17 +39,17 @@ export const getKeyboardHandleFunc = (
     direction: Direction;
     max: number;
     min: number;
-  }
+  },
 ): HandleFunction | null => {
   switch (e.keyCode) {
     case KEY_CODE.UP:
-      return i => (params.direction === 'ttb' ? i - 1 : i + 1);
+      return (i) => (params.direction === 'ttb' ? i - 1 : i + 1);
     case KEY_CODE.RIGHT:
-      return i => (params.direction === 'rtl' ? i - 1 : i + 1);
+      return (i) => (params.direction === 'rtl' ? i - 1 : i + 1);
     case KEY_CODE.DOWN:
-      return i => (params.direction === 'ttb' ? i + 1 : i - 1);
+      return (i) => (params.direction === 'ttb' ? i + 1 : i - 1);
     case KEY_CODE.LEFT:
-      return i => (params.direction === 'rtl' ? i + 1 : i - 1);
+      return (i) => (params.direction === 'rtl' ? i + 1 : i - 1);
 
     case KEY_CODE.END:
       return () => params.max;
@@ -61,9 +57,9 @@ export const getKeyboardHandleFunc = (
       return () => params.min;
 
     case KEY_CODE.PAGE_UP:
-      return i => i + 10;
+      return (i) => i + 10;
     case KEY_CODE.PAGE_DOWN:
-      return i => i - 10;
+      return (i) => i - 10;
 
     default:
       return null;

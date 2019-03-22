@@ -1,29 +1,29 @@
 $tooltipGap: 10px;
 
 .vue-slider-dot {
-  position: absolute;
-  will-change: transform;
-  transition: all 0s;
-  z-index: 5;
-
-  width: 14px;
   height: 14px;
-  transform: translate(-50%, -50%);
-  top: 50%;
   left: 58%;
+  position: absolute;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+  transition: all 0s;
   transition: left 0.5s ease 0s;
+  width: 14px;
+  will-change: transform;
+  z-index: 5;
 }
 
 .vue-slider-dot-handle {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: #fff;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   -webkit-box-shadow: 0.5px 0.5px 2px 1px rgba(0, 0, 0, 0.32);
+  -webkit-box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 50%;
   box-shadow: 0.5px 0.5px 2px 1px rgba(0, 0, 0, 0.32);
+  box-sizing: border-box;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
 }
 
 .vue-slider-dot-tooltip {
@@ -35,8 +35,8 @@ $tooltipGap: 10px;
   }
 
   &-top {
-    top: -$tooltipGap;
     left: 50%;
+    top: -$tooltipGap;
     transform: translate(-50%, -100%);
   }
 
@@ -62,9 +62,9 @@ $tooltipGap: 10px;
 $labelGap: 10px;
 
 .vue-slider-marks {
+  height: 100%;
   position: relative;
   width: 100%;
-  height: 100%;
 }
 
 .vue-slider-mark {
@@ -73,17 +73,17 @@ $labelGap: 10px;
 
   @at-root .vue-slider-ltr &,
     .vue-slider-rtl & {
-    width: 0;
     height: 100%;
     top: 50%;
+    width: 0;
 
     &-step {
       top: 0;
     }
 
     &-label {
-      top: 100%;
       margin-top: $labelGap;
+      top: 100%;
     }
   }
 
@@ -115,9 +115,9 @@ $labelGap: 10px;
 
   @at-root .vue-slider-ttb &,
     .vue-slider-btt & {
-    width: 100%;
     height: 0;
     left: 50%;
+    width: 100%;
 
     &-step {
       left: 0;
