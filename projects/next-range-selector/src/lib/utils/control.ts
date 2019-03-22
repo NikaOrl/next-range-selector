@@ -93,6 +93,7 @@ export default class Control {
 
   // Sync slider position
   syncDotsPos() {
+    console.log('pidr', this.dotsValue);
     this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
   }
 

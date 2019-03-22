@@ -1,10 +1,4 @@
-<div
-  ref="container"
-  class="vue-slider"
-  aria-hidden="true"
-  (click)="clickHandle($event)"
-  id="range-selector"
->
+<div ref="container" class="vue-slider" aria-hidden="true" (click)="clickHandle($event)" id="range-selector">
   <div class="vue-slider-rail">
     <div class="vue-slider-process"></div>
     <div class="vue-slider-marks">
@@ -18,15 +12,11 @@
       [ngStyle]="calculateStyles(dot)"
       *ngFor="let dot of dots; let i = index"
       class="vue-slider-dot"
+      (dragstart)="dragStart(i)"
     >
       <ng-content select="[dots-slot]" dots-slot-comp></ng-content>
     </next-range-selector-dot>
   </div>
-  <input
-    class="vue-slider-sr-only"
-    type="range"
-    value="value"
-    min="min"
-    max="max"
-  />
+  <!-- {{ value }}
+  <input class="vue-slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" /> -->
 </div>
