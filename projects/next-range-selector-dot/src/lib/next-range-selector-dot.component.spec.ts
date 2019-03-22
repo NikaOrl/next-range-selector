@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NextRangeSelectorDotComponent } from './next-range-selector-dot.component';
+import {NextRangeSelectorDotComponent} from './next-range-selector-dot.component';
 
 describe('NextRangeSelectorDotComponent', () => {
   let component: NextRangeSelectorDotComponent;
@@ -8,9 +8,8 @@ describe('NextRangeSelectorDotComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NextRangeSelectorDotComponent ]
-    })
-    .compileComponents();
+      declarations: [NextRangeSelectorDotComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

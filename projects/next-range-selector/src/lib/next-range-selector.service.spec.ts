@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { NextRangeSelectorService } from './next-range-selector.service';
+import {NextRangeSelectorService} from './next-range-selector.service';
 
 describe('NextRangeSelectorService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

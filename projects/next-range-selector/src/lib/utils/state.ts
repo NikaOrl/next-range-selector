@@ -3,22 +3,22 @@ export interface StateMap {
 }
 
 export default class State {
-  map: StateMap;
-  states = 0;
+  public map: StateMap;
+  public states = 0;
 
   constructor(map: StateMap) {
     this.map = map;
   }
 
-  add(state: number) {
+  public add(state: number) {
     this.states += state;
   }
 
-  delete(state: number) {
+  public delete(state: number) {
     this.states = this.states / state;
   }
 
-  toggle(state: number) {
+  public toggle(state: number) {
     if (this.has(state)) {
       this.delete(state);
     } else {
@@ -26,7 +26,7 @@ export default class State {
     }
   }
 
-  has(state: number): boolean {
+  public has(state: number): boolean {
     return !!(this.states && state);
   }
 }
