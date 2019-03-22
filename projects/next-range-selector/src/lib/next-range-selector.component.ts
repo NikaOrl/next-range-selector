@@ -1,15 +1,23 @@
-import {Component, OnInit, Input, forwardRef} from '@angular/core';
-import {getSize, getPos, getKeyboardHandleFunc} from './utils/1';
-import State, {StateMap} from './utils/state';
-import {Value, Styles, DotOption, Dot, Direction, MarksProp, ProcessProp} from './1';
+import { Component, OnInit, Input, forwardRef } from '@angular/core';
+import { getSize, getPos, getKeyboardHandleFunc } from './utils/1';
+import State, { StateMap } from './utils/state';
+import {
+  Value,
+  Styles,
+  DotOption,
+  Dot,
+  Direction,
+  MarksProp,
+  ProcessProp
+} from './1';
 import Decimal from './utils/decimal';
-import Control, {ERROR_TYPE} from './utils/control';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import Control, { ERROR_TYPE } from './utils/control';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export const SliderState: StateMap = {
   None: 0,
   Drag: 1,
-  Focus: 2,
+  Focus: 2
 };
 
 @Component({
@@ -20,11 +28,12 @@ export const SliderState: StateMap = {
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => NextRangeSelectorComponent),
-      multi: true,
-    },
-  ],
+      multi: true
+    }
+  ]
 })
-export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
+export class NextRangeSelectorComponent
+  implements OnInit, ControlValueAccessor {
   constructor() {}
   get isHorizontal(): boolean {
     return this.direction === 'ltr' || this.direction === 'rtl';
@@ -35,16 +44,18 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   get dots(): Dot[] {
-    console.log('dots');
     if (this.control) {
       return this.control.dotsPos.map((pos, index) => ({
         pos,
         index,
         value: this.control.dotsValue[index],
-        focus: this.states.has(SliderState.Focus) && this.focusDotIndex === index,
+        focus:
+          this.states.has(SliderState.Focus) && this.focusDotIndex === index,
         disabled: false,
         style: this.dotStyle,
-        ...((Array.isArray(this.dotOptions) ? this.dotOptions[index] : this.dotOptions) || {}),
+        ...((Array.isArray(this.dotOptions)
+          ? this.dotOptions[index]
+          : this.dotOptions) || {})
       }));
     } else {
       return [];
@@ -67,7 +78,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   private get isNotSync() {
     const values = this.control.dotsValue;
     return Array.isArray(this.value)
-      ? this.value.length !== values.length || this.value.some((val, index) => val !== values[index])
+      ? this.value.length !== values.length ||
+          this.value.some((val, index) => val !== values[index])
       : this.value !== values[0];
   }
   value: Value | Value[];
@@ -105,7 +117,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     //   'width': tailSize,
     //   'left': marcPosPer(dot),
     // }
-    return {left: `${dot.pos}%`};
+    return { left: `${dot.pos}%` };
   }
   public onChangeCallback = (val?: any) => null;
   public onTouchedCallback = (val?: any) => null;
@@ -115,7 +127,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   initControl() {
-    console.log('initControl');
     this.control = new Control({
       value: this.value,
       data: this.data,
@@ -129,7 +140,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       order: this.order,
       marks: this.marks,
       process: this.process,
-      onError: this.emitError,
+      onError: this.emitError
     });
     // [
     //   'data',
@@ -169,7 +180,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
   // From ControlValueAccessor interface
   public writeValue(value: any): void {
-    console.log('AAAAAAAAAAAAAAA', this.states);
     this.value = value;
     this.initControl();
     this.bindEvent();
@@ -185,34 +195,41 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   setScale() {
-    console.log(this.$el);
-    this.scale = new Decimal(Math.floor(this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight))
+    this.scale = new Decimal(
+      Math.floor(
+        this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight
+      )
+    )
       .divide(100)
       .toNumber();
   }
 
   private getPosByEvent(e: MouseEvent | TouchEvent): number {
-    return getPos(e, this.$el, this.isReverse)[this.isHorizontal ? 'x' : 'y'] / this.scale;
+    return (
+      getPos(e, this.$el, this.isReverse)[this.isHorizontal ? 'x' : 'y'] /
+      this.scale
+    );
   }
 
   isDisabledByDotIndex(index: number): boolean {
-    console.log(this.dots, index);
     return this.dots[index].disabled;
   }
 
   private isDiff(value1: Value[], value2: Value[]) {
-    return value1.length !== value2.length || value1.some((val, index) => val !== value2[index]);
+    return (
+      value1.length !== value2.length ||
+      value1.some((val, index) => val !== value2[index])
+    );
   }
 
   private syncValueByPos() {
     let values = this.control.dotsValue;
-    console.log('mewmew', this.control.dotsValue);
     // When included is true, the return value is the value of the nearest mark
     if (this.included && this.control.markList.length > 0) {
       const getRecentValue = (val: Value) => {
         let curValue = val;
         let dir = this.max - this.min;
-        this.control.markList.forEach((mark) => {
+        this.control.markList.forEach(mark => {
           if (typeof mark.value === 'number' && typeof val === 'number') {
             const curDir = Math.abs(mark.value - val);
             if (curDir < dir) {
@@ -223,10 +240,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         });
         return curValue;
       };
-      values = values.map((val) => getRecentValue(val));
+      values = values.map(val => getRecentValue(val));
     }
-    console.log('mewmew2', this.control.dotsValue);
-    if (this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])) {
+    if (
+      this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])
+    ) {
       this.onChangeCallback(values.length === 1 ? values[0] : [...values]);
       // this.value = values.length === 1 ? values[0] : [...values];
     }
@@ -240,9 +258,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   // }
 
   setValueByPos(pos: number) {
-    console.log(pos);
-    console.log(this.control);
-    console.log('go', this.control.dotsValue);
     const index = this.control.getRecentDot(pos);
     if (this.isDisabledByDotIndex(index)) {
       return false;
@@ -251,17 +266,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.control.setDotPos(pos, index);
     this.syncValueByPos();
 
-    console.log('1mew', this.control.dotsValue);
-    console.log('1mew', this.control);
-
     if (this.useKeyboard) {
       this.states.add(SliderState.Focus);
     }
 
     setTimeout(() => {
       if (this.included && this.isNotSync) {
-        console.log('dkdsdslfeoodel');
-        // debugger;
         this.control.setValue(this.control.dotsValue[0]);
       } else {
         this.control.syncDotsPos();
@@ -270,13 +280,22 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   get canSort(): boolean {
-    return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
+    return (
+      this.order &&
+      !this.minRange &&
+      !this.maxRange &&
+      !this.fixed &&
+      this.enableCross
+    );
   }
 
   private get dragRange(): [number, number] {
     const prevDot = this.dots[this.focusDotIndex - 1];
     const nextDot = this.dots[this.focusDotIndex + 1];
-    return [prevDot ? prevDot.pos : -Infinity, nextDot ? nextDot.pos : Infinity];
+    return [
+      prevDot ? prevDot.pos : -Infinity,
+      nextDot ? nextDot.pos : Infinity
+    ];
   }
 
   // If the component is sorted, then when the slider crosses, toggle the currently selected slider index
@@ -298,7 +317,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private dragMove(e: MouseEvent | TouchEvent) {
-    console.log('aaaaaaaaaaaaaaa2', this.states);
     if (!this.states.has(SliderState.Drag)) {
       return false;
     }
@@ -329,13 +347,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         this.control.syncDotsPos();
       }
 
-      console.log(1, this.states);
       this.states.delete(SliderState.Drag);
-      console.log(2, this.states);
       // If useKeyboard is true, keep focus status after dragging
       if (!this.useKeyboard) {
         this.states.delete(SliderState.Focus);
-        console.log(3, this.states);
       }
       // this.$emit('drag-end');
     });
@@ -349,9 +364,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     ) {
       return false;
     }
-    console.log(4, this.states);
     this.states.delete(SliderState.Focus);
-    console.log(5, this.states);
   }
 
   keydownHandle(e: KeyboardEvent) {
@@ -362,14 +375,18 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const handleFunc = getKeyboardHandleFunc(e, {
       direction: this.direction,
       max: this.control.total,
-      min: 0,
+      min: 0
     });
 
     if (handleFunc) {
       e.preventDefault();
-      const index = this.control.getIndexByValue(this.control.dotsValue[this.focusDotIndex]);
+      const index = this.control.getIndexByValue(
+        this.control.dotsValue[this.focusDotIndex]
+      );
       const newIndex = handleFunc(index);
-      const pos = this.control.parseValue(this.control.getValueByIndex(newIndex));
+      const pos = this.control.parseValue(
+        this.control.getValueByIndex(newIndex)
+      );
       this.isCrossDot(pos);
       this.control.setDotPos(pos, this.focusDotIndex);
       this.syncValueByPos();
@@ -377,25 +394,29 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   bindEvent() {
-    document.addEventListener('touchmove', this.dragMove, {passive: false});
-    document.addEventListener('touchend', this.dragEnd, {passive: false});
-    document.addEventListener('mousedown', this.blurHandle);
-    document.addEventListener('mousemove', this.dragMove);
-    document.addEventListener('mouseup', this.dragEnd);
-    document.addEventListener('mouseleave', this.dragEnd);
-    document.addEventListener('keydown', this.keydownHandle);
+    document.addEventListener('touchmove', this.dragMove.bind(this), {
+      passive: false
+    });
+    document.addEventListener('touchend', this.dragEnd.bind(this), {
+      passive: false
+    });
+    // document.addEventListener('mousedown', this.blurHandle.bind(this));
+    document.addEventListener('mousemove', this.dragMove.bind(this));
+    // document.addEventListener('mouseup', this.dragEnd.bind(this));
+    document.addEventListener('mouseleave', this.dragEnd.bind(this));
+    document.addEventListener('keydown', this.keydownHandle.bind(this));
   }
 
   unbindEvent() {
-    document.removeEventListener('touchmove', this.dragMove);
-    document.removeEventListener('touchend', this.dragEnd);
-    document.removeEventListener('mousemove', this.dragMove);
-    document.removeEventListener('mouseup', this.dragEnd);
-    document.removeEventListener('mouseleave', this.dragEnd);
-    document.removeEventListener('keydown', this.keydownHandle);
+    document.removeEventListener('touchmove', this.dragMove.bind(this));
+    document.removeEventListener('touchend', this.dragEnd.bind(this));
+    document.removeEventListener('mousemove', this.dragMove.bind(this));
+    document.removeEventListener('mouseup', this.dragEnd.bind(this));
+    document.removeEventListener('mouseleave', this.dragEnd.bind(this));
+    document.removeEventListener('keydown', this.keydownHandle.bind(this));
   }
 
-  private dragStart(index: number) {
+  dragStart(index: number) {
     this.focusDotIndex = index;
     this.setScale();
     this.states.add(SliderState.Drag);
@@ -403,7 +424,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   clickHandle(e: MouseEvent | TouchEvent) {
-    console.log(this);
     if (this.states.has(SliderState.Drag)) {
       return;
     }
@@ -412,6 +432,5 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const pos = this.getPosByEvent(e);
 
     this.setValueByPos(pos);
-    console.log('hi', this.control.dotsValue);
   }
 }

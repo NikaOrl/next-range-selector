@@ -1,5 +1,14 @@
 import Decimal from './decimal';
-import {Value, Mark, MarkOption, Marks, MarksProp, ProcessProp, ProcessOption, MarksFunction} from '../1';
+import {
+  Value,
+  Mark,
+  MarkOption,
+  Marks,
+  MarksProp,
+  ProcessProp,
+  ProcessOption,
+  MarksFunction
+} from '../1';
 
 // The distance each slider changes
 type DotsPosChangeArray = number[];
@@ -9,16 +18,18 @@ export const enum ERROR_TYPE {
   INTERVAL,
   MIN,
   MAX,
-  ORDER,
+  ORDER
 }
 
-type ERROR_MESSAGE = {[key in ERROR_TYPE]: string};
+type ERROR_MESSAGE = { [key in ERROR_TYPE]: string };
 export const ERROR_MSG: ERROR_MESSAGE = {
   [ERROR_TYPE.VALUE]: 'The type of the "value" is illegal',
-  [ERROR_TYPE.INTERVAL]: 'The prop "interval" is invalid, "(max - min)" cannot be divisible by "interval"',
+  [ERROR_TYPE.INTERVAL]:
+    'The prop "interval" is invalid, "(max - min)" cannot be divisible by "interval"',
   [ERROR_TYPE.MIN]: 'The "value" cannot be less than the minimum.',
   [ERROR_TYPE.MAX]: 'The "value" cannot be greater than the maximum.',
-  [ERROR_TYPE.ORDER]: 'When "order" is false, the parameters "minRange", "maxRange", "fixed", "enabled" are invalid.',
+  [ERROR_TYPE.ORDER]:
+    'When "order" is false, the parameters "minRange", "maxRange", "fixed", "enabled" are invalid.'
 };
 
 export default class Control {
@@ -67,7 +78,12 @@ export default class Control {
       this.enableCross = options.enableCross;
       this.fixed = options.fixed;
     } else {
-      if (options.minRange || options.maxRange || !options.enableCross || options.fixed) {
+      if (
+        options.minRange ||
+        options.maxRange ||
+        !options.enableCross ||
+        options.fixed
+      ) {
         this.emitError(ERROR_TYPE.ORDER);
       }
       this.minRange = 0;
@@ -79,7 +95,6 @@ export default class Control {
   }
 
   setValue(value: Value | Value[]) {
-    console.log('mewControl', value);
     this.dotsValue = Array.isArray(value) ? [...value] : [value];
     this.syncDotsPos();
   }
@@ -88,13 +103,12 @@ export default class Control {
   setDotsPos(dotsPos: number[]) {
     const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
     this.dotsPos = list;
-    this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
+    this.dotsValue = list.map(dotPos => this.parsePos(dotPos));
   }
 
   // Sync slider position
   syncDotsPos() {
-    console.log('pidr', this.dotsValue);
-    this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
+    this.dotsPos = this.dotsValue.map(v => this.parseValue(v));
   }
 
   get markList(): Mark[] {
@@ -109,33 +123,38 @@ export default class Control {
         value: typeof value === 'string' ? parseFloat(value) : value,
         label: value,
         active: this.isActiveByPos(pos),
-        ...mark,
+        ...mark
       };
     };
 
     if (this.marks === true) {
-      return this.getValues().map((value) => getMarkByValue(value));
-    } else if (Object.prototype.toString.call(this.marks) === '[object Object]') {
+      return this.getValues().map(value => getMarkByValue(value));
+    } else if (
+      Object.prototype.toString.call(this.marks) === '[object Object]'
+    ) {
       return Object.keys(this.marks)
         .sort((a, b) => +a - +b)
-        .map((value) => {
+        .map(value => {
           const item = (this.marks as Marks)[value];
-          return getMarkByValue(value, typeof item !== 'string' ? item : {label: item});
+          return getMarkByValue(
+            value,
+            typeof item !== 'string' ? item : { label: item }
+          );
         });
     } else if (Array.isArray(this.marks)) {
-      return this.marks.map((value) => getMarkByValue(value));
+      return this.marks.map(value => getMarkByValue(value));
     } else if (typeof this.marks === 'function') {
       return this.getValues()
-        .map((value) => ({value, result: (this.marks as MarksFunction)(value)}))
-        .filter(({result}) => !!result)
-        .map(({value, result}) => getMarkByValue(value, result as Mark));
+        .map(value => ({ value, result: (this.marks as MarksFunction)(value) }))
+        .filter(({ result }) => !!result)
+        .map(({ value, result }) => getMarkByValue(value, result as Mark));
     } else {
       return [];
     }
   }
 
   getRecentDot(pos: number): number {
-    const arr = this.dotsPos.map((dotPos) => Math.abs(dotPos - pos));
+    const arr = this.dotsPos.map(dotPos => Math.abs(dotPos - pos));
     return arr.indexOf(Math.min(...arr));
   }
 
@@ -180,60 +199,76 @@ export default class Control {
       changePosArr[index] = changePos;
     }
 
-    this.setDotsPos(this.dotsPos.map((curPos, i) => curPos + (changePosArr[i] || 0)));
+    this.setDotsPos(
+      this.dotsPos.map((curPos, i) => curPos + (changePosArr[i] || 0))
+    );
   }
 
-  private getFixedChangePosArr(changePos: number, index: number): DotsPosChangeArray {
+  private getFixedChangePosArr(
+    changePos: number,
+    index: number
+  ): DotsPosChangeArray {
     this.dotsPos.forEach((originPos, i) => {
       if (i !== index) {
-        const {pos: lastPos, inRange} = this.getValidPos(originPos + changePos, i);
+        const { pos: lastPos, inRange } = this.getValidPos(
+          originPos + changePos,
+          i
+        );
         if (!inRange) {
-          changePos = Math.min(Math.abs(lastPos - originPos), Math.abs(changePos)) * (changePos < 0 ? -1 : 1);
+          changePos =
+            Math.min(Math.abs(lastPos - originPos), Math.abs(changePos)) *
+            (changePos < 0 ? -1 : 1);
         }
       }
     });
-    return this.dotsPos.map((_) => changePos);
+    return this.dotsPos.map(_ => changePos);
   }
 
-  private getLimitRangeChangePosArr(pos: number, changePos: number, index: number): DotsPosChangeArray {
-    const changeDots = [{index, changePos}];
+  private getLimitRangeChangePosArr(
+    pos: number,
+    changePos: number,
+    index: number
+  ): DotsPosChangeArray {
+    const changeDots = [{ index, changePos }];
     const newChangePos = changePos;
-    [this.minRange, this.maxRange].forEach((isLimitRange?: number, rangeIndex?: number) => {
-      if (!isLimitRange) {
-        return false;
-      }
-      const isMinRange = rangeIndex === 0;
-      const isForward = changePos > 0;
-      let next = 0;
-      if (isMinRange) {
-        next = isForward ? 1 : -1;
-      } else {
-        next = isForward ? -1 : 1;
-      }
+    [this.minRange, this.maxRange].forEach(
+      (isLimitRange?: number, rangeIndex?: number) => {
+        if (!isLimitRange) {
+          return false;
+        }
+        const isMinRange = rangeIndex === 0;
+        const isForward = changePos > 0;
+        let next = 0;
+        if (isMinRange) {
+          next = isForward ? 1 : -1;
+        } else {
+          next = isForward ? -1 : 1;
+        }
 
-      // Determine if the two positions are within the legal interval
-      const inLimitRange = (pos2: number, pos1: number): boolean => {
-        const diff = Math.abs(pos2 - pos1);
-        return isMinRange ? diff < this.minRangeDir : diff > this.maxRangeDir;
-      };
+        // Determine if the two positions are within the legal interval
+        const inLimitRange = (pos2: number, pos1: number): boolean => {
+          const diff = Math.abs(pos2 - pos1);
+          return isMinRange ? diff < this.minRangeDir : diff > this.maxRangeDir;
+        };
 
-      let i = index + next;
-      let nextPos = this.dotsPos[i];
-      let curPos = pos;
-      while (this.isPos(nextPos) && inLimitRange(nextPos, curPos)) {
-        const {pos: lastPos} = this.getValidPos(nextPos + newChangePos, i);
-        changeDots.push({
-          index: i,
-          changePos: lastPos - nextPos,
-        });
-        i = i + next;
-        curPos = lastPos;
-        nextPos = this.dotsPos[i];
+        let i = index + next;
+        let nextPos = this.dotsPos[i];
+        let curPos = pos;
+        while (this.isPos(nextPos) && inLimitRange(nextPos, curPos)) {
+          const { pos: lastPos } = this.getValidPos(nextPos + newChangePos, i);
+          changeDots.push({
+            index: i,
+            changePos: lastPos - nextPos
+          });
+          i = i + next;
+          curPos = lastPos;
+          nextPos = this.dotsPos[i];
+        }
       }
-    });
+    );
 
     return this.dotsPos.map((_, i) => {
-      const changeDot = changeDots.filter((dot) => dot.index === i);
+      const changeDot = changeDots.filter(dot => dot.index === i);
       return changeDot.length ? changeDot[0].changePos : 0;
     });
   }
@@ -242,7 +277,7 @@ export default class Control {
     return typeof pos === 'number';
   }
 
-  getValidPos(pos: number, index: number): {pos: number; inRange: boolean} {
+  getValidPos(pos: number, index: number): { pos: number; inRange: boolean } {
     const range = this.valuePosRange[index];
     let inRange = true;
     if (pos < range[0]) {
@@ -254,7 +289,7 @@ export default class Control {
     }
     return {
       pos,
-      inRange,
+      inRange
     };
   }
 
@@ -365,11 +400,16 @@ export default class Control {
 
     dotsPos.forEach((pos, i) => {
       valuePosRange.push([
-        Math.max(this.minRange ? this.minRangeDir * i : 0, !this.enableCross ? dotsPos[i - 1] || 0 : 0),
-        Math.min(
-          this.minRange ? 100 - this.minRangeDir * (dotsPos.length - 1 - i) : 100,
-          !this.enableCross ? dotsPos[i + 1] || 100 : 100,
+        Math.max(
+          this.minRange ? this.minRangeDir * i : 0,
+          !this.enableCross ? dotsPos[i - 1] || 0 : 0
         ),
+        Math.min(
+          this.minRange
+            ? 100 - this.minRangeDir * (dotsPos.length - 1 - i)
+            : 100,
+          !this.enableCross ? dotsPos[i + 1] || 100 : 100
+        )
       ]);
     });
 
@@ -377,6 +417,6 @@ export default class Control {
   }
 
   get dotsIndex(): number[] {
-    return this.dotsValue.map((val) => this.getIndexByValue(val));
+    return this.dotsValue.map(val => this.getIndexByValue(val));
   }
 }
