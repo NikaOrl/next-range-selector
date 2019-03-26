@@ -8,4 +8,5 @@ import {Component} from '@angular/core';
 export class AppComponent {
   public title = 'next-range-selector-project';
   public value = 10;
+  public value2 = 40;
 }

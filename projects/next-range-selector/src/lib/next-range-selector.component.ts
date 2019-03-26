@@ -84,12 +84,14 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   // public dragMove = new EventEmitter<PointerEvent>();
   // public dragEnd = new EventEmitter<PointerEvent>();
 
+  @Input() public itemTpl;
+
   @Input() public dotStyle: Styles;
   @Input() public dotOptions: DotOption | DotOption[];
   @Input() public included = true;
   @Input() public min = 0;
   @Input() public max = 100;
-  @Input() public useKeyboard = false;
+  @Input() public useKeyboard = true;
   @Input() public data?: Value[];
   @Input() public enableCross = true;
   @Input() public fixed = false;
@@ -115,14 +117,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   private dragging = false;
 
-  @HostListener('pointerdown', ['$event'])
   public onPointerDown(event: PointerEvent): void {
-    console.log(this.dragging, this.states.states, this.states.map);
-    console.log(event);
-    if (event.path.length === 13) {
-      this.dragging = true;
-      this.dragStart(event.path[3].id);
-    }
+    this.dragging = true;
+    this.dragStart(0);
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -136,14 +133,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   @HostListener('document:pointerup', ['$event'])
   public onPointerUp(event: PointerEvent): void {
-    console.log(this.dragging, this.states.states, this.states.map);
     if (!this.dragging) {
       return;
     }
 
     this.dragging = false;
     this.dragEnd();
-    console.log(this.dragging, this.states.states, this.states.map);
   }
 
   public calculateStyles(dot) {
@@ -265,6 +260,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   public keydownHandle(e: KeyboardEvent) {
     if (!this.useKeyboard || !this.states.has(SliderState.Focus)) {
+      // the problem in the SliderState.Focus
       return false;
     }
 
@@ -296,7 +292,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     // document.addEventListener('mousemove', this.dragMove.bind(this));
     // // document.addEventListener('mouseup', this.dragEnd.bind(this));
     // document.addEventListener('mouseleave', this.dragEnd.bind(this));
-    // document.addEventListener('keydown', this.keydownHandle.bind(this));
+    document.addEventListener('keydown', this.keydownHandle.bind(this));
   }
 
   public unbindEvent() {
@@ -305,11 +301,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     // document.removeEventListener('mousemove', this.dragMove.bind(this));
     // document.removeEventListener('mouseup', this.dragEnd.bind(this));
     // document.removeEventListener('mouseleave', this.dragEnd.bind(this));
-    // document.removeEventListener('keydown', this.keydownHandle.bind(this));
+    document.removeEventListener('keydown', this.keydownHandle.bind(this));
   }
 
   public dragStart(index: number) {
-    console.log(1);
     this.focusDotIndex = index;
     this.setScale();
     this.states.add(SliderState.Drag);
@@ -317,9 +312,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public clickHandle(e: MouseEvent | TouchEvent) {
-    if (this.states.has(SliderState.Drag)) {
-      return;
-    }
+    // if (this.states.has(SliderState.Drag)) {
+    //   return;
+    // }
     this.setScale();
 
     const pos = this.getPosByEvent(e);

@@ -182,7 +182,9 @@ export default class Control {
   }
 
   public setValue(value: Value | Value[]) {
+    console.log(value);
     this.dotsValue = Array.isArray(value) ? [...value] : [value];
+    console.log(this.dotsValue);
     this.syncDotsPos();
   }
 
