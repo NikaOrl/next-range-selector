@@ -117,9 +117,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   private dragging = false;
 
-  public onPointerDown(event: PointerEvent): void {
+  public onPointerDown(dotIndex: number): void {
     this.dragging = true;
-    this.dragStart(0);
+    this.dragStart(dotIndex);
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -241,6 +241,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     if (this.isDisabledByDotIndex(index)) {
       return false;
     }
+
     this.focusDotIndex = index;
     this.control.setDotPos(pos, index);
     this.syncValueByPos();
@@ -251,7 +252,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
     setTimeout(() => {
       if (this.included && this.isNotSync) {
-        this.control.setValue(this.control.dotsValue[0]);
+        // not sure what this code for
+        this.control.setValue(this.value);
       } else {
         this.control.syncDotsPos();
       }
@@ -356,7 +358,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
     if (this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])) {
       this.onChangeCallback(values.length === 1 ? values[0] : [...values]);
-      // this.value = values.length === 1 ? values[0] : [...values];
+      this.value = values.length === 1 ? values[0] : [...values];
     }
   }
 

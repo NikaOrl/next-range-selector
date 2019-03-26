@@ -12,11 +12,9 @@
       disabled="dot.disabled"
       focus="dot.focus"
       id="{{ i }}"
-      (mousedown)="onPointerDown($event)"
+      (mousedown)="onPointerDown(i)"
     >
-      <!-- <ng-container *ngTemplateOutlet="itemTpl; context: {$implicit: dot}"></ng-container> -->
-      <!-- {{ dot }} -->
-      <ng-content select="[dots-slot]" dots-slot-comp></ng-content>
+      <ng-container *ngTemplateOutlet="itemTpl"></ng-container>
     </div>
   </div>
   <!-- {{ value }}
