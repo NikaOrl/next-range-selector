@@ -15,9 +15,7 @@
     "lib": ["es2018", "dom"],
     "paths": {
       "next-range-selector": ["dist/next-range-selector"],
-      "next-range-selector/*": ["dist/next-range-selector/*"],
-      "next-range-selector-dot": ["dist/next-range-selector-dot"],
-      "next-range-selector-dot/*": ["dist/next-range-selector-dot/*"]
+      "next-range-selector/*": ["dist/next-range-selector/*"]
     }
   }
 }

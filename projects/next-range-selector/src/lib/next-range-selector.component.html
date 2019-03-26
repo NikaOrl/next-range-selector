@@ -1,4 +1,4 @@
-<div ref="container" class="vue-slider" aria-hidden="true" (click)="clickHandle($event)" id="range-selector">
+<div ref="container" class="vue-slider" aria-hidden="true" id="range-selector" (click)="clickHandle($event)">
   <div class="vue-slider-rail">
     <div class="vue-slider-process"></div>
     <div class="vue-slider-marks">
@@ -11,10 +11,10 @@
       value="dot.value"
       disabled="dot.disabled"
       focus="dot.focus"
-      draggable="true"
-      (drag)="dragStart(i)"
+      id="{{ i }}"
+      (mousedown)="onPointerDown(i)"
     >
-      <ng-content select="[dots-slot]" dots-slot-comp></ng-content>
+      <ng-container *ngTemplateOutlet="itemTpl"></ng-container>
     </div>
   </div>
   <!-- {{ value }}

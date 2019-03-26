@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, forwardRef} from '@angular/core';
+import {Component, OnInit, Input, forwardRef, HostListener} from '@angular/core';
 import {getSize, getPos, getKeyboardHandleFunc} from './utils/1';
 import State, {StateMap} from './utils/state';
 import {Value, Styles, DotOption, Dot, Direction, MarksProp, ProcessProp} from './1';
@@ -25,23 +25,6 @@ export const SliderState: StateMap = {
   ],
 })
 export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
-  @Input() public dotStyle: Styles;
-  @Input() public dotOptions: DotOption | DotOption[];
-  @Input() public included = true;
-  @Input() public min = 0;
-  @Input() public max = 100;
-  @Input() public useKeyboard = false;
-  @Input() public data?: Value[];
-  @Input() public enableCross = true;
-  @Input() public fixed = false;
-  @Input() public interval = 1;
-  @Input() public minRange?: number;
-  @Input() public maxRange?: number;
-  @Input() public order = true;
-  @Input() public marks?: MarksProp = false;
-  @Input() public process?: ProcessProp = true;
-  @Input() public lazy = false;
-
   get isHorizontal(): boolean {
     return this.direction === 'ltr' || this.direction === 'rtl';
   }
@@ -95,6 +78,30 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const nextDot = this.dots[this.focusDotIndex + 1];
     return [prevDot ? prevDot.pos : -Infinity, nextDot ? nextDot.pos : Infinity];
   }
+
+  // public dragStart = new EventEmitter<PointerEvent>();
+
+  // public dragMove = new EventEmitter<PointerEvent>();
+  // public dragEnd = new EventEmitter<PointerEvent>();
+
+  @Input() public itemTpl;
+
+  @Input() public dotStyle: Styles;
+  @Input() public dotOptions: DotOption | DotOption[];
+  @Input() public included = true;
+  @Input() public min = 0;
+  @Input() public max = 100;
+  @Input() public useKeyboard = true;
+  @Input() public data?: Value[];
+  @Input() public enableCross = true;
+  @Input() public fixed = false;
+  @Input() public interval = 1;
+  @Input() public minRange?: number;
+  @Input() public maxRange?: number;
+  @Input() public order = true;
+  @Input() public marks?: MarksProp = false;
+  @Input() public process?: ProcessProp = true;
+  @Input() public lazy = false;
   public value: Value | Value[];
 
   public states: State = new State(SliderState);
@@ -107,6 +114,32 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   };
   public $el: HTMLElement = document.getElementById('range-selector');
   public focusDotIndex = 0;
+
+  private dragging = false;
+
+  public onPointerDown(dotIndex: number): void {
+    this.dragging = true;
+    this.dragStart(dotIndex);
+  }
+
+  @HostListener('document:pointermove', ['$event'])
+  public onPointerMove(event: PointerEvent): void {
+    if (!this.dragging) {
+      return;
+    }
+
+    this.dragMove(event);
+  }
+
+  @HostListener('document:pointerup', ['$event'])
+  public onPointerUp(event: PointerEvent): void {
+    if (!this.dragging) {
+      return;
+    }
+
+    this.dragging = false;
+    this.dragEnd();
+  }
 
   public calculateStyles(dot) {
     //   'height': '100%',
@@ -208,6 +241,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     if (this.isDisabledByDotIndex(index)) {
       return false;
     }
+
     this.focusDotIndex = index;
     this.control.setDotPos(pos, index);
     this.syncValueByPos();
@@ -218,7 +252,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
     setTimeout(() => {
       if (this.included && this.isNotSync) {
-        this.control.setValue(this.control.dotsValue[0]);
+        // not sure what this code for
+        this.control.setValue(this.value);
       } else {
         this.control.syncDotsPos();
       }
@@ -227,6 +262,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   public keydownHandle(e: KeyboardEvent) {
     if (!this.useKeyboard || !this.states.has(SliderState.Focus)) {
+      // the problem in the SliderState.Focus
       return false;
     }
 
@@ -248,25 +284,25 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public bindEvent() {
-    document.addEventListener('touchmove', this.dragMove.bind(this), {
-      passive: false,
-    });
-    document.addEventListener('touchend', this.dragEnd.bind(this), {
-      passive: false,
-    });
-    // document.addEventListener('mousedown', this.blurHandle.bind(this));
-    document.addEventListener('mousemove', this.dragMove.bind(this));
-    // document.addEventListener('mouseup', this.dragEnd.bind(this));
-    document.addEventListener('mouseleave', this.dragEnd.bind(this));
+    // document.addEventListener('touchmove', this.dragMove.bind(this), {
+    //   passive: false,
+    // });
+    // document.addEventListener('touchend', this.dragEnd.bind(this), {
+    //   passive: false,
+    // });
+    // // document.addEventListener('mousedown', this.blurHandle.bind(this));
+    // document.addEventListener('mousemove', this.dragMove.bind(this));
+    // // document.addEventListener('mouseup', this.dragEnd.bind(this));
+    // document.addEventListener('mouseleave', this.dragEnd.bind(this));
     document.addEventListener('keydown', this.keydownHandle.bind(this));
   }
 
   public unbindEvent() {
-    document.removeEventListener('touchmove', this.dragMove.bind(this));
-    document.removeEventListener('touchend', this.dragEnd.bind(this));
-    document.removeEventListener('mousemove', this.dragMove.bind(this));
-    document.removeEventListener('mouseup', this.dragEnd.bind(this));
-    document.removeEventListener('mouseleave', this.dragEnd.bind(this));
+    // document.removeEventListener('touchmove', this.dragMove.bind(this));
+    // document.removeEventListener('touchend', this.dragEnd.bind(this));
+    // document.removeEventListener('mousemove', this.dragMove.bind(this));
+    // document.removeEventListener('mouseup', this.dragEnd.bind(this));
+    // document.removeEventListener('mouseleave', this.dragEnd.bind(this));
     document.removeEventListener('keydown', this.keydownHandle.bind(this));
   }
 
@@ -278,9 +314,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public clickHandle(e: MouseEvent | TouchEvent) {
-    if (this.states.has(SliderState.Drag)) {
-      return;
-    }
+    // if (this.states.has(SliderState.Drag)) {
+    //   return;
+    // }
     this.setScale();
 
     const pos = this.getPosByEvent(e);
@@ -322,7 +358,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
     if (this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])) {
       this.onChangeCallback(values.length === 1 ? values[0] : [...values]);
-      // this.value = values.length === 1 ? values[0] : [...values];
+      this.value = values.length === 1 ? values[0] : [...values];
     }
   }
 
@@ -368,12 +404,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
 
     setTimeout(() => {
-      if (this.included && this.isNotSync) {
-        this.control.setValue(this.value);
-      } else {
-        // Sync slider position
-        this.control.syncDotsPos();
-      }
+      // if (this.included && this.isNotSync) {
+      //   this.control.setValue(this.value);
+      // } else {
+      // Sync slider position
+      this.control.syncDotsPos();
+      // }
 
       this.states.delete(SliderState.Drag);
       // If useKeyboard is true, keep focus status after dragging
