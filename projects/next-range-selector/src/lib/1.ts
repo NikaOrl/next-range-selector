@@ -57,3 +57,9 @@ export interface Dot extends DotOption {
 export type ProcessOption = Array<[number, number, Styles?]>;
 export type ProcessFunc = (dotsPos: number[]) => ProcessOption;
 export type ProcessProp = boolean | ProcessFunc;
+
+export interface Process {
+  start: number;
+  end: number;
+  style?: Styles;
+}

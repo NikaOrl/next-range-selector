@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, forwardRef, HostListener} from '@angular/core';
 import {getSize, getPos, getKeyboardHandleFunc} from './utils/1';
 import State, {StateMap} from './utils/state';
-import {Value, Styles, DotOption, Dot, Direction, MarksProp, ProcessProp} from './1';
+import {Value, Styles, DotOption, Dot, Direction, MarksProp, ProcessProp, Process} from './1';
 import Decimal from './utils/decimal';
 import Control, {ERROR_TYPE} from './utils/control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -11,6 +11,8 @@ export const SliderState: StateMap = {
   Drag: 1,
   Focus: 2,
 };
+
+export const DEFAULT_SLIDER_SIZE = 4;
 
 @Component({
   selector: 'next-range-selector',
@@ -33,6 +35,38 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return this.direction === 'rtl' || this.direction === 'btt';
   }
 
+  get animateTime(): number {
+    // if (this.states.has(SliderState.Drag)) {
+    //   return 0;
+    // }
+    return this.duration;
+  }
+
+  get dotBaseStyle() {
+    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
+    let dotPos: {[key: string]: string};
+    if (this.isHorizontal) {
+      dotPos = {
+        transform: `translate(${this.isReverse ? '50%' : '-50%'}, -50%)`,
+        WebkitTransform: `translate(${this.isReverse ? '50%' : '-50%'}, -50%)`,
+        top: '50%',
+        [this.direction === 'ltr' ? 'left' : 'right']: '0',
+      };
+    } else {
+      dotPos = {
+        transform: `translate(-50%, ${this.isReverse ? '50%' : '-50%'})`,
+        WebkitTransform: `translate(-50%, ${this.isReverse ? '50%' : '-50%'})`,
+        left: '50%',
+        [this.direction === 'btt' ? 'bottom' : 'top']: '0',
+      };
+    }
+    return {
+      width: `${dotWidth}px`,
+      height: `${dotHeight}px`,
+      ...dotPos,
+    };
+  }
+
   get dots(): Dot[] {
     if (this.control) {
       return this.control.dotsPos.map((pos, index) => ({
@@ -41,7 +75,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         value: this.control.dotsValue[index],
         focus: this.states.has(SliderState.Focus) && this.focusDotIndex === index,
         disabled: false,
-        style: this.dotStyle,
+        // transition doesn't  work
+        style: {
+          ...this.dotBaseStyle,
+          [this.mainDirection]: `${pos}%`,
+          transition: `${this.mainDirection} ${this.animateTime}s`,
+        },
         ...((Array.isArray(this.dotOptions) ? this.dotOptions[index] : this.dotOptions) || {}),
       }));
     } else {
@@ -73,6 +112,21 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
   }
 
+  get containerStyles() {
+    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
+    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
+    const containerHeight = this.height
+      ? getSize(this.height)
+      : this.isHorizontal
+      ? getSize(DEFAULT_SLIDER_SIZE)
+      : '100%';
+    return {
+      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
+      width: containerWidth,
+      height: containerHeight,
+    };
+  }
+
   private get dragRange(): [number, number] {
     const prevDot = this.dots[this.focusDotIndex - 1];
     const nextDot = this.dots[this.focusDotIndex + 1];
@@ -102,11 +156,16 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public marks?: MarksProp = false;
   @Input() public process?: ProcessProp = true;
   @Input() public lazy = false;
+  @Input() public duration: number = 0.5;
+  @Input() public width: number | string;
+
+  @Input() public height: number | string;
+  @Input() public dotSize: [number, number] | number = 14;
   public value: Value | Value[];
 
   public states: State = new State(SliderState);
   public displayValue = 10;
-  public direction: Direction = 'ltr';
+  @Input() public direction: Direction = 'ltr';
   public scale = 1;
   public control!: Control;
   public $refs!: {
@@ -141,13 +200,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.dragEnd();
   }
 
-  public calculateStyles(dot) {
-    //   'height': '100%',
-    //   'width': tailSize,
-    //   'left': marcPosPer(dot),
-    // }
-    return {left: `${dot.pos}%`};
-  }
   public onChangeCallback = (val?: any) => null;
   public onTouchedCallback = (val?: any) => null;
 
@@ -322,6 +374,34 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const pos = this.getPosByEvent(e);
 
     this.setValueByPos(pos);
+  }
+
+  public get processArray(): Process[] {
+    if (this.control) {
+      return this.control.processArray.map(([start, end, style]) => {
+        if (start > end) {
+          /* tslint:disable:semicolon */
+          [start, end] = [end, start];
+        }
+        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+        return {
+          start,
+          end,
+          style: {
+            [this.isHorizontal ? 'height' : 'width']: '100%',
+            [this.isHorizontal ? 'top' : 'left']: 0,
+            [this.mainDirection]: `${start}%`,
+            [sizeStyleKey]: `${end - start}%`,
+            transitionProperty: `${sizeStyleKey},${this.mainDirection}`,
+            transitionDuration: `${this.animateTime}s`,
+            // ...this.processStyle,
+            // ...style,
+          },
+        };
+      });
+    } else {
+      return [];
+    }
   }
 
   private emitError(type: ERROR_TYPE, message: string) {

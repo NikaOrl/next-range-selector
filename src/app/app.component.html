@@ -1,22 +1,45 @@
 <form>
-  <next-range-selector [(ngModel)]="value" name="range-selector" [itemTpl]="itemTpl">
+  <!-- <next-range-selector [(ngModel)]="value" name="range-selector" [itemTpl]="itemTpl">
     <div marks-slot>
       <div class="marks-slot"></div>
     </div>
-  </next-range-selector>
+  </next-range-selector> -->
   <next-range-selector [(ngModel)]="value2" name="range-selector2" [itemTpl]="itemTpl">
     <div marks-slot>
       <div class="marks-slot"></div>
     </div>
   </next-range-selector>
+
+  <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value"
+    [itemTpl]="itemTpl"
+    [direction]="'rtl'"
+    name="range-selector32"
+  ></next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value"
+    [direction]="'btt'"
+    [itemTpl]="itemTpl"
+    [height]="300"
+    style="display: inline-block; margin: 30px;"
+    name="range-selector33"
+  ></next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value"
+    [itemTpl]="itemTpl"
+    [direction]="'ttb'"
+    name="range-selector34"
+    style="display: inline-block; margin: 30px 0; height: 300px;"
+  ></next-range-selector>
 </form>
 
 <ng-template let-item #itemTpl>
-  <div class="vue-slider-dot">
-    <div class="vue-slider-dot-handle"></div>
-    <div class="vue-slider-dot-tooltip">
-      <div class="vue-slider-dot-tooltip-inner">
-        <span class="vue-slider-dot-tooltip-text">{{ tooltipValue }}</span>
+  <div class="slider-dot">
+    <div class="slider-dot-handle"></div>
+    <div class="slider-dot-tooltip">
+      <div class="slider-dot-tooltip-inner">
+        <span class="slider-dot-tooltip-text">{{ tooltipValue }}</span>
       </div>
     </div>
   </div>
