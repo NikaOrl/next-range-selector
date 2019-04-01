@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, forwardRef, HostListener} from '@angular/core';
+import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2} from '@angular/core';
 import {getSize, getPos, getKeyboardHandleFunc} from './utils/1';
 import State, {StateMap} from './utils/state';
 import {Value, Styles, DotOption, Dot, Direction, MarksProp, ProcessProp, Process} from './1';
@@ -12,7 +12,8 @@ export const SliderState: StateMap = {
   Focus: 2,
 };
 
-export const DEFAULT_SLIDER_SIZE = 4;
+const DEFAULT_SLIDER_SIZE = 4;
+let uniqueId = 0;
 
 @Component({
   selector: 'next-range-selector',
@@ -133,12 +134,41 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return [prevDot ? prevDot.pos : -Infinity, nextDot ? nextDot.pos : Infinity];
   }
 
+  public get processArray(): Process[] {
+    if (this.control) {
+      return this.control.processArray.map(([start, end, style]) => {
+        if (start > end) {
+          /* tslint:disable:semicolon */
+          [start, end] = [end, start];
+        }
+        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+        return {
+          start,
+          end,
+          style: {
+            [this.isHorizontal ? 'height' : 'width']: '100%',
+            [this.isHorizontal ? 'top' : 'left']: 0,
+            [this.mainDirection]: `${start}%`,
+            [sizeStyleKey]: `${end - start}%`,
+            transitionProperty: `${sizeStyleKey},${this.mainDirection}`,
+            transitionDuration: `${this.animateTime}s`,
+            // ...this.processStyle,
+            // ...style,
+          },
+        };
+      });
+    } else {
+      return [];
+    }
+  }
+
   // public dragStart = new EventEmitter<PointerEvent>();
 
   // public dragMove = new EventEmitter<PointerEvent>();
   // public dragEnd = new EventEmitter<PointerEvent>();
 
   @Input() public itemTpl;
+  @Input() public id = `next-range-selector-${++uniqueId}`;
 
   @Input() public dotStyle: Styles;
   @Input() public dotOptions: DotOption | DotOption[];
@@ -171,10 +201,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   public $refs!: {
     container: HTMLDivElement;
   };
-  public $el: HTMLElement = document.getElementById('range-selector');
+  public $el: HTMLElement = document.getElementById(this.id);
   public focusDotIndex = 0;
 
   private dragging = false;
+
+  constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
   public onPointerDown(dotIndex: number): void {
     this.dragging = true;
@@ -253,13 +285,14 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public ngOnInit() {
-    this.$el = document.getElementById('range-selector');
+    this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
   }
   // From ControlValueAccessor interface
   public writeValue(value: any): void {
     this.value = value;
     this.initControl();
     this.bindEvent();
+    this.$el = document.getElementById(this.id);
   }
   // From ControlValueAccessor interface
   public registerOnChange(fn: (val?: any) => void) {
@@ -374,34 +407,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const pos = this.getPosByEvent(e);
 
     this.setValueByPos(pos);
-  }
-
-  public get processArray(): Process[] {
-    if (this.control) {
-      return this.control.processArray.map(([start, end, style]) => {
-        if (start > end) {
-          /* tslint:disable:semicolon */
-          [start, end] = [end, start];
-        }
-        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
-        return {
-          start,
-          end,
-          style: {
-            [this.isHorizontal ? 'height' : 'width']: '100%',
-            [this.isHorizontal ? 'top' : 'left']: 0,
-            [this.mainDirection]: `${start}%`,
-            [sizeStyleKey]: `${end - start}%`,
-            transitionProperty: `${sizeStyleKey},${this.mainDirection}`,
-            transitionDuration: `${this.animateTime}s`,
-            // ...this.processStyle,
-            // ...style,
-          },
-        };
-      });
-    } else {
-      return [];
-    }
   }
 
   private emitError(type: ERROR_TYPE, message: string) {
