@@ -7,7 +7,12 @@
   [ngStyle]="containerStyles"
 >
   <div class="slider-rail">
-    <div class="slider-process" *ngFor="let item of processArray; let i = index" [ngStyle]="item.style"></div>
+    <div
+      class="slider-process"
+      *ngFor="let item of processArray; let i = index"
+      [ngStyle]="item.style"
+      (mousedown)="clickHandle($event)"
+    ></div>
     <div class="slider-marks">
       <ng-content select="[marks-slot]"></ng-content>
     </div>
@@ -18,12 +23,10 @@
       value="dot.value"
       disabled="dot.disabled"
       focus="dot.focus"
-      id="{{ i }}"
       (mousedown)="onPointerDown(i)"
     >
       <ng-container *ngTemplateOutlet="itemTpl"></ng-container>
     </div>
   </div>
-  <!-- {{ value }}
-  <input class="slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" /> -->
+  <input class="slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" />
 </div>
