@@ -1,6 +1,6 @@
 $tooltipGap: 10px;
 
-.vue-slider-dot {
+.slider-dot {
   height: 14px;
   left: 58%;
   position: absolute;
@@ -14,7 +14,7 @@ $tooltipGap: 10px;
   z-index: 5;
 }
 
-.vue-slider-dot-handle {
+.slider-dot-handle {
   -webkit-box-shadow: 0.5px 0.5px 2px 1px rgba(0, 0, 0, 0.32);
   -webkit-box-sizing: border-box;
   background-color: #fff;
@@ -26,7 +26,7 @@ $tooltipGap: 10px;
   width: 100%;
 }
 
-.vue-slider-dot-tooltip {
+.slider-dot-tooltip {
   position: absolute;
   visibility: hidden;
 
@@ -61,18 +61,18 @@ $tooltipGap: 10px;
 
 $labelGap: 10px;
 
-.vue-slider-marks {
+.slider-marks {
   height: 100%;
   position: relative;
   width: 100%;
 }
 
-.vue-slider-mark {
+.slider-mark {
   position: absolute;
   z-index: 1;
 
-  @at-root .vue-slider-ltr &,
-    .vue-slider-rtl & {
+  @at-root .slider-ltr &,
+    .slider-rtl & {
     height: 100%;
     top: 50%;
     width: 0;
@@ -87,7 +87,7 @@ $labelGap: 10px;
     }
   }
 
-  @at-root .vue-slider-ltr & {
+  @at-root .slider-ltr & {
     transform: translate(-50%, -50%);
 
     &-step {
@@ -100,7 +100,7 @@ $labelGap: 10px;
     }
   }
 
-  @at-root .vue-slider-rtl & {
+  @at-root .slider-rtl & {
     transform: translate(50%, -50%);
 
     &-step {
@@ -113,8 +113,8 @@ $labelGap: 10px;
     }
   }
 
-  @at-root .vue-slider-ttb &,
-    .vue-slider-btt & {
+  @at-root .slider-ttb &,
+    .slider-btt & {
     height: 0;
     left: 50%;
     width: 100%;
@@ -129,7 +129,7 @@ $labelGap: 10px;
     }
   }
 
-  @at-root .vue-slider-btt & {
+  @at-root .slider-btt & {
     transform: translate(-50%, 50%);
 
     &-step {
@@ -142,7 +142,7 @@ $labelGap: 10px;
     }
   }
 
-  @at-root .vue-slider-ttb & {
+  @at-root .slider-ttb & {
     transform: translate(-50%, -50%);
 
     &-step {
