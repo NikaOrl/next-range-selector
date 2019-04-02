@@ -21,6 +21,31 @@ let uniqueId = 0;
   ],
 })
 export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
+  @Input() public itemTpl;
+  @Input() public id = `next-range-selector-${++uniqueId}`;
+  @Input() public dotStyle: Styles;
+  @Input() public min = 0;
+  @Input() public max = 100;
+  @Input() public useKeyboard = true;
+  @Input() public interval = 1;
+  @Input() public process?: ProcessProp = true;
+  @Input() public duration: number = 0.5;
+  @Input() public tabIndex: number = 1;
+  @Input() public width: number | string;
+  @Input() public height: number | string;
+  @Input() public dotSize: [number, number] | number = 14;
+  @Input() public direction: Direction = 'ltr';
+
+  @Input() public dotOptions: DotOption | DotOption[];
+  @Input() public included = true;
+  @Input() public data?: Value[];
+  @Input() public enableCross = true;
+  @Input() public fixed = false;
+  @Input() public minRange?: number;
+  @Input() public maxRange?: number;
+  @Input() public order = true;
+  @Input() public lazy = false;
+
   get isHorizontal(): boolean {
     return this.direction === 'ltr' || this.direction === 'rtl';
   }
@@ -150,30 +175,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       ? this.value.length !== values.length || this.value.some((val, index) => val !== values[index])
       : this.value !== values[0];
   }
-  @Input() public itemTpl;
-  @Input() public id = `next-range-selector-${++uniqueId}`;
-  @Input() public dotStyle: Styles;
-  @Input() public min = 0;
-  @Input() public max = 100;
-  @Input() public useKeyboard = true;
-  @Input() public interval = 1;
-  @Input() public process?: ProcessProp = true;
-  @Input() public duration: number = 0.5;
-  @Input() public tabIndex: number = 1;
-  @Input() public width: number | string;
-  @Input() public height: number | string;
-  @Input() public dotSize: [number, number] | number = 14;
-  @Input() public direction: Direction = 'ltr';
-
-  @Input() public dotOptions: DotOption | DotOption[];
-  @Input() public included = true;
-  @Input() public data?: Value[];
-  @Input() public enableCross = true;
-  @Input() public fixed = false;
-  @Input() public minRange?: number;
-  @Input() public maxRange?: number;
-  @Input() public order = true;
-  @Input() public lazy = false;
 
   public value: Value | Value[];
   public displayValue = 10;
