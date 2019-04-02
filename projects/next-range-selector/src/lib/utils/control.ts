@@ -1,5 +1,5 @@
 import Decimal from './decimal';
-import {Value, Mark, MarkOption, Marks, MarksProp, ProcessProp, ProcessOption, MarksFunction} from '../1';
+import {Value, ProcessProp, ProcessOption} from '../typings';
 
 // The distance each slider changes
 type DotsPosChangeArray = number[];
@@ -22,43 +22,6 @@ export const ERROR_MSG: ERROR_MESSAGE = {
 };
 
 export default class Control {
-  get markList(): Mark[] {
-    if (!this.marks) {
-      return [];
-    }
-
-    const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
-      const pos = this.parseValue(value);
-      return {
-        pos,
-        value: typeof value === 'string' ? parseFloat(value) : value,
-        label: value,
-        active: this.isActiveByPos(pos),
-        ...mark,
-      };
-    };
-
-    if (this.marks === true) {
-      return this.getValues().map((value) => getMarkByValue(value));
-    } else if (Object.prototype.toString.call(this.marks) === '[object Object]') {
-      return Object.keys(this.marks)
-        .sort((a, b) => +a - +b)
-        .map((value) => {
-          const item = (this.marks as Marks)[value];
-          return getMarkByValue(value, typeof item !== 'string' ? item : {label: item});
-        });
-    } else if (Array.isArray(this.marks)) {
-      return this.marks.map((value) => getMarkByValue(value));
-    } else if (typeof this.marks === 'function') {
-      return this.getValues()
-        .map((value) => ({value, result: (this.marks as MarksFunction)(value)}))
-        .filter(({result}) => !!result)
-        .map(({value, result}) => getMarkByValue(value, result as Mark));
-    } else {
-      return [];
-    }
-  }
-
   get processArray(): ProcessOption {
     if (this.process) {
       if (typeof this.process === 'function') {
@@ -137,7 +100,6 @@ export default class Control {
   public minRange: number;
   public maxRange: number;
   public order: boolean;
-  public marks?: MarksProp;
   public process?: ProcessProp;
   public onError?: (type: ERROR_TYPE, message: string) => void;
 
@@ -152,7 +114,6 @@ export default class Control {
     order: boolean;
     minRange?: number;
     maxRange?: number;
-    marks?: MarksProp;
     process?: ProcessProp;
     onError?: (type: ERROR_TYPE, message: string) => void;
   }) {
@@ -161,7 +122,6 @@ export default class Control {
     this.min = options.min;
     this.interval = options.interval;
     this.order = options.order;
-    this.marks = options.marks;
     this.process = options.process;
     this.onError = options.onError;
     if (this.order) {
