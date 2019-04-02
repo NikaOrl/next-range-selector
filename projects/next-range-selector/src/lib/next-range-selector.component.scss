@@ -3,7 +3,6 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   box-sizing: content-box;
   display: block;
-  // height: 4px;
   padding: 7px 0;
   position: relative;
   user-select: none;
@@ -40,10 +39,7 @@
 
 .slider-dot {
   height: 14px;
-  // left: 58%;
   position: absolute;
-  // top: 50%;
-
   transform: translate(-50%, -50%);
   transition: all 0s;
   transition: left 0.5s ease 0s;

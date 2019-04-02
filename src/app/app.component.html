@@ -1,14 +1,5 @@
 <form>
-  <!-- <next-range-selector [(ngModel)]="value" name="range-selector" [itemTpl]="itemTpl">
-    <div marks-slot>
-      <div class="marks-slot"></div>
-    </div>
-  </next-range-selector> -->
-  <next-range-selector [(ngModel)]="value2" name="range-selector2" [itemTpl]="itemTpl">
-    <div marks-slot>
-      <div class="marks-slot"></div>
-    </div>
-  </next-range-selector>
+  <next-range-selector [(ngModel)]="value2" name="range-selector2" [itemTpl]="itemTpl"> </next-range-selector>
 
   <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>
   <next-range-selector
@@ -37,10 +28,5 @@
 <ng-template let-item #itemTpl>
   <div class="slider-dot">
     <div class="slider-dot-handle"></div>
-    <div class="slider-dot-tooltip">
-      <div class="slider-dot-tooltip-inner">
-        <span class="slider-dot-tooltip-text">{{ tooltipValue }}</span>
-      </div>
-    </div>
   </div>
 </ng-template>
