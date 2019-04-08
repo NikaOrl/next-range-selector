@@ -1,7 +1,14 @@
 <form>
-  <next-range-selector [(ngModel)]="value2" name="range-selector2" [itemTpl]="itemTpl"> </next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value2"
+    name="range-selector2"
+    [itemTpl]="itemTpl"
+    [borders]="borders"
+    [duration]="0"
+  >
+  </next-range-selector>
 
-  <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>
+  <!-- <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>
   <next-range-selector
     [(ngModel)]="value"
     [itemTpl]="itemTpl"
@@ -22,7 +29,7 @@
     [direction]="'ttb'"
     name="range-selector34"
     style="display: inline-block; margin: 30px 0; height: 300px;"
-  ></next-range-selector>
+  ></next-range-selector> -->
 </form>
 
 <ng-template let-item #itemTpl>

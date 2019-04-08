@@ -21,31 +21,6 @@ let uniqueId = 0;
   ],
 })
 export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
-  @Input() public itemTpl;
-  @Input() public id = `next-range-selector-${++uniqueId}`;
-  @Input() public dotStyle: Styles;
-  @Input() public min = 0;
-  @Input() public max = 100;
-  @Input() public useKeyboard = true;
-  @Input() public interval = 1;
-  @Input() public process?: ProcessProp = true;
-  @Input() public duration: number = 0.5;
-  @Input() public tabIndex: number = 1;
-  @Input() public width: number | string;
-  @Input() public height: number | string;
-  @Input() public dotSize: [number, number] | number = 14;
-  @Input() public direction: Direction = 'ltr';
-
-  @Input() public dotOptions: DotOption | DotOption[];
-  @Input() public included = true;
-  @Input() public data?: Value[];
-  @Input() public enableCross = true;
-  @Input() public fixed = false;
-  @Input() public minRange?: number;
-  @Input() public maxRange?: number;
-  @Input() public order = true;
-  @Input() public lazy = false;
-
   get isHorizontal(): boolean {
     return this.direction === 'ltr' || this.direction === 'rtl';
   }
@@ -81,6 +56,31 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       height: `${dotHeight}px`,
       ...dotPos,
     };
+  }
+
+  get bordersArray() {
+    if (this.borders) {
+      const bordersArray = [];
+      this.borders.forEach((value, index) => {
+        if (index < this.borders.length - 1) {
+          const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+          bordersArray.push({
+            min: this.borders[index],
+            max: this.borders[index + 1] - 1,
+            style: {
+              'background-color': index % 2 === 0 ? 'black' : 'white',
+              [this.isHorizontal ? 'height' : 'width']: '100%',
+              [this.isHorizontal ? 'top' : 'left']: 0,
+              [this.mainDirection]: `${this.borders[index]}%`,
+              [sizeStyleKey]: `${this.borders[index + 1] - this.borders[index]}%`,
+            },
+          });
+        }
+      });
+      return bordersArray;
+    } else {
+      return [];
+    }
   }
 
   get dots(): Dot[] {
@@ -119,21 +119,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   get canSort(): boolean {
     return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
-  }
-
-  get containerStyles() {
-    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
-    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
-    const containerHeight = this.height
-      ? getSize(this.height)
-      : this.isHorizontal
-      ? getSize(DEFAULT_SLIDER_SIZE)
-      : '100%';
-    return {
-      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
-      width: containerWidth,
-      height: containerHeight,
-    };
   }
 
   get processArray(): Process[] {
@@ -175,6 +160,32 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       ? this.value.length !== values.length || this.value.some((val, index) => val !== values[index])
       : this.value !== values[0];
   }
+  @Input() public itemTpl;
+  @Input() public id = `next-range-selector-${++uniqueId}`;
+  @Input() public dotStyle: Styles;
+  @Input() public min = 0;
+  @Input() public max = 100;
+  @Input() public useKeyboard = true;
+  @Input() public interval = 1;
+  @Input() public process?: ProcessProp = true;
+  @Input() public duration: number = 0.5;
+  @Input() public tabIndex: number = 1;
+  @Input() public width: number | string;
+  @Input() public height: number | string;
+  @Input() public dotSize: [number, number] | number = 14;
+  @Input() public direction: Direction = 'ltr';
+  @Input() public borders: number[];
+
+  // disabled and others
+  @Input() public dotOptions: DotOption | DotOption[];
+  @Input() public included = true;
+  @Input() public data?: Value[];
+  @Input() public enableCross = true;
+  @Input() public fixed = false;
+  @Input() public minRange?: number;
+  @Input() public maxRange?: number;
+  @Input() public order = true;
+  @Input() public lazy = false;
 
   public value: Value | Value[];
   public displayValue = 10;
@@ -189,8 +200,31 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
+  // public containerStyles(item) {
+  get containerStyles() {
+    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
+    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
+    const containerHeight = this.height
+      ? getSize(this.height)
+      : this.isHorizontal
+      ? getSize(DEFAULT_SLIDER_SIZE)
+      : '100%';
+    // const containerWidth = item.max
+    //   ? `${item.max - item.min}%`
+    //   : this.isHorizontal
+    //   ? '100%'
+    //   : getSize(DEFAULT_SLIDER_SIZE);
+    // const containerHeight = '4px';
+    return {
+      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
+      width: containerWidth,
+      height: containerHeight,
+    };
+  }
+
   public ngOnInit() {
     this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
+    this.processOrBoundaries();
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -263,6 +297,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     if (this.isDisabledByDotIndex(index)) {
       return false;
     }
+    const val = Array.isArray(this.value) ? this.value[index] : this.value;
+    if (this.borders && (pos > this.getBordersByValue(val).max || pos < this.getBordersByValue(val).min)) {
+      return false;
+    }
 
     this.focusDotIndex = index;
     this.control.setDotPos(pos, index);
@@ -309,6 +347,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       const newIndex = handleFunc(index);
       const pos = this.control.parseValue(this.control.getValueByIndex(newIndex));
       this.isCrossDot(pos);
+      const val = Array.isArray(this.value) ? this.value[index] : this.value;
+      if (this.borders && (pos > this.getBordersByValue(val).max || pos < this.getBordersByValue(val).min)) {
+        return false;
+      }
       this.control.setDotPos(pos, this.focusDotIndex);
       this.syncValueByPos();
     }
@@ -336,6 +378,29 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return `${id}-${i}`;
   }
 
+  private getBordersByValue(dotValue): any {
+    return this.bordersArray.find((value) => {
+      return dotValue >= value.min && dotValue < value.max;
+    });
+  }
+
+  private processOrBoundaries() {
+    if (this.borders) {
+      this.process = false;
+      const borders = this.borders.map((value) => {
+        if (value > this.min && value < this.max) {
+          return value;
+        }
+      });
+      this.borders = borders;
+      this.borders.push(this.min);
+      this.borders.push(this.max);
+      this.borders = this.borders.sort((a, b) => {
+        return a - b;
+      });
+    }
+  }
+
   private emitError(type: ERROR_TYPE, message: string) {
     console.log('error');
   }
@@ -358,6 +423,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   // If the component is sorted, then when the slider crosses, toggle the currently selected slider index
   private isCrossDot(pos: number) {
+    const val = Array.isArray(this.value) ? this.value[this.focusDotIndex] : this.value;
+    if (this.borders && (pos > this.getBordersByValue(val).max || pos < this.getBordersByValue(val).min)) {
+      return false;
+    }
     if (this.canSort) {
       const curIndex = this.focusDotIndex;
       let curPos = pos;
@@ -379,6 +448,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     e.preventDefault();
     const pos = this.getPosByEvent(e);
     this.isCrossDot(pos);
+    const val = Array.isArray(this.value) ? this.value[this.focusDotIndex] : this.value;
+    if (this.borders && (pos > this.getBordersByValue(val).max || pos < this.getBordersByValue(val).min)) {
+      return false;
+    }
     this.control.setDotPos(pos, this.focusDotIndex);
     if (!this.lazy) {
       this.syncValueByPos();

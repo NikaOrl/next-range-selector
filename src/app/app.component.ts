@@ -9,4 +9,5 @@ export class AppComponent {
   public title = 'next-range-selector-project';
   public value = 10;
   public value2 = [10, 40];
+  public borders = [10, 30];
 }
