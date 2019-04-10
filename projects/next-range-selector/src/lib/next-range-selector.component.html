@@ -1,41 +1,38 @@
-<div>
-  <div
-    ref="container"
-    class="slider"
-    aria-hidden="true"
-    [id]="id"
-    (click)="clickHandle($event)"
-    [ngStyle]="containerStyles"
-  >
-    <!-- [ngStyle]="containerStyles(item)" -->
-    <div class="slider-rail">
-      <div
-        class="slider-process"
-        *ngFor="let item of processArray; let i = index; trackBy: trackByFn"
-        [ngStyle]="item.style"
-        (mousedown)="clickHandle($event)"
-      ></div>
-      <div
-        class="slider-process"
-        *ngFor="let item of bordersArray; let i = index; trackBy: trackByFn"
-        [ngStyle]="item.style"
-      ></div>
-      <div
-        [ngStyle]="dot.style"
-        *ngFor="let dot of dots; let i = index; trackBy: trackByFn"
-        class="slider-dot"
-        [id]="getDotId(id, i)"
-        [tabIndex]="tabIndex"
-        (mousedown)="onPointerDown(i)"
-        (keydown.arrowup)="keydownHandle($event)"
-        (keydown.arrowleft)="keydownHandle($event)"
-        (keydown.arrowright)="keydownHandle($event)"
-        (keydown.arrowdown)="keydownHandle($event)"
-        (keydown.tab)="tabHandle()"
-      >
-        <ng-container *ngTemplateOutlet="itemTpl"></ng-container>
-      </div>
+<div
+  ref="container"
+  class="slider"
+  aria-hidden="true"
+  [id]="id"
+  (click)="clickHandle($event)"
+  [ngStyle]="containerStyles"
+>
+  <div class="slider-rail">
+    <div
+      class="slider-process"
+      *ngFor="let item of processArray; let i = index; trackBy: trackByFn"
+      [ngStyle]="item.style"
+      (mousedown)="clickHandle($event)"
+    ></div>
+    <div
+      class="slider-process"
+      *ngFor="let item of bordersArray; let i = index; trackBy: trackByFn"
+      [ngStyle]="item.style"
+    ></div>
+    <div
+      [ngStyle]="dot.style"
+      *ngFor="let dot of dots; let i = index; trackBy: trackByFn"
+      class="slider-dot"
+      [id]="getDotId(id, i)"
+      [tabIndex]="tabIndex"
+      (mousedown)="onPointerDown(i)"
+      (keydown.arrowup)="keydownHandle($event)"
+      (keydown.arrowleft)="keydownHandle($event)"
+      (keydown.arrowright)="keydownHandle($event)"
+      (keydown.arrowdown)="keydownHandle($event)"
+      (keydown.tab)="tabHandle()"
+    >
+      <ng-container *ngTemplateOutlet="itemTpl"></ng-container>
     </div>
-    <input [tabIndex]="-1" class="slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" />
   </div>
+  <input [tabIndex]="-1" class="slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" />
 </div>
