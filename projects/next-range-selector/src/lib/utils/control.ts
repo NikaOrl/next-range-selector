@@ -150,7 +150,14 @@ export default class Control {
   }
 
   public getRecentDot(pos: number): number {
-    const arr = this.dotsPos.map((dotPos) => Math.abs(dotPos - pos));
+    const arr = this.dotsPos.map((dotPos) => {
+      const value = this.dotsValue.find((v) => v.dotValue === Math.round(dotPos));
+      if ((value.max && value.max <= pos) || (value.min && value.min >= pos)) {
+        return this.max;
+      } else {
+        return Math.abs(dotPos - pos);
+      }
+    });
     return arr.indexOf(Math.min(...arr));
   }
 

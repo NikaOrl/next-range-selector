@@ -85,32 +85,43 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   get bordersArray() {
     if (this.borders) {
       const bordersArray = [];
-      Array.isArray(this.value)
-        ? this.value.forEach((value, index) => {
+      if (Array.isArray(this.value)) {
+        this.value.forEach((value, index) => {
+          if (value.min || value.max) {
             const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+            const valueMin = value.min ? value.min : this.min;
+            const valueMax = value.max ? value.max : this.max;
             bordersArray.push({
-              min: value.min,
-              max: value.max,
+              min: valueMin,
+              max: valueMax,
               style: {
                 'background-color': index % 2 === 0 ? 'black' : 'white',
                 [this.isHorizontal ? 'height' : 'width']: '100%',
                 [this.isHorizontal ? 'top' : 'left']: 0,
-                [this.mainDirection]: `${value.min}%`,
-                [sizeStyleKey]: `${+value.max - +value.min}%`,
+                [this.mainDirection]: `${valueMin}%`,
+                [sizeStyleKey]: `${+valueMax - +valueMin}%`,
               },
             });
-          })
-        : bordersArray.push({
-            min: this.value.min,
-            max: this.value.max,
+          }
+        });
+      } else {
+        if (this.value.min || this.value.max) {
+          const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+          const valueMin = this.value.min ? this.value.min : this.min;
+          const valueMax = this.value.max ? this.value.max : this.max;
+          bordersArray.push({
+            min: valueMin,
+            max: valueMax,
             style: {
               'background-color': 'white',
               [this.isHorizontal ? 'height' : 'width']: '100%',
               [this.isHorizontal ? 'top' : 'left']: 0,
               [this.mainDirection]: `${this.value.min}%`,
-              [this.isHorizontal ? 'width' : 'height']: `${+this.value.max - +this.value.min}%`,
+              [sizeStyleKey]: `${+this.value.max - +this.value.min}%`,
             },
           });
+        }
+      }
       return bordersArray;
     } else {
       return [];
@@ -155,6 +166,21 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
   }
 
+  get containerStyles() {
+    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
+    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
+    const containerHeight = this.height
+      ? getSize(this.height)
+      : this.isHorizontal
+      ? getSize(DEFAULT_SLIDER_SIZE)
+      : '100%';
+    return {
+      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
+      width: containerWidth,
+      height: containerHeight,
+    };
+  }
+
   get processArray(): Process[] {
     if (this.control && this.process) {
       return this.control.processArray.map(([start, end, style]) => {
@@ -193,21 +219,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return Array.isArray(this.value)
       ? this.value.length !== values.length || this.value.some((val, index) => val !== values[index])
       : this.value !== values[0];
-  }
-
-  get containerStyles() {
-    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
-    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
-    const containerHeight = this.height
-      ? getSize(this.height)
-      : this.isHorizontal
-      ? getSize(DEFAULT_SLIDER_SIZE)
-      : '100%';
-    return {
-      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
-      width: containerWidth,
-      height: containerHeight,
-    };
   }
 
   public value: Value | Value[];
@@ -300,7 +311,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       return false;
     }
     const val = Array.isArray(this.value) ? this.value[index] : this.value;
-    if (this.borders && (pos > val.max || pos < val.min)) {
+    if (this.borders && ((val.max && pos > val.max) || (val.min && pos < val.min))) {
       return false;
     }
 
@@ -350,7 +361,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       const pos = this.control.parseValue(this.control.getValueByIndex(newIndex));
       this.isCrossDot(pos);
       const val = Array.isArray(this.value) ? this.value[this.focusDotIndex] : this.value;
-      if (this.borders && (pos > val.max || pos < val.min)) {
+      if (this.borders && ((val.max && pos > val.max) || (val.min && pos < val.min))) {
         return false;
       }
       this.control.setDotPos(pos, this.focusDotIndex);
@@ -412,7 +423,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   // If the component is sorted, then when the slider crosses, toggle the currently selected slider index
   private isCrossDot(pos: number) {
     const val = Array.isArray(this.value) ? this.value[this.focusDotIndex] : this.value;
-    if (this.borders && (pos > val.max || pos < val.min)) {
+    if (this.borders && ((val.max && pos > val.max) || (val.min && pos < val.min))) {
       return false;
     }
     if (this.canSort) {
@@ -437,7 +448,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const pos = this.getPosByEvent(e);
     this.isCrossDot(pos);
     const val = Array.isArray(this.value) ? this.value[this.focusDotIndex] : this.value;
-    if (this.borders && (pos > val.max || pos < val.min)) {
+    if (this.borders && ((val.max && pos > val.max) || (val.min && pos < val.min))) {
       return false;
     }
     this.control.setDotPos(pos, this.focusDotIndex);
