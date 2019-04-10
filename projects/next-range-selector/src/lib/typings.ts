@@ -5,7 +5,13 @@ export interface Styles {
 export type Direction = 'ltr' | 'rtl' | 'ttb' | 'btt';
 export type Position = 'top' | 'right' | 'bottom' | 'left';
 
-export type Value = number | string;
+// Value
+
+export interface Value {
+  dotValue: number | string;
+  min?: number | string;
+  max?: number | string;
+}
 
 // Tooltip
 export interface TooltipStyle {

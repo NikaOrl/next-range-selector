@@ -1,4 +1,3 @@
-import Decimal from './decimal';
 import {Value, ProcessProp, ProcessOption} from '../typings';
 
 // The distance each slider changes
@@ -38,14 +37,7 @@ export default class Control {
 
   get total(): number {
     let total = 0;
-    if (this.data) {
-      total = this.data.length - 1;
-    } else {
-      total = new Decimal(this.max)
-        .minus(this.min)
-        .divide(this.interval)
-        .toNumber();
-    }
+    total = (this.max - this.min) / this.interval;
     if (total - Math.floor(total) !== 0) {
       this.emitError(ERROR_TYPE.INTERVAL);
       return 0;
@@ -91,7 +83,6 @@ export default class Control {
   public dotsPos: number[] = []; // The position of each slider
   public dotsValue: Value[] = []; // The value of each slider
 
-  public data?: Value[];
   public enableCross: boolean;
   public fixed: boolean;
   public max: number;
@@ -105,7 +96,6 @@ export default class Control {
 
   constructor(options: {
     value: Value | Value[];
-    data?: Value[];
     enableCross: boolean;
     fixed: boolean;
     max: number;
@@ -117,7 +107,6 @@ export default class Control {
     process?: ProcessProp;
     onError?: (type: ERROR_TYPE, message: string) => void;
   }) {
-    this.data = options.data;
     this.max = options.max;
     this.min = options.min;
     this.interval = options.interval;
@@ -150,12 +139,14 @@ export default class Control {
   public setDotsPos(dotsPos: number[]) {
     const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
     this.dotsPos = list;
-    this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
+    this.dotsValue.forEach((v, i) => {
+      this.dotsValue[i].dotValue = this.parsePos(list[i]);
+    });
   }
 
   // Sync slider position
   public syncDotsPos() {
-    this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
+    this.dotsPos = this.dotsValue.map((v) => this.parseValue(v.dotValue));
   }
 
   public getRecentDot(pos: number): number {
@@ -164,27 +155,16 @@ export default class Control {
   }
 
   public getIndexByValue(value: Value): number {
-    if (this.data) {
-      return this.data.indexOf(value);
-    }
-    return new Decimal(+value)
-      .minus(this.min)
-      .divide(this.interval)
-      .toNumber();
+    return (+value.dotValue - this.min) / this.interval;
   }
 
-  public getValueByIndex(index: number): Value {
+  public getValueByIndex(index: number): number {
     if (index < 0) {
       index = 0;
     } else if (index > this.total) {
       index = this.total;
     }
-    return this.data
-      ? this.data[index]
-      : new Decimal(index)
-          .multiply(this.interval)
-          .plus(this.min)
-          .toNumber();
+    return index * this.interval + this.min;
   }
 
   public setDotPos(pos: number, index: number) {
@@ -223,10 +203,8 @@ export default class Control {
     };
   }
 
-  public parseValue(val: Value): number {
-    if (this.data) {
-      val = this.data.indexOf(val);
-    } else if (typeof val === 'number' || typeof val === 'string') {
+  public parseValue(val: number | string): number {
+    if (typeof val === 'number' || typeof val === 'string') {
       val = +val;
       if (val < this.min) {
         this.emitError(ERROR_TYPE.MIN);
@@ -240,17 +218,14 @@ export default class Control {
         this.emitError(ERROR_TYPE.VALUE);
         return 0;
       }
-      val = new Decimal(val)
-        .minus(this.min)
-        .divide(this.interval)
-        .toNumber();
+      val = (val - this.min) / this.interval;
     }
 
-    const pos = new Decimal(val).multiply(this.gap).toNumber();
+    const pos = val * this.gap;
     return pos < 0 ? 0 : pos > 100 ? 100 : pos;
   }
 
-  public parsePos(pos: number): Value {
+  public parsePos(pos: number): number | string {
     const index = Math.round(pos / this.gap);
     return this.getValueByIndex(index);
   }
@@ -259,17 +234,10 @@ export default class Control {
     return this.processArray.some(([start, end]) => pos >= start && pos <= end);
   }
 
-  public getValues(): Value[] {
-    if (this.data) {
-      return this.data;
-    } else {
-      return Array.from(new Array(this.total), (_, index) => {
-        return new Decimal(index)
-          .multiply(this.interval)
-          .plus(this.min)
-          .toNumber();
-      }).concat([this.max]);
-    }
+  public getValues(): number[] {
+    return Array.from(new Array(this.total), (_, index) => {
+      return index * this.interval + this.min;
+    }).concat([this.max]);
   }
 
   private getFixedChangePosArr(changePos: number, index: number): DotsPosChangeArray {
