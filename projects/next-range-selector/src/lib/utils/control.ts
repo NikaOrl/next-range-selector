@@ -139,20 +139,22 @@ export default class Control {
   public setDotsPos(dotsPos: number[]) {
     const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
     this.dotsPos = list;
-    this.dotsValue.forEach((v, i) => {
-      this.dotsValue[i].dotValue = this.parsePos(list[i]);
-    });
+    this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
   }
 
   // Sync slider position
   public syncDotsPos() {
-    this.dotsPos = this.dotsValue.map((v) => this.parseValue(v.dotValue));
+    this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
   }
 
-  public getRecentDot(pos: number): number {
+  public getRecentDot(pos: number, borders: any[]): number {
     const arr = this.dotsPos.map((dotPos) => {
-      const value = this.dotsValue.find((v) => v.dotValue === Math.round(dotPos));
-      if ((value.max && value.max <= pos) || (value.min && value.min >= pos)) {
+      const bordersIndex = this.dotsValue.indexOf(Math.round(dotPos));
+      if (
+        borders &&
+        ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
+          (borders[bordersIndex].min && borders[bordersIndex].min >= pos))
+      ) {
         return this.max;
       } else {
         return Math.abs(dotPos - pos);
@@ -162,7 +164,7 @@ export default class Control {
   }
 
   public getIndexByValue(value: Value): number {
-    return (+value.dotValue - this.min) / this.interval;
+    return (+value - this.min) / this.interval;
   }
 
   public getValueByIndex(index: number): number {

@@ -7,13 +7,7 @@ export type Position = 'top' | 'right' | 'bottom' | 'left';
 
 // Value
 
-// export type Value = string | number | ValueInterface;
-// export interface ValueInterface {
-export interface Value {
-  dotValue: number | string;
-  min?: number | string;
-  max?: number | string;
-}
+export type Value = number | string;
 
 // Tooltip
 export interface TooltipStyle {

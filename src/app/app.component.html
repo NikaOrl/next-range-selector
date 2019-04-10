@@ -1,5 +1,11 @@
 <form>
-  <next-range-selector [(ngModel)]="value2" name="range-selector2" [itemTpl]="itemTpl" [duration]="0">
+  <next-range-selector
+    [(ngModel)]="value2"
+    name="range-selector2"
+    [itemTpl]="itemTpl"
+    [duration]="0"
+    [dotBorders]="borders"
+  >
   </next-range-selector>
 
   <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>

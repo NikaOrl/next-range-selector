@@ -7,6 +7,7 @@ import {Component} from '@angular/core';
 })
 export class AppComponent {
   public title = 'next-range-selector-project';
-  public value = {dotValue: 10};
-  public value2 = [{dotValue: 10, max: 30, min: 5}, {dotValue: 40, max: 50, min: 40}];
+  public value = 10;
+  public value2 = [10, 40];
+  public borders = [{max: 40, min: 5}, {max: 50, min: 30}];
 }
