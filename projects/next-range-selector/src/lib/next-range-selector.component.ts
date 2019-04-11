@@ -1,6 +1,6 @@
 import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2} from '@angular/core';
 import {getSize, getPos, getKeyboardHandleFunc} from './utils/utils';
-import {Value, Styles, DotOption, Dot, Direction, ProcessProp, Process} from './typings';
+import {Value, Styles, DotOption, Dot, Direction, ProcessProp, Process, Border} from './typings';
 import Control, {ERROR_TYPE} from './utils/control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -27,14 +27,15 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public max = 100;
   @Input() public useKeyboard = true;
   @Input() public interval = 1;
-  @Input() public process?: ProcessProp = true;
+  @Input() public process?: ProcessProp;
   @Input() public duration: number = 0.5;
   @Input() public tabIndex: number = 1;
   @Input() public width: number | string;
   @Input() public height: number | string;
   @Input() public dotSize: [number, number] | number = 14;
   @Input() public direction: Direction = 'ltr';
-  @Input() public dotBorders: any[];
+  @Input() public borders: Border[];
+  @Input() public showBorders: boolean = true;
 
   // disabled and others
   @Input() public dotOptions: DotOption | DotOption[];
@@ -84,9 +85,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   get bordersArray() {
-    if (this.borders) {
+    if (this.borders && this.showBorders) {
       const bordersArray = [];
-      this.dotBorders.forEach((value, index) => {
+      this.borders.forEach((value, index) => {
         const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
         const valueMin = value.min ? value.min : this.min;
         const valueMax = value.max ? value.max : this.max;
@@ -210,13 +211,13 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   };
   public $el: HTMLElement = document.getElementById(this.id);
   public focusDotIndex = 0;
-  private borders: boolean = false;
   private dragging = false;
 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
   public ngOnInit() {
     this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
+    this.processOrBorders();
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -263,7 +264,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       this.value = value;
       this.initControl();
       this.$el = document.getElementById(this.id);
-      this.processOrBorders();
     }
   }
 
@@ -286,7 +286,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public setValueByPos(pos: number) {
-    const index = this.control.getRecentDot(pos, this.dotBorders);
+    const index = this.control.getRecentDot(pos, this.borders);
     if (this.isDisabledByDotIndex(index)) {
       return false;
     }
@@ -370,9 +370,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private processOrBorders() {
-    if (this.dotBorders) {
-      this.borders = true;
-      this.process = false;
+    if (this.process === undefined) {
+      this.process = !(this.borders && this.showBorders);
     }
   }
 
@@ -420,8 +419,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   private isPosNotInValueBorders(index, pos): boolean {
     return (
-      (this.dotBorders[index].max && this.dotBorders[index].max < pos) ||
-      (this.dotBorders[index].min && this.dotBorders[index].min > pos)
+      (this.borders[index].max && this.borders[index].max < pos) ||
+      (this.borders[index].min && this.borders[index].min > pos)
     );
   }
 

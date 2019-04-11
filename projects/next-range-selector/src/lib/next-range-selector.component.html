@@ -9,14 +9,14 @@
   <div class="slider-rail">
     <div
       class="slider-process"
-      *ngFor="let item of processArray; let i = index; trackBy: trackByFn"
+      *ngFor="let item of bordersArray; let i = index; trackBy: trackByFn"
       [ngStyle]="item.style"
-      (mousedown)="clickHandle($event)"
     ></div>
     <div
       class="slider-process"
-      *ngFor="let item of bordersArray; let i = index; trackBy: trackByFn"
+      *ngFor="let item of processArray; let i = index; trackBy: trackByFn"
       [ngStyle]="item.style"
+      (mousedown)="clickHandle($event)"
     ></div>
     <div
       [ngStyle]="dot.style"

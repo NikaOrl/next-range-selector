@@ -36,6 +36,12 @@ export interface Dot extends DotOption {
   focus: boolean;
 }
 
+// Border
+export interface Border {
+  min: number;
+  max: number;
+}
+
 // Process
 export type ProcessOption = Array<[number, number, Styles?]>;
 export type ProcessFunc = (dotsPos: number[]) => ProcessOption;
