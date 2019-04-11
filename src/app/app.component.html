@@ -1,5 +1,41 @@
 <form>
-  <next-range-selector [(ngModel)]="value2" name="range-selector2" [itemTpl]="itemTpl"> </next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value2"
+    name="range-selector2"
+    [itemTpl]="itemTpl"
+    [duration]="0"
+    [borders]="borders"
+  >
+  </next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value3"
+    name="range-selector20"
+    [itemTpl]="itemTpl"
+    [duration]="0"
+    [borders]="borders"
+    [process]="true"
+  >
+  </next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value4"
+    name="range-selector21"
+    [itemTpl]="itemTpl"
+    [duration]="0"
+    [borders]="borders"
+    [process]="true"
+    [showBorders]="false"
+  >
+  </next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value5"
+    name="range-selector22"
+    [itemTpl]="itemTpl"
+    [duration]="0"
+    [borders]="borders"
+    [process]="false"
+    [showBorders]="false"
+  >
+  </next-range-selector>
 
   <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>
   <next-range-selector

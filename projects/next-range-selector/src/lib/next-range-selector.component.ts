@@ -1,7 +1,6 @@
 import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2} from '@angular/core';
 import {getSize, getPos, getKeyboardHandleFunc} from './utils/utils';
-import {Value, Styles, DotOption, Dot, Direction, ProcessProp, Process} from './typings';
-import Decimal from './utils/decimal';
+import {Value, Styles, DotOption, Dot, Direction, ProcessProp, Process, Border} from './typings';
 import Control, {ERROR_TYPE} from './utils/control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -28,17 +27,19 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public max = 100;
   @Input() public useKeyboard = true;
   @Input() public interval = 1;
-  @Input() public process?: ProcessProp = true;
+  @Input() public process?: ProcessProp;
   @Input() public duration: number = 0.5;
   @Input() public tabIndex: number = 1;
   @Input() public width: number | string;
   @Input() public height: number | string;
   @Input() public dotSize: [number, number] | number = 14;
   @Input() public direction: Direction = 'ltr';
+  @Input() public borders: Border[];
+  @Input() public showBorders: boolean = true;
 
+  // disabled and others
   @Input() public dotOptions: DotOption | DotOption[];
   @Input() public included = true;
-  @Input() public data?: Value[];
   @Input() public enableCross = true;
   @Input() public fixed = false;
   @Input() public minRange?: number;
@@ -81,6 +82,31 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       height: `${dotHeight}px`,
       ...dotPos,
     };
+  }
+
+  get bordersArray() {
+    if (this.borders && this.showBorders) {
+      const bordersArray = [];
+      this.borders.forEach((value, index) => {
+        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+        const valueMin = value.min ? value.min : this.min;
+        const valueMax = value.max ? value.max : this.max;
+        bordersArray.push({
+          min: valueMin,
+          max: valueMax,
+          style: {
+            'background-color': index % 2 === 0 ? 'black' : 'white',
+            [this.isHorizontal ? 'height' : 'width']: '100%',
+            [this.isHorizontal ? 'top' : 'left']: 0,
+            [this.mainDirection]: `${valueMin}%`,
+            [sizeStyleKey]: `${+valueMax - +valueMin}%`,
+          },
+        });
+      });
+      return bordersArray;
+    } else {
+      return [];
+    }
   }
 
   get dots(): Dot[] {
@@ -137,7 +163,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   get processArray(): Process[] {
-    if (this.control) {
+    if (this.control && this.process) {
       return this.control.processArray.map(([start, end, style]) => {
         if (start > end) {
           [start, end] = [end, start];
@@ -191,6 +217,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   public ngOnInit() {
     this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
+    this.processOrBorders();
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -218,7 +245,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   public initControl() {
     this.control = new Control({
       value: this.value,
-      data: this.data,
       enableCross: this.enableCross,
       fixed: this.fixed,
       max: this.max,
@@ -234,10 +260,13 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   // From ControlValueAccessor interface
   public writeValue(value: any): void {
-    this.value = value;
-    this.initControl();
-    this.$el = document.getElementById(this.id);
+    if (value) {
+      this.value = value;
+      this.initControl();
+      this.$el = document.getElementById(this.id);
+    }
   }
+
   // From ControlValueAccessor interface
   public registerOnChange(fn: (val?: any) => void) {
     this.onChangeCallback = fn;
@@ -249,9 +278,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public setScale() {
-    this.scale = new Decimal(Math.floor(this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight))
-      .divide(100)
-      .toNumber();
+    this.scale = Math.floor(this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight) / 100;
   }
 
   public isDisabledByDotIndex(index: number): boolean {
@@ -259,8 +286,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public setValueByPos(pos: number) {
-    const index = this.control.getRecentDot(pos);
+    const index = this.control.getRecentDot(pos, this.borders);
     if (this.isDisabledByDotIndex(index)) {
+      return false;
+    }
+    if (this.borders && this.isPosNotInValueBorders(index, pos)) {
       return false;
     }
 
@@ -309,6 +339,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       const newIndex = handleFunc(index);
       const pos = this.control.parseValue(this.control.getValueByIndex(newIndex));
       this.isCrossDot(pos);
+      if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
+        return false;
+      }
       this.control.setDotPos(pos, this.focusDotIndex);
       this.syncValueByPos();
     }
@@ -336,6 +369,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return `${id}-${i}`;
   }
 
+  private processOrBorders() {
+    if (this.process === undefined) {
+      this.process = !(this.borders && this.showBorders);
+    }
+  }
+
   private emitError(type: ERROR_TYPE, message: string) {
     console.log('error');
   }
@@ -358,6 +397,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   // If the component is sorted, then when the slider crosses, toggle the currently selected slider index
   private isCrossDot(pos: number) {
+    if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
+      return false;
+    }
     if (this.canSort) {
       const curIndex = this.focusDotIndex;
       let curPos = pos;
@@ -375,10 +417,20 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
+  private isPosNotInValueBorders(index, pos): boolean {
+    return (
+      (this.borders[index].max && this.borders[index].max < pos) ||
+      (this.borders[index].min && this.borders[index].min > pos)
+    );
+  }
+
   private dragMove(e: MouseEvent | TouchEvent) {
     e.preventDefault();
     const pos = this.getPosByEvent(e);
     this.isCrossDot(pos);
+    if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
+      return false;
+    }
     this.control.setDotPos(pos, this.focusDotIndex);
     if (!this.lazy) {
       this.syncValueByPos();

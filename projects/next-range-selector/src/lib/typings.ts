@@ -5,6 +5,8 @@ export interface Styles {
 export type Direction = 'ltr' | 'rtl' | 'ttb' | 'btt';
 export type Position = 'top' | 'right' | 'bottom' | 'left';
 
+// Value
+
 export type Value = number | string;
 
 // Tooltip
@@ -32,6 +34,12 @@ export interface Dot extends DotOption {
   index: number;
   value: Value;
   focus: boolean;
+}
+
+// Border
+export interface Border {
+  min: number;
+  max: number;
 }
 
 // Process
