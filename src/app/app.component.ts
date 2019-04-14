@@ -13,4 +13,5 @@ export class AppComponent {
   public value4 = [10, 40];
   public value5 = [10, 40];
   public borders = [{max: 30, min: 5}, {max: 50, min: 30}];
+  public dotOptions = [{disabled: false}, {disabled: true}];
 }
