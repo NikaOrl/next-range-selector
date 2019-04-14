@@ -36,6 +36,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public direction: Direction = 'ltr';
   @Input() public borders: Border[];
   @Input() public showBorders: boolean = true;
+  @Input() public disabled: boolean = false;
 
   // disabled and others
   @Input() public dotOptions: DotOption | DotOption[];
@@ -114,12 +115,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       return this.control.dotsPos.map((pos, index) => ({
         pos,
         index,
-        // remove all of it => styles
-        value: this.control.dotsValue[index],
-        focus: this.focusDotIndex === index,
-        disabled: false,
         style: {
           ...this.dotBaseStyle,
+          'pointer-events': (this.dotOptions && this.dotOptions[index].disabled) || this.disabled ? 'none' : 'auto',
           [this.mainDirection]: `${pos}%`,
           transition: `${this.mainDirection} ${this.animateTime}s`,
         },
@@ -156,6 +154,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       ? getSize(DEFAULT_SLIDER_SIZE)
       : '100%';
     return {
+      'pointer-events': this.disabled ? 'none' : 'auto',
       padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
       width: containerWidth,
       height: containerHeight,
@@ -282,7 +281,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public isDisabledByDotIndex(index: number): boolean {
-    return this.dots[index].disabled;
+    return this.dotOptions && this.dotOptions[index].disabled;
   }
 
   public setValueByPos(pos: number) {
@@ -321,7 +320,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public keydownHandle(e: KeyboardEvent) {
-    if (!this.useKeyboard) {
+    if (!this.useKeyboard || this.disabled) {
       return false;
     }
 

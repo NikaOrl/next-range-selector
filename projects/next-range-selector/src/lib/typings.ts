@@ -26,14 +26,11 @@ export interface DotStyle {
   disabledStyle?: Styles;
 }
 export interface DotOption extends DotStyle, TooltipStyle {
-  disabled: boolean;
   tooltip?: TooltipProp;
 }
 export interface Dot extends DotOption {
   pos: number;
   index: number;
-  value: Value;
-  focus: boolean;
 }
 
 // Border
