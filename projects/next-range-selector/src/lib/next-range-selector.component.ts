@@ -1,5 +1,4 @@
 import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2, TemplateRef} from '@angular/core';
-import {getSize, getPos, getKeyboardHandleFunc} from './utils/utils';
 import {
   Value,
   Mark,
@@ -12,12 +11,24 @@ import {
   ProcessProp,
   Process,
   Border,
+  HandleFunction,
+  IPosObject,
 } from './typings';
-import Control, {ERROR_TYPE} from './utils/control';
+import Control, {ERROR_TYPE} from './control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 const DEFAULT_SLIDER_SIZE = 4;
 let uniqueId = 0;
+const enum KEY_CODE {
+  PAGE_UP = 33,
+  PAGE_DOWN,
+  END,
+  HOME,
+  LEFT,
+  UP,
+  RIGHT,
+  DOWN,
+}
 
 @Component({
   selector: 'next-range-selector',
@@ -206,11 +217,15 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   get containerStyles() {
     const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
-    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
-    const containerHeight = this.height
-      ? getSize(this.height)
+    const containerWidth = this.width
+      ? this.getSize(this.width)
       : this.isHorizontal
-      ? getSize(DEFAULT_SLIDER_SIZE)
+      ? '100%'
+      : this.getSize(DEFAULT_SLIDER_SIZE);
+    const containerHeight = this.height
+      ? this.getSize(this.height)
+      : this.isHorizontal
+      ? this.getSize(DEFAULT_SLIDER_SIZE)
       : '100%';
     return {
       'pointer-events': this.disabled ? 'none' : 'auto',
@@ -283,7 +298,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public value: Value | Value[];
-  public displayValue = 10;
   public scale = 1;
   public control!: Control;
   public $refs!: {
@@ -296,11 +310,13 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
   public ngOnInit() {
+    this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
     if (!this.interval) {
       this.interval = this.data ? (this.max - this.min) / (this.data.length - 1) : 1;
     }
-    this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
-    this.processOrBorders();
+    if (this.process === undefined) {
+      this.process = !(this.borders && this.showBorders);
+    }
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -409,7 +425,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       return false;
     }
 
-    const handleFunc = getKeyboardHandleFunc(e, {
+    const handleFunc = this.getKeyboardHandleFunc(e, {
       direction: this.direction,
       max: this.control.total,
       min: 0,
@@ -452,9 +468,53 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return `${id}-${i}`;
   }
 
-  private processOrBorders() {
-    if (this.process === undefined) {
-      this.process = !(this.borders && this.showBorders);
+  public getSize(value: number | string): string {
+    return typeof value === 'number' ? `${value}px` : value;
+  }
+
+  public getPos(e: MouseEvent | TouchEvent, elem: HTMLElement, isReverse: boolean): IPosObject {
+    const event = e instanceof MouseEvent ? e : e.targetTouches[0];
+    const rect = elem.getBoundingClientRect();
+    const posObj = {
+      x: event.pageX - rect.left,
+      y: event.pageY - rect.top,
+    };
+    return {
+      x: isReverse ? elem.offsetWidth - posObj.x : posObj.x,
+      y: isReverse ? elem.offsetHeight - posObj.y : posObj.y,
+    };
+  }
+
+  public getKeyboardHandleFunc(
+    e: KeyboardEvent,
+    params: {
+      direction: Direction;
+      max: number;
+      min: number;
+    },
+  ): HandleFunction | null {
+    switch (e.keyCode) {
+      case KEY_CODE.UP:
+        return (i) => (params.direction === 'ttb' ? i - 1 : i + 1);
+      case KEY_CODE.RIGHT:
+        return (i) => (params.direction === 'rtl' ? i - 1 : i + 1);
+      case KEY_CODE.DOWN:
+        return (i) => (params.direction === 'ttb' ? i + 1 : i - 1);
+      case KEY_CODE.LEFT:
+        return (i) => (params.direction === 'rtl' ? i + 1 : i - 1);
+
+      case KEY_CODE.END:
+        return () => params.max;
+      case KEY_CODE.HOME:
+        return () => params.min;
+
+      case KEY_CODE.PAGE_UP:
+        return (i) => i + 10;
+      case KEY_CODE.PAGE_DOWN:
+        return (i) => i - 10;
+
+      default:
+        return null;
     }
   }
 
@@ -463,7 +523,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private getPosByEvent(e: MouseEvent | TouchEvent): number {
-    return getPos(e, this.$el, this.isReverse)[this.isHorizontal ? 'x' : 'y'] / this.scale;
+    return this.getPos(e, this.$el, this.isReverse)[this.isHorizontal ? 'x' : 'y'] / this.scale;
   }
 
   private isDiff(value1: Value[], value2: Value[]) {

@@ -64,3 +64,9 @@ export interface Process {
   end: number;
   style?: Styles;
 }
+
+export type HandleFunction = (i: number) => number;
+export interface IPosObject {
+  x: number;
+  y: number;
+}
