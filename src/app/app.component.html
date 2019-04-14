@@ -1,37 +1,45 @@
 <form>
-  <next-range-selector
+  <!-- <next-range-selector
     [(ngModel)]="value2"
     name="range-selector2"
-    [itemTpl]="itemTpl"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
     [duration]="0"
     [borders]="borders"
     [disabled]="true"
+    [marks]="true"
+    [interval]="10"
   >
   </next-range-selector>
   <next-range-selector
     [(ngModel)]="value3"
     name="range-selector20"
-    [itemTpl]="itemTpl"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
     [duration]="0"
     [borders]="borders"
     [process]="true"
     [dotOptions]="dotOptions"
   >
-  </next-range-selector>
+  </next-range-selector> -->
   <next-range-selector
     [(ngModel)]="value4"
     name="range-selector21"
-    [itemTpl]="itemTpl"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
     [duration]="0"
     [borders]="borders"
     [process]="true"
     [showBorders]="false"
+    [marks]="true"
+    [interval]="10"
   >
   </next-range-selector>
-  <next-range-selector
+  <!-- <next-range-selector
     [(ngModel)]="value5"
     name="range-selector22"
-    [itemTpl]="itemTpl"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
     [duration]="0"
     [borders]="borders"
     [process]="false"
@@ -39,32 +47,53 @@
   >
   </next-range-selector>
 
-  <next-range-selector [(ngModel)]="value" [itemTpl]="itemTpl" name="range-selector31"></next-range-selector>
   <next-range-selector
     [(ngModel)]="value"
-    [itemTpl]="itemTpl"
-    [direction]="'rtl'"
-    name="range-selector32"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    name="range-selector31"
   ></next-range-selector>
   <next-range-selector
     [(ngModel)]="value"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    [direction]="'rtl'"
+    name="range-selector32"
+  ></next-range-selector> -->
+  <next-range-selector
+    [(ngModel)]="value2"
     [direction]="'btt'"
-    [itemTpl]="itemTpl"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
     [height]="300"
     style="display: inline-block; margin: 30px;"
     name="range-selector33"
   ></next-range-selector>
   <next-range-selector
+    [marks]="true"
     [(ngModel)]="value"
-    [itemTpl]="itemTpl"
+    [dotTpl]="dotTpl"
+    [data]="data"
+    [markTpl]="markTpl"
     [direction]="'ttb'"
     name="range-selector34"
-    style="display: inline-block; margin: 30px 0; height: 300px;"
+    style="display: inline-block; margin: 30px; height: 300px;"
+  ></next-range-selector>
+  <next-range-selector
+    [marks]="marks"
+    [(ngModel)]="value3"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    [direction]="'ttb'"
+    name="range-selector35"
+    style="display: inline-block; margin: 30px; height: 300px;"
   ></next-range-selector>
 </form>
 
-<ng-template let-item #itemTpl>
+<ng-template #dotTpl>
   <div class="slider-dot">
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
+
+<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
