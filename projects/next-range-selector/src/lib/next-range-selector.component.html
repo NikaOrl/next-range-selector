@@ -1,13 +1,12 @@
 <div
   ref="container"
-  class="slider"
   aria-hidden="true"
   [id]="id"
   (click)="clickHandle($event)"
   [ngStyle]="containerStyles"
   [ngClass]="containerClasses"
 >
-  <div class="slider-rail">
+  <div class="slider-rail" [ngStyle]="railStyles">
     <div
       class="slider-process"
       *ngFor="let item of bordersArray; let i = index; trackBy: trackByFn"
@@ -21,7 +20,7 @@
     ></div>
     <div class="slider-marks">
       <div class="slider-mark" *ngFor="let mark of markList; let i = index; trackBy: trackByFn" [ngStyle]="mark.style">
-        <div class="slider-mark-step"></div>
+        <div class="slider-mark-step" [ngStyle]="markStepStyles"></div>
         <div class="slider-mark-label"><ng-container *ngTemplateOutlet="markTpl; context: mark"></ng-container></div>
       </div>
     </div>

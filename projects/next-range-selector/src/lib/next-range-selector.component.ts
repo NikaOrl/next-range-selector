@@ -34,14 +34,14 @@ let uniqueId = 0;
 export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
   @Input() public dotTpl: TemplateRef<any>;
   @Input() public markTpl: TemplateRef<any>;
+
   @Input() public id = `next-range-selector-${++uniqueId}`;
-  @Input() public dotStyle: Styles;
   @Input() public min = 0;
   @Input() public max = 100;
   @Input() public useKeyboard = true;
   @Input() public interval;
   @Input() public process?: ProcessProp;
-  @Input() public duration: number = 0.5;
+  @Input() public duration: number = 0;
   @Input() public tabIndex: number = 1;
   @Input() public width: number | string;
   @Input() public height: number | string;
@@ -53,15 +53,22 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public marks?: MarksProp;
   @Input() public data?: Value[];
 
-  // disabled and others
-  @Input() public dotOptions: DotOption | DotOption[];
-  @Input() public included = true;
+  @Input() public railStyle?: Styles;
+  @Input() public processStyle?: Styles;
+  @Input() public markStyle?: Styles;
+  @Input() public markStepStyle?: Styles;
+  @Input() public dotStyle: Styles;
+  @Input() public borderStyle?: Styles;
+  @Input() public bordersColorsArray: string[] = ['#9d9d9d', '#c6c6c6'];
+
+  @Input() public dotOptions: DotOption | DotOption[]; // disabled dots
+  // only for multi-dots:
   @Input() public enableCross = true;
   @Input() public fixed = false;
   @Input() public minRange?: number;
   @Input() public maxRange?: number;
-  @Input() public order = true;
-  @Input() public lazy = false;
+  @Input() public order = true; // false -> fixed and min/maxRange don't work
+  @Input() public lazy = false; // true -> value will only be updated when the drag is over
 
   get isHorizontal(): boolean {
     return this.direction === 'ltr' || this.direction === 'rtl';
@@ -73,6 +80,144 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   get animateTime(): number {
     return this.duration;
+  }
+
+  get mainDirection(): string {
+    switch (this.direction) {
+      case 'ltr':
+        return 'left';
+      case 'rtl':
+        return 'right';
+      case 'btt':
+        return 'bottom';
+      case 'ttb':
+        return 'top';
+    }
+  }
+
+  get canSort(): boolean {
+    return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
+  }
+
+  get dots(): Dot[] {
+    if (this.control) {
+      return this.control.dotsPos.map((pos, index) => ({
+        pos,
+        index,
+        style: {
+          ...this.dotBaseStyle,
+          'pointer-events': (this.dotOptions && this.dotOptions[index].disabled) || this.disabled ? 'none' : 'auto',
+          [this.mainDirection]: `${pos}%`,
+          transition: `${this.mainDirection} ${this.animateTime}s`,
+          ...this.dotStyle,
+        },
+        ...((Array.isArray(this.dotOptions) ? this.dotOptions[index] : this.dotOptions) || {}),
+      }));
+    } else {
+      return [];
+    }
+  }
+
+  get processArray(): Process[] {
+    if (this.control && this.process) {
+      return this.control.processArray.map(([start, end, style]) => {
+        if (start > end) {
+          [start, end] = [end, start];
+        }
+        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+        return {
+          start,
+          end,
+          style: {
+            [this.isHorizontal ? 'height' : 'width']: '100%',
+            [this.isHorizontal ? 'top' : 'left']: 0,
+            [this.mainDirection]: `${start}%`,
+            [sizeStyleKey]: `${end - start}%`,
+            transitionProperty: `${sizeStyleKey},${this.mainDirection}`,
+            transitionDuration: `${this.animateTime}s`,
+            ...this.processStyle,
+          },
+        };
+      });
+    } else {
+      return [];
+    }
+  }
+
+  get bordersArray() {
+    if (this.borders && this.showBorders) {
+      const bordersArray = [];
+      this.borders.forEach((value, index) => {
+        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
+        const valueMin = value.min ? value.min : this.min;
+        const valueMax = value.max ? value.max : this.max;
+        bordersArray.push({
+          min: valueMin,
+          max: valueMax,
+          style: {
+            'background-color': this.bordersColorsArray[index % this.bordersColorsArray.length],
+            [this.isHorizontal ? 'height' : 'width']: '100%',
+            [this.isHorizontal ? 'top' : 'left']: 0,
+            [this.mainDirection]: `${valueMin}%`,
+            [sizeStyleKey]: `${+valueMax - +valueMin}%`,
+            ...this.borderStyle,
+          },
+        });
+      });
+      return bordersArray;
+    } else {
+      return [];
+    }
+  }
+
+  get markList(): Mark[] {
+    if (!this.marks) {
+      return [];
+    }
+
+    const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
+      const pos = this.control.parseValue(value);
+      return {
+        pos,
+        value,
+        label: value,
+        active: this.control.isActiveByPos(pos),
+        style: {
+          [this.isHorizontal ? 'height' : 'width']: '100%',
+          [this.isHorizontal ? 'width' : 'height']: '4px',
+          [this.mainDirection]: `${pos}%`,
+          ...this.markStyle,
+        },
+        ...mark,
+      };
+    };
+    if (this.control) {
+      if (this.marks === true) {
+        return this.control.getValues().map((value) => getMarkByValue(value));
+      } else if (Array.isArray(this.marks)) {
+        return this.marks.map((value) => getMarkByValue(value));
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
+  get containerStyles() {
+    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
+    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
+    const containerHeight = this.height
+      ? getSize(this.height)
+      : this.isHorizontal
+      ? getSize(DEFAULT_SLIDER_SIZE)
+      : '100%';
+    return {
+      'pointer-events': this.disabled ? 'none' : 'auto',
+      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
+      width: containerWidth,
+      height: containerHeight,
+    };
   }
 
   get dotBaseStyle() {
@@ -100,106 +245,23 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     };
   }
 
-  get bordersArray() {
-    if (this.borders && this.showBorders) {
-      const bordersArray = [];
-      this.borders.forEach((value, index) => {
-        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
-        const valueMin = value.min ? value.min : this.min;
-        const valueMax = value.max ? value.max : this.max;
-        bordersArray.push({
-          min: valueMin,
-          max: valueMax,
-          style: {
-            'background-color': index % 2 === 0 ? 'black' : 'white',
-            [this.isHorizontal ? 'height' : 'width']: '100%',
-            [this.isHorizontal ? 'top' : 'left']: 0,
-            [this.mainDirection]: `${valueMin}%`,
-            [sizeStyleKey]: `${+valueMax - +valueMin}%`,
-          },
-        });
-      });
-      return bordersArray;
+  get railStyles() {
+    if (this.railStyle) {
+      return this.railStyle;
     } else {
-      return [];
+      return {
+        'background-color': '#e3e3e3',
+      };
     }
   }
 
-  get dots(): Dot[] {
-    if (this.control) {
-      return this.control.dotsPos.map((pos, index) => ({
-        pos,
-        index,
-        style: {
-          ...this.dotBaseStyle,
-          'pointer-events': (this.dotOptions && this.dotOptions[index].disabled) || this.disabled ? 'none' : 'auto',
-          [this.mainDirection]: `${pos}%`,
-          transition: `${this.mainDirection} ${this.animateTime}s`,
-        },
-        ...((Array.isArray(this.dotOptions) ? this.dotOptions[index] : this.dotOptions) || {}),
-      }));
+  get markStepStyles() {
+    if (this.markStepStyle) {
+      return this.markStepStyle;
     } else {
-      return [];
-    }
-  }
-
-  get mainDirection(): string {
-    switch (this.direction) {
-      case 'ltr':
-        return 'left';
-      case 'rtl':
-        return 'right';
-      case 'btt':
-        return 'bottom';
-      case 'ttb':
-        return 'top';
-    }
-  }
-
-  get canSort(): boolean {
-    return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
-  }
-
-  get containerStyles() {
-    const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
-    const containerWidth = this.width ? getSize(this.width) : this.isHorizontal ? '100%' : getSize(DEFAULT_SLIDER_SIZE);
-    const containerHeight = this.height
-      ? getSize(this.height)
-      : this.isHorizontal
-      ? getSize(DEFAULT_SLIDER_SIZE)
-      : '100%';
-    return {
-      'pointer-events': this.disabled ? 'none' : 'auto',
-      padding: this.isHorizontal ? `${dotHeight / 2}px 0` : `0 ${dotWidth / 2}px`,
-      width: containerWidth,
-      height: containerHeight,
-    };
-  }
-
-  get processArray(): Process[] {
-    if (this.control && this.process) {
-      return this.control.processArray.map(([start, end, style]) => {
-        if (start > end) {
-          [start, end] = [end, start];
-        }
-        const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
-        return {
-          start,
-          end,
-          style: {
-            [this.isHorizontal ? 'height' : 'width']: '100%',
-            [this.isHorizontal ? 'top' : 'left']: 0,
-            [this.mainDirection]: `${start}%`,
-            [sizeStyleKey]: `${end - start}%`,
-            transitionProperty: `${sizeStyleKey},${this.mainDirection}`,
-            transitionDuration: `${this.animateTime}s`,
-            // ...this.processStyle,
-            // ...style,
-          },
-        };
-      });
-    } else {
-      return [];
+      return {
+        'background-color': '#c6c6c6',
+      };
     }
   }
 
@@ -322,8 +384,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.syncValueByPos();
 
     setTimeout(() => {
-      if (this.included && this.isNotSync) {
-        // not sure what this code for
+      if (this.isNotSync) {
         this.control.setValue(this.value);
       } else {
         this.control.syncDotsPos();
@@ -383,7 +444,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.setScale();
 
     const pos = this.getPosByEvent(e);
-
     this.setValueByPos(pos);
     document.getElementById(`${this.id}-${this.focusDotIndex}`).focus();
   }
@@ -466,45 +526,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
 
     setTimeout(() => {
-      // if (this.included && this.isNotSync) {
-      //   this.control.setValue(this.value);
-      // } else {
-      // Sync slider position
-      this.control.syncDotsPos();
-      // }
-    });
-  }
-
-  get markList(): Mark[] {
-    if (!this.marks) {
-      return [];
-    }
-
-    const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
-      const pos = this.control.parseValue(value);
-      return {
-        pos,
-        value,
-        label: value,
-        active: this.control.isActiveByPos(pos),
-        style: {
-          [this.isHorizontal ? 'height' : 'width']: '100%',
-          [this.isHorizontal ? 'width' : 'height']: '4px',
-          [this.mainDirection]: `${pos}%`,
-        },
-        ...mark,
-      };
-    };
-    if (this.control) {
-      if (this.marks === true) {
-        return this.control.getValues().map((value) => getMarkByValue(value));
-      } else if (Array.isArray(this.marks)) {
-        return this.marks.map((value) => getMarkByValue(value));
+      if (this.isNotSync) {
+        this.control.setValue(this.value);
       } else {
-        return [];
+        // Sync slider position
+        this.control.syncDotsPos();
       }
-    } else {
-      return [];
-    }
+    });
   }
 }

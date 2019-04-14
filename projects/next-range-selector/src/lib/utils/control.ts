@@ -154,7 +154,7 @@ export default class Control {
 
   public getRecentDot(pos: number, borders: any[]): number {
     const arr = this.dotsPos.map((dotPos) => {
-      const bordersIndex = this.dotsValue.indexOf(Math.round(dotPos));
+      const bordersIndex = this.dotsValue.indexOf(Math.round(dotPos / this.interval) * this.interval);
       if (
         borders &&
         ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
