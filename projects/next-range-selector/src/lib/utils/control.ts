@@ -1,4 +1,4 @@
-import {Value, ProcessProp, ProcessOption} from '../typings';
+import {Value, MarksProp, ProcessProp, ProcessOption} from '../typings';
 
 // The distance each slider changes
 type DotsPosChangeArray = number[];
@@ -83,6 +83,7 @@ export default class Control {
   public dotsPos: number[] = []; // The position of each slider
   public dotsValue: Value[] = []; // The value of each slider
 
+  public data?: Value[];
   public enableCross: boolean;
   public fixed: boolean;
   public max: number;
@@ -91,10 +92,12 @@ export default class Control {
   public minRange: number;
   public maxRange: number;
   public order: boolean;
+  public marks?: MarksProp;
   public process?: ProcessProp;
   public onError?: (type: ERROR_TYPE, message: string) => void;
 
   constructor(options: {
+    data?: Value[];
     value: Value | Value[];
     enableCross: boolean;
     fixed: boolean;
@@ -104,9 +107,11 @@ export default class Control {
     order: boolean;
     minRange?: number;
     maxRange?: number;
+    marks?: MarksProp;
     process?: ProcessProp;
     onError?: (type: ERROR_TYPE, message: string) => void;
   }) {
+    this.data = options.data;
     this.max = options.max;
     this.min = options.min;
     this.interval = options.interval;
@@ -164,16 +169,19 @@ export default class Control {
   }
 
   public getIndexByValue(value: Value): number {
+    if (this.data) {
+      return this.data.indexOf(value);
+    }
     return (+value - this.min) / this.interval;
   }
 
-  public getValueByIndex(index: number): number {
+  public getValueByIndex(index: number): number | Value {
     if (index < 0) {
       index = 0;
     } else if (index > this.total) {
       index = this.total;
     }
-    return index * this.interval + this.min;
+    return this.data ? this.data[index] : index * this.interval + this.min;
   }
 
   public setDotPos(pos: number, index: number) {
@@ -213,7 +221,9 @@ export default class Control {
   }
 
   public parseValue(val: number | string): number {
-    if (typeof val === 'number' || typeof val === 'string') {
+    if (this.data) {
+      val = this.data.indexOf(val);
+    } else if (typeof val === 'number' || typeof val === 'string') {
       val = +val;
       if (val < this.min) {
         this.emitError(ERROR_TYPE.MIN);
@@ -224,6 +234,7 @@ export default class Control {
         return 0;
       }
       if (typeof val !== 'number' || val !== val) {
+        // what - I'll understand it in the next branch :)
         this.emitError(ERROR_TYPE.VALUE);
         return 0;
       }
@@ -243,10 +254,14 @@ export default class Control {
     return this.processArray.some(([start, end]) => pos >= start && pos <= end);
   }
 
-  public getValues(): number[] {
-    return Array.from(new Array(this.total), (_, index) => {
-      return index * this.interval + this.min;
-    }).concat([this.max]);
+  public getValues(): Value[] {
+    if (this.data) {
+      return this.data;
+    } else {
+      return Array.from(new Array(this.total), (_, index) => {
+        return index * this.interval + this.min;
+      }).concat([this.max]);
+    }
   }
 
   private getFixedChangePosArr(changePos: number, index: number): DotsPosChangeArray {

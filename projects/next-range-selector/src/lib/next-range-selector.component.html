@@ -5,6 +5,7 @@
   [id]="id"
   (click)="clickHandle($event)"
   [ngStyle]="containerStyles"
+  [ngClass]="containerClasses"
 >
   <div class="slider-rail">
     <div
@@ -18,6 +19,12 @@
       [ngStyle]="item.style"
       (mousedown)="clickHandle($event)"
     ></div>
+    <div class="slider-marks">
+      <div class="slider-mark" *ngFor="let mark of markList; let i = index; trackBy: trackByFn" [ngStyle]="mark.style">
+        <div class="slider-mark-step"></div>
+        <div class="slider-mark-label"><ng-container *ngTemplateOutlet="markTpl; context: mark"></ng-container></div>
+      </div>
+    </div>
     <div
       [ngStyle]="dot.style"
       *ngFor="let dot of dots; let i = index; trackBy: trackByFn"
@@ -31,8 +38,10 @@
       (keydown.arrowdown)="keydownHandle($event)"
       (keydown.tab)="tabHandle()"
     >
-      <ng-container *ngTemplateOutlet="itemTpl"></ng-container>
+      <ng-container *ngTemplateOutlet="dotTpl"></ng-container>
     </div>
   </div>
-  <input [tabIndex]="-1" class="slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" />
+  <div *ngIf="this.dots.length === 1 && !this.data">
+    <input [tabIndex]="-1" class="slider-sr-only" type="range" value="{{ value }}" min="{{ min }}" max="{{ max }}" />
+  </div>
 </div>

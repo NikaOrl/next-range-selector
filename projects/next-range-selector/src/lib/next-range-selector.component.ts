@@ -1,6 +1,18 @@
-import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2} from '@angular/core';
+import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2, TemplateRef} from '@angular/core';
 import {getSize, getPos, getKeyboardHandleFunc} from './utils/utils';
-import {Value, Styles, DotOption, Dot, Direction, ProcessProp, Process, Border} from './typings';
+import {
+  Value,
+  Mark,
+  MarksProp,
+  MarkOption,
+  Styles,
+  DotOption,
+  Dot,
+  Direction,
+  ProcessProp,
+  Process,
+  Border,
+} from './typings';
 import Control, {ERROR_TYPE} from './utils/control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -20,13 +32,14 @@ let uniqueId = 0;
   ],
 })
 export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
-  @Input() public itemTpl;
+  @Input() public dotTpl: TemplateRef<any>;
+  @Input() public markTpl: TemplateRef<any>;
   @Input() public id = `next-range-selector-${++uniqueId}`;
   @Input() public dotStyle: Styles;
   @Input() public min = 0;
   @Input() public max = 100;
   @Input() public useKeyboard = true;
-  @Input() public interval = 1;
+  @Input() public interval;
   @Input() public process?: ProcessProp;
   @Input() public duration: number = 0.5;
   @Input() public tabIndex: number = 1;
@@ -37,6 +50,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public borders: Border[];
   @Input() public showBorders: boolean = true;
   @Input() public disabled: boolean = false;
+  @Input() public marks?: MarksProp;
+  @Input() public data?: Value[];
 
   // disabled and others
   @Input() public dotOptions: DotOption | DotOption[];
@@ -188,6 +203,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
+  get containerClasses() {
+    return ['slider', `slider-${this.direction}`];
+  }
+
   private get dragRange(): [number, number] {
     const prevDot = this.dots[this.focusDotIndex - 1];
     const nextDot = this.dots[this.focusDotIndex + 1];
@@ -215,6 +234,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
   public ngOnInit() {
+    if (!this.interval) {
+      this.interval = this.data ? (this.max - this.min) / (this.data.length - 1) : 1;
+    }
     this.renderer.removeAttribute(this.elementRef.nativeElement, 'id');
     this.processOrBorders();
   }
@@ -244,6 +266,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   public initControl() {
     this.control = new Control({
       value: this.value,
+      data: this.data,
       enableCross: this.enableCross,
       fixed: this.fixed,
       max: this.max,
@@ -252,6 +275,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       minRange: this.minRange,
       maxRange: this.maxRange,
       order: this.order,
+      marks: this.marks,
       process: this.process,
       onError: this.emitError,
     });
@@ -375,7 +399,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private emitError(type: ERROR_TYPE, message: string) {
-    console.log('error');
+    console.log('error', type, message);
   }
 
   private getPosByEvent(e: MouseEvent | TouchEvent): number {
@@ -449,5 +473,38 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       this.control.syncDotsPos();
       // }
     });
+  }
+
+  get markList(): Mark[] {
+    if (!this.marks) {
+      return [];
+    }
+
+    const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
+      const pos = this.control.parseValue(value);
+      return {
+        pos,
+        value,
+        label: value,
+        active: this.control.isActiveByPos(pos),
+        style: {
+          [this.isHorizontal ? 'height' : 'width']: '100%',
+          [this.isHorizontal ? 'width' : 'height']: '4px',
+          [this.mainDirection]: `${pos}%`,
+        },
+        ...mark,
+      };
+    };
+    if (this.control) {
+      if (this.marks === true) {
+        return this.control.getValues().map((value) => getMarkByValue(value));
+      } else if (Array.isArray(this.marks)) {
+        return this.marks.map((value) => getMarkByValue(value));
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
   }
 }

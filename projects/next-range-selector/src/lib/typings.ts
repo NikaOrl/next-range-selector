@@ -5,6 +5,21 @@ export interface Styles {
 export type Direction = 'ltr' | 'rtl' | 'ttb' | 'btt';
 export type Position = 'top' | 'right' | 'bottom' | 'left';
 
+// Mark
+export interface MarkOption {
+  label: Value;
+  style?: Styles;
+}
+export interface Mark extends MarkOption {
+  active?: boolean;
+  pos?: number;
+  value: number | string;
+}
+export interface Marks {
+  [key: string]: string | MarkOption;
+}
+export type MarksProp = boolean | Marks | Value[];
+
 // Value
 
 export type Value = number | string;
