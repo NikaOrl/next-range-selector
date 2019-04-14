@@ -46,21 +46,21 @@ export default class Control {
   }
 
   // Distance between each value
-  get gap(): number {
+  private get gap(): number {
     return 100 / this.total;
   }
 
   // The minimum distance between the two sliders
-  get minRangeDir(): number {
+  private get minRangeDir(): number {
     return this.minRange ? this.minRange * this.gap : 0;
   }
 
   // Maximum distance between the two sliders
-  get maxRangeDir(): number {
+  private get maxRangeDir(): number {
     return this.maxRange ? this.maxRange * this.gap : 100;
   }
 
-  get valuePosRange(): Array<[number, number]> {
+  private get valuePosRange(): Array<[number, number]> {
     const dotsPos = this.dotsPos;
     const valuePosRange: Array<[number, number]> = [];
 
@@ -77,9 +77,6 @@ export default class Control {
     return valuePosRange;
   }
 
-  get dotsIndex(): number[] {
-    return this.dotsValue.map((val) => this.getIndexByValue(val));
-  }
   public dotsPos: number[] = []; // The position of each slider
   public dotsValue: Value[] = []; // The value of each slider
 
@@ -140,13 +137,6 @@ export default class Control {
     this.syncDotsPos();
   }
 
-  // Set the slider position
-  public setDotsPos(dotsPos: number[]) {
-    const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
-    this.dotsPos = list;
-    this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
-  }
-
   // Sync slider position
   public syncDotsPos() {
     this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
@@ -204,22 +194,6 @@ export default class Control {
     this.setDotsPos(this.dotsPos.map((curPos, i) => curPos + (changePosArr[i] || 0)));
   }
 
-  public getValidPos(pos: number, index: number): {pos: number; inRange: boolean} {
-    const range = this.valuePosRange[index];
-    let inRange = true;
-    if (pos < range[0]) {
-      pos = range[0];
-      inRange = false;
-    } else if (pos > range[1]) {
-      pos = range[1];
-      inRange = false;
-    }
-    return {
-      pos,
-      inRange,
-    };
-  }
-
   public parseValue(val: number | string): number {
     if (this.data) {
       val = this.data.indexOf(val);
@@ -243,15 +217,6 @@ export default class Control {
 
     const pos = val * this.gap;
     return pos < 0 ? 0 : pos > 100 ? 100 : pos;
-  }
-
-  public parsePos(pos: number): number | string {
-    const index = Math.round(pos / this.gap);
-    return this.getValueByIndex(index);
-  }
-
-  public isActiveByPos(pos: number): boolean {
-    return this.processArray.some(([start, end]) => pos >= start && pos <= end);
   }
 
   public getValues(): Value[] {
@@ -327,5 +292,33 @@ export default class Control {
     if (this.onError) {
       this.onError(type, ERROR_MSG[type]);
     }
+  }
+
+  private getValidPos(pos: number, index: number): {pos: number; inRange: boolean} {
+    const range = this.valuePosRange[index];
+    let inRange = true;
+    if (pos < range[0]) {
+      pos = range[0];
+      inRange = false;
+    } else if (pos > range[1]) {
+      pos = range[1];
+      inRange = false;
+    }
+    return {
+      pos,
+      inRange,
+    };
+  }
+
+  // Set the slider position
+  private setDotsPos(dotsPos: number[]) {
+    const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
+    this.dotsPos = list;
+    this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
+  }
+
+  private parsePos(pos: number): number | string {
+    const index = Math.round(pos / this.gap);
+    return this.getValueByIndex(index);
   }
 }

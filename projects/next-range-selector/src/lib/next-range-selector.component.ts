@@ -9,7 +9,6 @@ import {
   Dot,
   Direction,
   ProcessProp,
-  Process,
   Border,
   HandleFunction,
   IPosObject,
@@ -81,55 +80,27 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public order = true; // false -> fixed and min/maxRange don't work
   @Input() public lazy = false; // true -> value will only be updated when the drag is over
 
-  get isHorizontal(): boolean {
-    return this.direction === 'ltr' || this.direction === 'rtl';
-  }
-
-  get isReverse(): boolean {
-    return this.direction === 'rtl' || this.direction === 'btt';
-  }
-
-  get animateTime(): number {
-    return this.duration;
-  }
-
-  get mainDirection(): string {
-    switch (this.direction) {
-      case 'ltr':
-        return 'left';
-      case 'rtl':
-        return 'right';
-      case 'btt':
-        return 'bottom';
-      case 'ttb':
-        return 'top';
-    }
-  }
-
-  get canSort(): boolean {
-    return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
-  }
-
   get dots(): Dot[] {
     if (this.control) {
       return this.control.dotsPos.map((pos, index) => ({
         pos,
         index,
+        disabled: (this.dotOptions && this.dotOptions[index].disabled) || this.disabled,
+        focus: this.focusDotIndex === index,
         style: {
           ...this.dotBaseStyle,
           'pointer-events': (this.dotOptions && this.dotOptions[index].disabled) || this.disabled ? 'none' : 'auto',
           [this.mainDirection]: `${pos}%`,
-          transition: `${this.mainDirection} ${this.animateTime}s`,
+          transition: this.dragging ? '0s' : `${this.mainDirection} ${this.animateTime}s`,
           ...this.dotStyle,
         },
-        ...((Array.isArray(this.dotOptions) ? this.dotOptions[index] : this.dotOptions) || {}),
       }));
     } else {
       return [];
     }
   }
 
-  get processArray(): Process[] {
+  get processArray(): Styles[] {
     if (this.control && this.process) {
       return this.control.processArray.map(([start, end, style]) => {
         if (start > end) {
@@ -137,8 +108,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         }
         const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
         return {
-          start,
-          end,
           style: {
             [this.isHorizontal ? 'height' : 'width']: '100%',
             [this.isHorizontal ? 'top' : 'left']: 0,
@@ -155,7 +124,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  get bordersArray() {
+  get bordersArray(): Styles[] {
     if (this.borders && this.showBorders) {
       const bordersArray = [];
       this.borders.forEach((value, index) => {
@@ -163,8 +132,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         const valueMin = value.min ? value.min : this.min;
         const valueMax = value.max ? value.max : this.max;
         bordersArray.push({
-          min: valueMin,
-          max: valueMax,
           style: {
             'background-color': this.bordersColorsArray[index % this.bordersColorsArray.length],
             [this.isHorizontal ? 'height' : 'width']: '100%',
@@ -189,10 +156,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
       const pos = this.control.parseValue(value);
       return {
-        pos,
         value,
-        label: value,
-        active: this.control.isActiveByPos(pos),
         style: {
           [this.isHorizontal ? 'height' : 'width']: '100%',
           [this.isHorizontal ? 'width' : 'height']: '4px',
@@ -235,6 +199,30 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     };
   }
 
+  get railStyles() {
+    if (this.railStyle) {
+      return this.railStyle;
+    } else {
+      return {
+        'background-color': '#e3e3e3',
+      };
+    }
+  }
+
+  get markStepStyles() {
+    if (this.markStepStyle) {
+      return this.markStepStyle;
+    } else {
+      return {
+        'background-color': '#c6c6c6',
+      };
+    }
+  }
+
+  get containerClasses() {
+    return ['slider', `slider-${this.direction}`];
+  }
+
   get dotBaseStyle() {
     const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
     let dotPos: {[key: string]: string};
@@ -260,28 +248,33 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     };
   }
 
-  get railStyles() {
-    if (this.railStyle) {
-      return this.railStyle;
-    } else {
-      return {
-        'background-color': '#e3e3e3',
-      };
+  private get isHorizontal(): boolean {
+    return this.direction === 'ltr' || this.direction === 'rtl';
+  }
+
+  private get isReverse(): boolean {
+    return this.direction === 'rtl' || this.direction === 'btt';
+  }
+
+  private get animateTime(): number {
+    return this.duration;
+  }
+
+  private get mainDirection(): string {
+    switch (this.direction) {
+      case 'ltr':
+        return 'left';
+      case 'rtl':
+        return 'right';
+      case 'btt':
+        return 'bottom';
+      case 'ttb':
+        return 'top';
     }
   }
 
-  get markStepStyles() {
-    if (this.markStepStyle) {
-      return this.markStepStyle;
-    } else {
-      return {
-        'background-color': '#c6c6c6',
-      };
-    }
-  }
-
-  get containerClasses() {
-    return ['slider', `slider-${this.direction}`];
+  private get canSort(): boolean {
+    return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
   }
 
   private get dragRange(): [number, number] {
@@ -298,13 +291,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public value: Value | Value[];
-  public scale = 1;
-  public control!: Control;
-  public $refs!: {
-    container: HTMLDivElement;
-  };
-  public $el: HTMLElement = document.getElementById(this.id);
-  public focusDotIndex = 0;
+  private scale = 1;
+  private control!: Control;
+  private $el: HTMLElement = document.getElementById(this.id);
+  private focusDotIndex = 0;
   private dragging = false;
 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
@@ -378,36 +368,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.onTouchedCallback = fn;
   }
 
-  public setScale() {
-    this.scale = Math.floor(this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight) / 100;
-  }
-
-  public isDisabledByDotIndex(index: number): boolean {
-    return this.dotOptions && this.dotOptions[index].disabled;
-  }
-
-  public setValueByPos(pos: number) {
-    const index = this.control.getRecentDot(pos, this.borders);
-    if (this.isDisabledByDotIndex(index)) {
-      return false;
-    }
-    if (this.borders && this.isPosNotInValueBorders(index, pos)) {
-      return false;
-    }
-
-    this.focusDotIndex = index;
-    this.control.setDotPos(pos, index);
-    this.syncValueByPos();
-
-    setTimeout(() => {
-      if (this.isNotSync) {
-        this.control.setValue(this.value);
-      } else {
-        this.control.syncDotsPos();
-      }
-    });
-  }
-
   public tabHandle() {
     this.focusDotIndex++;
     if (this.focusDotIndex >= this.dots.length) {
@@ -447,15 +407,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  public trackByFn(index: any, item: any) {
-    return index;
-  }
-
-  public dragStart(index: number) {
-    this.focusDotIndex = index;
-    this.setScale();
-  }
-
   public clickHandle(e: MouseEvent | TouchEvent) {
     this.setScale();
 
@@ -468,11 +419,50 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return `${id}-${i}`;
   }
 
-  public getSize(value: number | string): string {
+  public trackByFn(index: any, item: any) {
+    return index;
+  }
+
+  private setScale() {
+    this.scale = Math.floor(this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight) / 100;
+  }
+
+  private isDisabledByDotIndex(index: number): boolean {
+    return this.dotOptions && this.dotOptions[index].disabled;
+  }
+
+  private setValueByPos(pos: number) {
+    const index = this.control.getRecentDot(pos, this.borders);
+    if (this.isDisabledByDotIndex(index)) {
+      return false;
+    }
+    if (this.borders && this.isPosNotInValueBorders(index, pos)) {
+      return false;
+    }
+
+    this.focusDotIndex = index;
+    this.control.setDotPos(pos, index);
+    this.syncValueByPos();
+
+    setTimeout(() => {
+      if (this.isNotSync) {
+        this.control.setValue(this.value);
+      } else {
+        this.control.syncDotsPos();
+      }
+    });
+  }
+
+  private dragStart(index: number) {
+    this.focusDotIndex = index;
+    this.setScale();
+  }
+
+  private getSize(value: number | string): string {
     return typeof value === 'number' ? `${value}px` : value;
   }
 
-  public getPos(e: MouseEvent | TouchEvent, elem: HTMLElement, isReverse: boolean): IPosObject {
+  private getPos(e: MouseEvent | TouchEvent, elem: HTMLElement, isReverse: boolean): IPosObject {
     const event = e instanceof MouseEvent ? e : e.targetTouches[0];
     const rect = elem.getBoundingClientRect();
     const posObj = {
@@ -485,7 +475,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     };
   }
 
-  public getKeyboardHandleFunc(
+  private getKeyboardHandleFunc(
     e: KeyboardEvent,
     params: {
       direction: Direction;
