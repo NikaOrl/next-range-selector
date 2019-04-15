@@ -70,7 +70,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public markStepStyle?: Styles;
   @Input() public dotStyle: Styles;
   @Input() public borderStyle?: Styles;
-  @Input() public bordersColorsArray: string[] = ['#9d9d9d', '#c6c6c6'];
+  @Input() public bordersColors: string[] = ['#9d9d9d', '#c6c6c6'];
 
   @Input() public dotOptions: DotOption | DotOption[]; // disabled dots
   // only for multi-dots:
@@ -86,7 +86,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         pos,
         index,
         disabled: (this.dotOptions && this.dotOptions[index].disabled) || this.disabled,
-        focus: this.focusDotIndex === index,
+        focus: document.getElementById(`${this.id}-${index}`) === document.activeElement,
         style: {
           ...this.dotBaseStyle,
           'pointer-events': (this.dotOptions && this.dotOptions[index].disabled) || this.disabled ? 'none' : 'auto',
@@ -133,7 +133,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         const valueMax = value.max ? value.max : this.max;
         bordersArray.push({
           style: {
-            'background-color': this.bordersColorsArray[index % this.bordersColorsArray.length],
+            'background-color': this.bordersColors[index % this.bordersColors.length],
             [this.isHorizontal ? 'height' : 'width']: '100%',
             [this.isHorizontal ? 'top' : 'left']: 0,
             [this.mainDirection]: `${valueMin}%`,
@@ -271,16 +271,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       case 'ttb':
         return 'top';
     }
-  }
-
-  private get canSort(): boolean {
-    return this.order && !this.minRange && !this.maxRange && !this.fixed && this.enableCross;
-  }
-
-  private get dragRange(): [number, number] {
-    const prevDot = this.dots[this.focusDotIndex - 1];
-    const nextDot = this.dots[this.focusDotIndex + 1];
-    return [prevDot ? prevDot.pos : -Infinity, nextDot ? nextDot.pos : Infinity];
   }
 
   private get isNotSync() {
@@ -431,7 +421,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private setValueByPos(pos: number) {
-    const index = this.control.getRecentDot(pos, this.borders);
+    const index = this.control.getRecentDot(pos, this.borders, this.dotOptions);
     if (this.isDisabledByDotIndex(index)) {
       return false;
     }
@@ -492,22 +482,13 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       case KEY_CODE.LEFT:
         return (i) => (params.direction === 'rtl' ? i + 1 : i - 1);
 
-      // case KEY_CODE.END:
-      //   return () => params.max;
-      // case KEY_CODE.HOME:
-      //   return () => params.min;
-
-      // case KEY_CODE.PAGE_UP:
-      //   return (i) => i + 10;
-      // case KEY_CODE.PAGE_DOWN:
-      //   return (i) => i - 10;
-
       default:
         return null;
     }
   }
 
   private emitError(type: ERROR_TYPE, message: string) {
+    // tslint:disable-next-line:no-console
     console.log('error', type, message);
   }
 

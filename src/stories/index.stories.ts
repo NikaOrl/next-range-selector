@@ -263,7 +263,18 @@ storiesOf('next-datepicker', module)
           style="display: inline-block; margin-top: 30px; width: 100%;"
         >
         </next-range-selector>
-        Добавить про цвета бордеров
+        <next-range-selector
+          [(ngModel)]="value5"
+          name="range-selector5"
+          [dotTpl]="dotTpl"
+          [markTpl]="markTpl"
+          [borders]="borders2"
+          [interval]="10"
+          [marks]="true"
+          [bordersColors]="bordersColors"
+          style="display: inline-block; margin-top: 30px; width: 100%;"
+        >
+        </next-range-selector>
       </form>
       <ng-template #dotTpl>
         <div class="slider-dot">
@@ -278,7 +289,10 @@ storiesOf('next-datepicker', module)
         value2: [10, 40, 30],
         value3: [10, 40, 30],
         value4: [10, 40, 30],
+        value5: [10, 40, 70],
         borders: [{max: 30, min: 5}, {max: 60, min: 30}],
+        borders2: [{max: 30, min: 5}, {max: 60, min: 30}, {max: 80, min: 60}],
+        bordersColors: ['red', 'green', 'blue'],
       },
     })),
   )
@@ -380,11 +394,10 @@ storiesOf('next-datepicker', module)
           style="display: inline-block; margin-top: 30px; width: 100%;"
         >
         </next-range-selector>
-        Показать как прокинуть стили для dot-disabled
       </form>
-      <ng-template #dotTpl>
+      <ng-template #dotTpl let-disabled="disabled">
         <div class="slider-dot">
-          <div class="slider-dot-handle"></div>
+          <div class="slider-dot-handle"  [ngStyle]="disabled ? {'background-color': 'lightgrey'}: {}"></div>
         </div>
       </ng-template>
       <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
@@ -496,24 +509,26 @@ storiesOf('next-datepicker', module)
           [markStepStyle]="markStepStyle"
           [marks]="true"
           [interval]="10"
+          [dotStyle]="dotStyle"
+          [markStyle]="markStyle"
         >
         </next-range-selector>
       </form>
-      {{focus}}
       <ng-template #dotTpl let-focus="focus">
         <div class="slider-dot">
-          <div class="slider-dot-rocket" [attr.focus]="focus"
-          [ngStyle]="focus ? {'outline': 'red auto 5px'}: {}">🚀{{focus}}</div>
+          <div class="slider-dot-rocket"
+          [ngStyle]="focus ? {'outline': 'red auto 5px'}: {}">🚀</div>
         </div>
       </ng-template>
       <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
     `,
       props: {
-        focus: false,
         value: 10,
         railStyle: {'background-color': 'pink'},
         processStyle: {'background-color': 'green'},
         markStepStyle: {'background-color': 'red'},
+        dotStyle: {outline: 'none'},
+        markStyle: {'font-family': 'Consolas', color: 'darkred'},
       },
     })),
   );

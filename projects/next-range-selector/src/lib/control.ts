@@ -1,4 +1,4 @@
-import {Value, MarksProp, ProcessProp, ProcessOption} from './typings';
+import {Value, MarksProp, ProcessProp, ProcessOption, DotOption} from './typings';
 
 // The distance each slider changes
 type DotsPosChangeArray = number[];
@@ -142,13 +142,14 @@ export default class Control {
     this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
   }
 
-  public getRecentDot(pos: number, borders: any[]): number {
+  public getRecentDot(pos: number, borders: any[], dotOptions: DotOption | DotOption[]): number {
     const arr = this.dotsPos.map((dotPos, bordersIndex) => {
       if (
-        borders &&
-        borders[bordersIndex] &&
-        ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
-          (borders[bordersIndex].min && borders[bordersIndex].min >= pos))
+        (borders &&
+          borders[bordersIndex] &&
+          ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
+            (borders[bordersIndex].min && borders[bordersIndex].min >= pos))) ||
+        (dotOptions && dotOptions[bordersIndex].disabled)
       ) {
         return this.max + 1;
       } else {
