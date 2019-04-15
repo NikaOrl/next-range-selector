@@ -398,7 +398,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       const index = this.control.getIndexByValue(this.control.dotsValue[this.focusDotIndex]);
       const newIndex = handleFunc(index);
       const pos = this.control.parseValue(this.control.getValueByIndex(newIndex));
-      this.isCrossDot(pos);
       if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
         return false;
       }
@@ -528,43 +527,16 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  // If the component is sorted, then when the slider crosses, toggle the currently selected slider index
-  private isCrossDot(pos: number) {
-    if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
-      return false;
-    }
-    if (this.canSort) {
-      const curIndex = this.focusDotIndex;
-      let curPos = pos;
-      if (curPos > this.dragRange[1]) {
-        curPos = this.dragRange[1];
-        this.focusDotIndex++;
-      } else if (curPos < this.dragRange[0]) {
-        curPos = this.dragRange[0];
-        this.focusDotIndex--;
-      }
-      if (curIndex !== this.focusDotIndex) {
-        this.control.setDotPos(curPos, curIndex);
-      }
-      document.getElementById(`${this.id}-${this.focusDotIndex}`).focus();
-    }
-  }
-
   private isPosNotInValueBorders(index, pos): boolean {
     return (
-      (this.borders[index].max && this.borders[index].max < pos) ||
-      (this.borders[index].min && this.borders[index].min > pos)
+      (this.borders[index] && this.borders[index].max && this.borders[index].max < pos) ||
+      (this.borders[index] && this.borders[index].min && this.borders[index].min > pos)
     );
-    // return (
-    //   (this.borders[index] && this.borders[index].max && this.borders[index].max < pos) ||
-    //   (this.borders[index] && this.borders[index].min && this.borders[index].min > pos)
-    // );
   }
 
   private dragMove(e: MouseEvent | TouchEvent) {
     e.preventDefault();
     const pos = this.getPosByEvent(e);
-    this.isCrossDot(pos);
     if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
       return false;
     }

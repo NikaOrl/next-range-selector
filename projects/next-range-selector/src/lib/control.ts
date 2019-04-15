@@ -143,15 +143,14 @@ export default class Control {
   }
 
   public getRecentDot(pos: number, borders: any[]): number {
-    const arr = this.dotsPos.map((dotPos) => {
-      const bordersIndex = this.dotsValue.indexOf(Math.round(dotPos / this.interval) * this.interval);
+    const arr = this.dotsPos.map((dotPos, bordersIndex) => {
       if (
         borders &&
-        // borders[bordersIndex] &&
+        borders[bordersIndex] &&
         ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
           (borders[bordersIndex].min && borders[bordersIndex].min >= pos))
       ) {
-        return this.max;
+        return this.max + 1;
       } else {
         return Math.abs(dotPos - pos);
       }
@@ -313,7 +312,7 @@ export default class Control {
 
   // Set the slider position
   private setDotsPos(dotsPos: number[]) {
-    const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
+    const list = dotsPos;
     this.dotsPos = list;
     this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
   }
