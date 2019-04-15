@@ -555,6 +555,10 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       (this.borders[index].max && this.borders[index].max < pos) ||
       (this.borders[index].min && this.borders[index].min > pos)
     );
+    // return (
+    //   (this.borders[index] && this.borders[index].max && this.borders[index].max < pos) ||
+    //   (this.borders[index] && this.borders[index].min && this.borders[index].min > pos)
+    // );
   }
 
   private dragMove(e: MouseEvent | TouchEvent) {

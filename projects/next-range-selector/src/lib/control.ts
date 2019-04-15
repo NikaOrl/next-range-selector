@@ -147,6 +147,7 @@ export default class Control {
       const bordersIndex = this.dotsValue.indexOf(Math.round(dotPos / this.interval) * this.interval);
       if (
         borders &&
+        // borders[bordersIndex] &&
         ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
           (borders[bordersIndex].min && borders[bordersIndex].min >= pos))
       ) {
