@@ -114,7 +114,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
             [this.mainDirection]: `${start}%`,
             [sizeStyleKey]: `${end - start}%`,
             transitionProperty: `${sizeStyleKey},${this.mainDirection}`,
-            transitionDuration: `${this.animateTime}s`,
+            transitionDuration: this.dragging ? '0s' : `${this.animateTime}s`,
             ...this.processStyle,
           },
         };
