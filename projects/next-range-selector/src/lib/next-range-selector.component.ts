@@ -51,7 +51,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public useKeyboard = true;
   @Input() public interval;
   @Input() public process?: ProcessProp;
-  @Input() public duration: number = 0;
+  @Input() public duration: number = 0.5;
   @Input() public tabIndex: number = 1;
   @Input() public width: number | string;
   @Input() public height: number | string;
@@ -62,6 +62,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public disabled: boolean = false;
   @Input() public marks?: MarksProp;
   @Input() public data?: Value[];
+  @Input() public lazy = false; // true -> value will only be updated when the drag is over
 
   @Input() public railStyle?: Styles;
   @Input() public processStyle?: Styles;
@@ -78,7 +79,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public minRange?: number;
   @Input() public maxRange?: number;
   @Input() public order = true; // false -> fixed and min/maxRange don't work
-  @Input() public lazy = false; // true -> value will only be updated when the drag is over
 
   get dots(): Dot[] {
     if (this.control) {
@@ -492,15 +492,15 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       case KEY_CODE.LEFT:
         return (i) => (params.direction === 'rtl' ? i + 1 : i - 1);
 
-      case KEY_CODE.END:
-        return () => params.max;
-      case KEY_CODE.HOME:
-        return () => params.min;
+      // case KEY_CODE.END:
+      //   return () => params.max;
+      // case KEY_CODE.HOME:
+      //   return () => params.min;
 
-      case KEY_CODE.PAGE_UP:
-        return (i) => i + 10;
-      case KEY_CODE.PAGE_DOWN:
-        return (i) => i - 10;
+      // case KEY_CODE.PAGE_UP:
+      //   return (i) => i + 10;
+      // case KEY_CODE.PAGE_DOWN:
+      //   return (i) => i - 10;
 
       default:
         return null;
