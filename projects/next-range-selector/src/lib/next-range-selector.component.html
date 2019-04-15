@@ -37,7 +37,7 @@
       (keydown.arrowdown)="keydownHandle($event)"
       (keydown.tab)="tabHandle()"
     >
-      <ng-container *ngTemplateOutlet="dotTpl"></ng-container>
+      <ng-container *ngTemplateOutlet="dotTpl; context: dot"></ng-container>
     </div>
   </div>
   <div *ngIf="this.dots.length === 1 && !this.data">

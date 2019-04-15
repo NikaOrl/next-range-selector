@@ -59,8 +59,8 @@ export type ProcessOption = Array<[number, number, Styles?]>;
 export type ProcessFunc = (dotsPos: number[]) => ProcessOption;
 export type ProcessProp = boolean | ProcessFunc;
 
-export interface Process {
-  start: number;
-  end: number;
-  style?: Styles;
+export type HandleFunction = (i: number) => number;
+export interface IPosObject {
+  x: number;
+  y: number;
 }
