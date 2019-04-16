@@ -56,8 +56,6 @@ export interface Border {
 
 // Process
 export type ProcessOption = Array<[number, number, Styles?]>;
-export type ProcessFunc = (dotsPos: number[]) => ProcessOption;
-export type ProcessProp = boolean | ProcessFunc;
 
 export type HandleFunction = (i: number) => number;
 export interface IPosObject {

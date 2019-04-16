@@ -1,4 +1,4 @@
-import {Value, MarksProp, ProcessProp, ProcessOption, DotOption} from './typings';
+import {Value, MarksProp, ProcessOption, DotOption} from './typings';
 
 // The distance each slider changes
 type DotsPosChangeArray = number[];
@@ -23,9 +23,7 @@ export const ERROR_MSG: ERROR_MESSAGE = {
 export default class Control {
   get processArray(): ProcessOption {
     if (this.process) {
-      if (typeof this.process === 'function') {
-        return this.process(this.dotsPos);
-      } else if (this.dotsPos.length === 1) {
+      if (this.dotsPos.length === 1) {
         return [[0, this.dotsPos[0]]];
       } else if (this.dotsPos.length > 1) {
         return [[Math.min(...this.dotsPos), Math.max(...this.dotsPos)]];
@@ -90,7 +88,7 @@ export default class Control {
   public maxRange: number;
   public order: boolean;
   public marks?: MarksProp;
-  public process?: ProcessProp;
+  public process?: boolean;
   public onError?: (type: ERROR_TYPE, message: string) => void;
 
   constructor(options: {
@@ -105,7 +103,7 @@ export default class Control {
     minRange?: number;
     maxRange?: number;
     marks?: MarksProp;
-    process?: ProcessProp;
+    process?: boolean;
     onError?: (type: ERROR_TYPE, message: string) => void;
   }) {
     this.data = options.data;

@@ -8,7 +8,6 @@ import {
   DotOption,
   Dot,
   Direction,
-  ProcessProp,
   Border,
   HandleFunction,
   IPosObject,
@@ -19,11 +18,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 const DEFAULT_SLIDER_SIZE = 4;
 let uniqueId = 0;
 const enum KEY_CODE {
-  PAGE_UP = 33,
-  PAGE_DOWN,
-  END,
-  HOME,
-  LEFT,
+  LEFT = 37,
   UP,
   RIGHT,
   DOWN,
@@ -50,7 +45,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public max = 100;
   @Input() public useKeyboard = true;
   @Input() public interval;
-  @Input() public process?: ProcessProp;
+  @Input() public process?: boolean;
   @Input() public duration: number = 0.5;
   @Input() public tabIndex: number = 1;
   @Input() public width: number | string;

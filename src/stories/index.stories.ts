@@ -1,8 +1,5 @@
-import {storiesOf} from '@storybook/angular';
-import {NextRangeSelectorComponent, NextRangeSelectorModule} from '../../projects/next-range-selector/src/public_api';
-import {withNotes} from '@storybook/addon-notes';
-import {withKnobs} from '@storybook/addon-knobs';
-import * as marked from 'marked';
+import {storiesOf, moduleMetadata} from '@storybook/angular';
+import {NextRangeSelectorComponent} from '../../projects/next-range-selector/src/public_api';
 import defaultText from './default.md';
 
 const styles = `
@@ -33,17 +30,18 @@ const styles = `
   </style>
 `;
 
-storiesOf('next-datepicker', module)
-  .addDecorator(withKnobs)
+storiesOf('next-range-selector', module)
+  .addDecorator(
+    moduleMetadata({
+      declarations: [NextRangeSelectorComponent],
+    }),
+  )
   .add(
     'Install',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -62,17 +60,15 @@ storiesOf('next-datepicker', module)
       props: {
         value: 10,
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Diff directions',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -118,17 +114,15 @@ storiesOf('next-datepicker', module)
       props: {
         value: 10,
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Diff marks and data',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -197,17 +191,15 @@ storiesOf('next-datepicker', module)
         marks: [0, 10, 40, 50, 100],
         value5: 10,
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Diff process and borders',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector0"
@@ -294,17 +286,15 @@ storiesOf('next-datepicker', module)
         borders2: [{max: 30, min: 5}, {max: 60, min: 30}, {max: 80, min: 60}],
         bordersColors: ['red', 'green', 'blue'],
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Multi-dots',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         Base:
         <next-range-selector
           [(ngModel)]="value1"
@@ -358,17 +348,15 @@ storiesOf('next-datepicker', module)
         value3: [15, 30],
         value4: [15, 30],
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Disabled',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
@@ -408,34 +396,33 @@ storiesOf('next-datepicker', module)
         value3: [15, 30],
         dotOptions: [{disabled: false}, {disabled: true}],
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Duration and tabIndex',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       ${styles}
-      <form class="datepicker-form">
-      0.5 duration (default), tabIndex 2:
+      <form class="range-selector-form">
+      0.5 duration (default), tabIndex 1:
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [tabIndex]="2"
+
           [interval]="10"
           [marks]="true"
           style="display: inline-block; margin: 30px 0; width: 100%;"
         >
         </next-range-selector>
-        0 duration, tabIndex 1 (default):
+        0 duration, tabIndex 3 (default):
         <next-range-selector
           [(ngModel)]="value2"
           name="range-selector2"
           [dotTpl]="dotTpl"
+          [tabIndex]="3"
           [markTpl]="markTpl"
           [duration]="0"
           [interval]="10"
@@ -456,13 +443,13 @@ storiesOf('next-datepicker', module)
           style="display: inline-block; margin: 30px 0; width: 100%;"
         >
         </next-range-selector>
-        2 duration, tabIndex 3:
+        2 duration, tabIndex 2:
         <next-range-selector
           [(ngModel)]="value4"
           name="range-selector4"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [tabIndex]="3"
+          [tabIndex]="2"
           [duration]="2"
           [interval]="10"
           [marks]="true"
@@ -483,14 +470,12 @@ storiesOf('next-datepicker', module)
         value3: [10, 50],
         value4: [10, 50],
       },
-    })),
+    }),
+    {notes: defaultText},
   )
   .add(
     'Diff styles',
-    withNotes({text: marked(defaultText)})(() => ({
-      moduleMetadata: {
-        declarations: [NextRangeSelectorComponent],
-      },
+    () => ({
       template: `
       <style>
         .slider-dot-rocket \{
@@ -498,7 +483,7 @@ storiesOf('next-datepicker', module)
         \}
       </style>
       ${styles}
-      <form class="datepicker-form">
+      <form class="range-selector-form">
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -530,5 +515,6 @@ storiesOf('next-datepicker', module)
         dotStyle: {outline: 'none'},
         markStyle: {'font-family': 'Consolas', color: 'darkred'},
       },
-    })),
+    }),
+    {notes: defaultText},
   );
