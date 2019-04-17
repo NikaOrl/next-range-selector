@@ -118,27 +118,32 @@ import { FormControl, FormGroup } from '@angular/forms';
 
 ### RangeSelector inputs:
 
-- dotTpl - template variable for the ng-template of the dot
-- markTpl- template variable for the ng-template of the mark
-
 - id: string (In case of missing the id, it will be automatically generated);
-- min (default 0) - minimum of the range
-- max (default 100) - maximum of the range
-- useKeyboard (default true)
-- interval - interval between values
-- process: ProcessProp;
-- duration: number (default 0.5)
-- tabIndex: number (default 1)
+- min: number (default 0) - minimum of the range;
+- max: number (default 100) - maximum of the range;
+- useKeyboard: boolean (default true);
+- interval: number - interval between values;
+- process: boolean - show process (area between dots);
+- duration: number (default 0.5) - transition-duration of the dot and the process in seconds;
+- tabIndex: number (default 1);
 - width: number | string;
 - height: number | string;
-- dotSize: [number, number] | number (default 14)
-- direction: Direction (default 'ltr')
-- borders: Border[];
-- showBorders: boolean (default true)
-- disabled: boolean (default false)
-- marks?: MarksProp;
-- data?: Value[];
-- lazy (default false) // true -> value will only be updated when the drag is over
+- dotSize: [number, number] | number (default 14);
+- direction: Direction (enum - string) (default 'ltr' - 'left to right');
+- borders: Border[] - array of borders by dot index;
+- showBorders: boolean (default true);
+- disabled: boolean (default false) - disable for a whole selector;
+- marks?: boolean | Marks | Value[] - if boolean: show marks (all possible values), if Marks: marks object, if Value: array of strings|numbers;
+- data?: Value[] - array of strings|numbers - possible values;
+- lazy (default false) - if true: value will only be updated when the drag is over
+- dotDisabled: boolean | boolean[];
+
+Templates:
+
+- dotTpl - template variable for the ng-template of the dot;
+- markTpl - template variable for the ng-template of the mark;
+
+Styles:
 
 - railStyle?: Styles;
 - processStyle?: Styles;
@@ -147,8 +152,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 - dotStyle: Styles;
 - borderStyle?: Styles;
 - bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
-
-- dotOptions: DotOption | DotOption[]; // disabled dots
 
 Only for multi-dots:
 

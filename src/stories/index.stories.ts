@@ -1,6 +1,13 @@
 import {storiesOf, moduleMetadata} from '@storybook/angular';
-import {NextRangeSelectorComponent} from '../../projects/next-range-selector/src/public_api';
+import {NextRangeSelectorComponent, RangeSelectorDirection} from '../../projects/next-range-selector/src/public_api';
 import defaultText from './default.md';
+import withDifferentDirections from './with-different-directions.md';
+import withDifferentMarksAndData from './with-different-marks-and-data.md';
+import withDifferentProcessAndBorders from './with-different-process-and-borders.md';
+import withMultiDots from './with-disable.md';
+import withDisable from './with-disable.md';
+import withDifferentDurationAndTabIndexes from './with-different-duration-and-tabIndexes.md';
+import withDifferentStyles from './with-different-styles.md';
 
 const styles = `
   <style>
@@ -10,8 +17,6 @@ const styles = `
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      transition: all 0s;
-      transition: left 0.5s ease 0s;
       width: 14px;
       will-change: transform;
       z-index: 5;
@@ -74,7 +79,7 @@ storiesOf('next-range-selector', module)
           name="range-selector1"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [direction]="'ltr'"
+          [direction]="RangeSelectorDirection.ltr"
         >
         </next-range-selector>
         <next-range-selector
@@ -82,7 +87,7 @@ storiesOf('next-range-selector', module)
           name="range-selector2"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [direction]="'rtl'"
+          [direction]="RangeSelectorDirection.rtl"
         >
         </next-range-selector>
         <next-range-selector
@@ -90,7 +95,7 @@ storiesOf('next-range-selector', module)
           name="range-selector3"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [direction]="'ttb'"
+          [direction]="RangeSelectorDirection.ttb"
           style="display: inline-block; margin: 30px; height: 300px;"
         >
         </next-range-selector>
@@ -99,7 +104,7 @@ storiesOf('next-range-selector', module)
           name="range-selector4"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [direction]="'btt'"
+          [direction]="RangeSelectorDirection.btt"
           style="display: inline-block; margin: 30px; height: 300px;"
         >
         </next-range-selector>
@@ -113,9 +118,10 @@ storiesOf('next-range-selector', module)
     `,
       props: {
         value: 10,
+        RangeSelectorDirection,
       },
     }),
-    {notes: defaultText},
+    {notes: withDifferentDirections},
   )
   .add(
     'Diff marks and data',
@@ -192,7 +198,7 @@ storiesOf('next-range-selector', module)
         value5: 10,
       },
     }),
-    {notes: defaultText},
+    {notes: withDifferentMarksAndData},
   )
   .add(
     'Diff process and borders',
@@ -287,7 +293,7 @@ storiesOf('next-range-selector', module)
         bordersColors: ['red', 'green', 'blue'],
       },
     }),
-    {notes: defaultText},
+    {notes: withDifferentProcessAndBorders},
   )
   .add(
     'Multi-dots',
@@ -349,7 +355,7 @@ storiesOf('next-range-selector', module)
         value4: [15, 30],
       },
     }),
-    {notes: defaultText},
+    {notes: withMultiDots},
   )
   .add(
     'Disabled',
@@ -378,7 +384,7 @@ storiesOf('next-range-selector', module)
           name="range-selector3"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          [dotOptions]="dotOptions"
+          [dotDisabled]="dotDisabled"
           style="display: inline-block; margin-top: 30px; width: 100%;"
         >
         </next-range-selector>
@@ -394,10 +400,10 @@ storiesOf('next-range-selector', module)
         value1: [15, 30],
         value2: [15, 30],
         value3: [15, 30],
-        dotOptions: [{disabled: false}, {disabled: true}],
+        dotDisabled: [false, true],
       },
     }),
-    {notes: defaultText},
+    {notes: withDisable},
   )
   .add(
     'Duration and tabIndex',
@@ -471,7 +477,7 @@ storiesOf('next-range-selector', module)
         value4: [10, 50],
       },
     }),
-    {notes: defaultText},
+    {notes: withDifferentDurationAndTabIndexes},
   )
   .add(
     'Diff styles',
@@ -516,5 +522,5 @@ storiesOf('next-range-selector', module)
         markStyle: {'font-family': 'Consolas', color: 'darkred'},
       },
     }),
-    {notes: defaultText},
+    {notes: withDifferentStyles},
   );
