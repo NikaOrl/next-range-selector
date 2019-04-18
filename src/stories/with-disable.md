@@ -1,25 +1,6 @@
 ## The range-selector with different directions
 
-You can set different directions to the range-selector.
-There are four options in the special enum RangeSelectorDirection:
-
-- 'ltr' (by default) - 'left to right';
-- 'rtl' - 'right to left';
-- 'ttb' - 'top to bottom';
-- 'btt' - 'bottom to top'.
-
-## To use this enum import it into the component:
-
-```
-import {RangeSelectorDirection} from 'next-range-selector';
-
-export class AppComponent {
-...
-  public get RangeSelectorDirection() {
-    return RangeSelectorDirection;
-  }
-}
-```
+You can make all range-selector disable - then all its dots will be disabled. Or you can set disable for some dots by using dotDisabled array ([false, true] for example).
 
 ### The template for this example looks like the code below
 
@@ -48,29 +29,41 @@ export class AppComponent {
   }
 </style>
 <form class="range-selector-form">
+  ...
   <next-range-selector
-    [(ngModel)]="value"
-    name="range-selector1"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.ltr"
-  >
-  </next-range-selector>
-  <next-range-selector
-    [(ngModel)]="value"
+    [(ngModel)]="value2"
     name="range-selector2"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.rtl"
+    [disabled]="true"
+    style="display: inline-block; margin-top: 30px; width: 100%;"
   >
   </next-range-selector>
-  ...
+  <next-range-selector
+    [(ngModel)]="value3"
+    name="range-selector3"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    [dotDisabled]="dotDisabled"
+    style="display: inline-block; margin-top: 30px; width: 100%;"
+  >
   </next-range-selector>
 </form>
-<ng-template #dotTpl>
+<ng-template #dotTpl let-disabled="disabled">
   <div class="slider-dot">
-    <div class="slider-dot-handle"></div>
+    <div class="slider-dot-handle" [ngStyle]="disabled ? {'background-color': 'lightgrey'}: {}"></div>
   </div>
 </ng-template>
 <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+```
+
+### And the props looks like the code below
+
+```
+props: {
+  value1: [15, 30],
+  value2: [15, 30],
+  value3: [15, 30],
+  dotDisabled: [false, true],
+}
 ```

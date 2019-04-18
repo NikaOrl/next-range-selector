@@ -1,25 +1,16 @@
 ## The range-selector with different directions
 
-You can set different directions to the range-selector.
-There are four options in the special enum RangeSelectorDirection:
+You can set any styles you'll want for the range-selector. There are following inputs:
 
-- 'ltr' (by default) - 'left to right';
-- 'rtl' - 'right to left';
-- 'ttb' - 'top to bottom';
-- 'btt' - 'bottom to top'.
+- railStyle?: Styles;
+- processStyle?: Styles;
+- markStyle?: Styles;
+- markStepStyle?: Styles;
+- dotStyle: Styles;
+- borderStyle?: Styles;
+- bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
 
-## To use this enum import it into the component:
-
-```
-import {RangeSelectorDirection} from 'next-range-selector';
-
-export class AppComponent {
-...
-  public get RangeSelectorDirection() {
-    return RangeSelectorDirection;
-  }
-}
-```
+You can use transclusion for dots and marks by setting ng-templates in dotTpl and markTpl. The component return pos, index, disabled it or not (boolean disabled) and on focus it or not (boolean focus) for every dot. And value for every mark. So you can add some styles for every state and show whatever and however you want it.
 
 ### The template for this example looks like the code below
 
@@ -46,6 +37,9 @@ export class AppComponent {
     height: 100%;
     width: 100%;
   }
+  .slider-dot-rocket {
+    cursor: pointer;
+  }
 </style>
 <form class="range-selector-form">
   <next-range-selector
@@ -53,24 +47,35 @@ export class AppComponent {
     name="range-selector1"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.ltr"
+    [railStyle]="railStyle"
+    [processStyle]="processStyle"
+    [markStepStyle]="markStepStyle"
+    [marks]="true"
+    [interval]="10"
+    [dotStyle]="dotStyle"
+    [markStyle]="markStyle"
   >
-  </next-range-selector>
-  <next-range-selector
-    [(ngModel)]="value"
-    name="range-selector2"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.rtl"
-  >
-  </next-range-selector>
-  ...
   </next-range-selector>
 </form>
-<ng-template #dotTpl>
+<ng-template #dotTpl let-focus="focus">
   <div class="slider-dot">
-    <div class="slider-dot-handle"></div>
+    <div class="slider-dot-rocket" [ngStyle]="focus ? {'outline': 'red auto 5px'}: {}">
+      🚀
+    </div>
   </div>
 </ng-template>
 <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+```
+
+### And the props looks like the code below
+
+```
+props: {
+  value: 10,
+  railStyle: {'background-color': 'pink'},
+  processStyle: {'background-color': 'green'},
+  markStepStyle: {'background-color': 'red'},
+  dotStyle: {outline: 'none'},
+  markStyle: {'font-family': 'Consolas', color: 'darkred'},
+}
 ```

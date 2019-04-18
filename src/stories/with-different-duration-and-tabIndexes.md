@@ -1,25 +1,9 @@
 ## The range-selector with different directions
 
-You can set different directions to the range-selector.
-There are four options in the special enum RangeSelectorDirection:
+You can set duration of the dot and process change animation to the range-selector - it's a number in seconds (default 0.5)
+Also you can set different tabIndexes to the checkboxes
 
-- 'ltr' (by default) - 'left to right';
-- 'rtl' - 'right to left';
-- 'ttb' - 'top to bottom';
-- 'btt' - 'bottom to top'.
-
-## To use this enum import it into the component:
-
-```
-import {RangeSelectorDirection} from 'next-range-selector';
-
-export class AppComponent {
-...
-  public get RangeSelectorDirection() {
-    return RangeSelectorDirection;
-  }
-}
-```
+#### _Try to push Tab for the ckeckboxes_
 
 ### The template for this example looks like the code below
 
@@ -48,24 +32,32 @@ export class AppComponent {
   }
 </style>
 <form class="range-selector-form">
+  duration 0.5(default), tabIndex 1:
   <next-range-selector
-    [(ngModel)]="value"
+    [(ngModel)]="value1"
     name="range-selector1"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.ltr"
+
+    [interval]="10"
+    [marks]="true"
+    style="display: inline-block; margin: 30px 0; width: 100%;"
   >
   </next-range-selector>
+  duration 0, tabIndex 3 (default):
   <next-range-selector
-    [(ngModel)]="value"
+    [(ngModel)]="value2"
     name="range-selector2"
     [dotTpl]="dotTpl"
+    [tabIndex]="3"
     [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.rtl"
+    [duration]="0"
+    [interval]="10"
+    [marks]="true"
+    style="display: inline-block; margin: 30px 0; width: 100%;"
   >
   </next-range-selector>
   ...
-  </next-range-selector>
 </form>
 <ng-template #dotTpl>
   <div class="slider-dot">

@@ -65,7 +65,6 @@ export class AppComponent {
   >
   </next-range-selector>
   ...
-  </next-range-selector>
 </form>
 <ng-template #dotTpl>
   <div class="slider-dot">

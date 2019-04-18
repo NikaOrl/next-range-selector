@@ -1,25 +1,12 @@
 ## The range-selector with different directions
 
-You can set different directions to the range-selector.
-There are four options in the special enum RangeSelectorDirection:
+You can set different settins for multi-dots renge-seector:
 
-- 'ltr' (by default) - 'left to right';
-- 'rtl' - 'right to left';
-- 'ttb' - 'top to bottom';
-- 'btt' - 'bottom to top'.
-
-## To use this enum import it into the component:
-
-```
-import {RangeSelectorDirection} from 'next-range-selector';
-
-export class AppComponent {
-...
-  public get RangeSelectorDirection() {
-    return RangeSelectorDirection;
-  }
-}
-```
+- enableCross (default true)
+- fixed (default false) - the dots process will be fixed length
+- minRange?: number - minimum length of the dots process
+- maxRange?: number - maximum length of the dots process
+- order (default true)
 
 ### The template for this example looks like the code below
 
@@ -48,23 +35,44 @@ export class AppComponent {
   }
 </style>
 <form class="range-selector-form">
+  Base:
   <next-range-selector
-    [(ngModel)]="value"
+    [(ngModel)]="value1"
     name="range-selector1"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.ltr"
   >
   </next-range-selector>
+  enableCross = false:
   <next-range-selector
-    [(ngModel)]="value"
+    [(ngModel)]="value2"
     name="range-selector2"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
-    [direction]="RangeSelectorDirection.rtl"
+    [enableCross]="false"
+    style="display: inline-block; margin-top: 30px; width: 100%;"
   >
   </next-range-selector>
-  ...
+  minRange, maxRange:
+  <next-range-selector
+    [(ngModel)]="value3"
+    name="range-selector3"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    [minRange]="10"
+    [maxRange]="50"
+    style="display: inline-block; margin-top: 30px; width: 100%;"
+  >
+  </next-range-selector>
+  fixed:
+  <next-range-selector
+    [(ngModel)]="value4"
+    name="range-selector4"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    [fixed]="true"
+    style="display: inline-block; margin-top: 30px; width: 100%;"
+  >
   </next-range-selector>
 </form>
 <ng-template #dotTpl>

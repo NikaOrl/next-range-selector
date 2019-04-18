@@ -4,7 +4,7 @@ import defaultText from './default.md';
 import withDifferentDirections from './with-different-directions.md';
 import withDifferentMarksAndData from './with-different-marks-and-data.md';
 import withDifferentProcessAndBorders from './with-different-process-and-borders.md';
-import withMultiDots from './with-disable.md';
+import withMultiDots from './with-multi-dots.md';
 import withDisable from './with-disable.md';
 import withDifferentDurationAndTabIndexes from './with-different-duration-and-tabIndexes.md';
 import withDifferentStyles from './with-different-styles.md';
@@ -411,7 +411,7 @@ storiesOf('next-range-selector', module)
       template: `
       ${styles}
       <form class="range-selector-form">
-      0.5 duration (default), tabIndex 1:
+      duration (default) 0.5, tabIndex 1:
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
@@ -423,7 +423,7 @@ storiesOf('next-range-selector', module)
           style="display: inline-block; margin: 30px 0; width: 100%;"
         >
         </next-range-selector>
-        0 duration, tabIndex 3 (default):
+        duration 0, tabIndex 3 (default):
         <next-range-selector
           [(ngModel)]="value2"
           name="range-selector2"
@@ -436,7 +436,7 @@ storiesOf('next-range-selector', module)
           style="display: inline-block; margin: 30px 0; width: 100%;"
         >
         </next-range-selector>
-        1 duration, tabIndex 4:
+        duration 1, tabIndex 4:
         <next-range-selector
           [(ngModel)]="value3"
           name="range-selector3"
@@ -449,7 +449,7 @@ storiesOf('next-range-selector', module)
           style="display: inline-block; margin: 30px 0; width: 100%;"
         >
         </next-range-selector>
-        2 duration, tabIndex 2:
+        duration 2, tabIndex 2:
         <next-range-selector
           [(ngModel)]="value4"
           name="range-selector4"
@@ -507,8 +507,9 @@ storiesOf('next-range-selector', module)
       </form>
       <ng-template #dotTpl let-focus="focus">
         <div class="slider-dot">
-          <div class="slider-dot-rocket"
-          [ngStyle]="focus ? {'outline': 'red auto 5px'}: {}">🚀</div>
+          <div class="slider-dot-rocket" [ngStyle]="focus ? {'outline': 'red auto 5px'}: {}">
+            🚀
+          </div>
         </div>
       </ng-template>
       <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
