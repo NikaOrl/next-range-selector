@@ -2,6 +2,8 @@
 
 You can set any styles you want for the range-selector. There are following inputs:
 
+`interface Styles { [key: string]: any; }`
+
 - railStyle: Styles;
 - processStyle: Styles;
 - markStyle: Styles;
@@ -10,7 +12,7 @@ You can set any styles you want for the range-selector. There are following inpu
 - borderStyle: Styles;
 - bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
 
-You can use transclusion for dots and marks by setting ng-templates in [dotTpl] and [markTpl]. The component return pos, index, disabled it or not (boolean disabled) and on focus it or not (boolean focus) for every dot. And value (number or string) for every mark. So you can add some styles for every state and show whatever and however you want it.
+You can use transclusion for dots and marks by setting ng-templates in [dotTpl] and [markTpl]. The component returns pos, index, disabled it or not (boolean disabled) and on focus it or not (boolean focus) for every dot. The component returns value (number or string) and label(mark) (number or string, if [marks] is not an object then mark = value) for every mark. So you can add some styles for every state and show whatever and however you want it.
 
 ### The template for this example looks like the code below
 
@@ -37,11 +39,16 @@ You can use transclusion for dots and marks by setting ng-templates in [dotTpl] 
     height: 100%;
     width: 100%;
   }
+  .container {
+    font-size: 16px;
+    font-family: sans-serif;
+    margin: 50px;
+  }
   .slider-dot-rocket {
     cursor: pointer;
   }
 </style>
-<form class="range-selector-form">
+<form class="container">
   <next-range-selector
     [(ngModel)]="value"
     name="range-selector1"
@@ -64,7 +71,7 @@ You can use transclusion for dots and marks by setting ng-templates in [dotTpl] 
     </div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```
 
 ### And the props looks like the code below

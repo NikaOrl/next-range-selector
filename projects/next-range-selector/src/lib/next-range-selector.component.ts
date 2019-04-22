@@ -1,5 +1,5 @@
 import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2, TemplateRef} from '@angular/core';
-import {Value, Mark, MarksProp, MarkOption, Styles, Dot, Border, HandleFunction, IPosObject} from './typings';
+import {Value, Mark, MarksProp, Styles, Dot, Border, HandleFunction, IPosObject} from './typings';
 import Control, {ERROR_TYPE} from './control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -142,7 +142,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       return [];
     }
 
-    const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
+    const getMarkByValue = (value: Value, mark?: Value): Mark => {
       const pos = this.control.parseValue(value);
       return {
         value,
@@ -152,12 +152,19 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
           [this.mainDirection]: `${pos}%`,
           ...this.markStyle,
         },
-        ...mark,
+        mark: mark ? mark : value,
       };
     };
     if (this.control) {
       if (this.marks === true) {
         return this.control.getValues().map((value) => getMarkByValue(value));
+      } else if (Object.prototype.toString.call(this.marks) === '[object Object]') {
+        return Object.keys(this.marks)
+          .sort((a, b) => +a - +b)
+          .map((value) => {
+            const item = this.marks[value];
+            return getMarkByValue(value, item);
+          });
       } else if (Array.isArray(this.marks)) {
         return this.marks.map((value) => getMarkByValue(value));
       } else {

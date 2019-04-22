@@ -33,9 +33,9 @@ const styles = `
       width: 100%;
     \}
     .container \{
-      font-size: 20px;
+      font-size: 16px;
       font-family: sans-serif;
-      margin: 50px;
+      margin: 20px;
     \}
   </style>
 `;
@@ -54,7 +54,7 @@ storiesOf('next-range-selector', module)
       <form class="container">
         <b>Form title</b>
         <p>min: 0, max: 100, value: <input type="text" name="input" size="5" [(ngModel)]="value"/></p>
-        <p>next-range-selector default look:</p>
+        <p>next-range-selector default view:</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -68,7 +68,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
     `,
       props: {
         value: 10,
@@ -115,7 +115,7 @@ storiesOf('next-range-selector', module)
             >
             </next-range-selector>
           </div>
-          <div style="margin-left: 200px;">
+          <div style="margin-left: 10%;">
             <p>RangeSelectorDirection.btt - bottom to top:</p>
             <next-range-selector
               [(ngModel)]="value"
@@ -134,7 +134,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }} </ng-template>
     `,
       props: {
         value: 10,
@@ -172,7 +172,7 @@ storiesOf('next-range-selector', module)
           style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        <p>marks = [0, 10, 40, 50, 100], value = 10:</p>
+        <p>marks = [0, 10, 40, 50, 100], interval = 10, value = 10:</p>
         <next-range-selector
           [(ngModel)]="value5"
           name="range-selector5"
@@ -180,6 +180,17 @@ storiesOf('next-range-selector', module)
           [markTpl]="markTpl"
           style="display: inline-block; margin-bottom: 30px; width: 100%;"
           [marks]="marks"
+          [interval]="10"
+        >
+        </next-range-selector>
+        <p>marks = {{ '{' }}30: '😀', 60: '😎', 80: '👍', 100: '💯'{{ '}' }}, interval = 10, value = 10:</p>
+        <next-range-selector
+          [(ngModel)]="value6"
+          name="range-selector6"
+          [dotTpl]="dotTpl"
+          [markTpl]="markTpl"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
+          [marks]="marks2"
           [interval]="10"
         >
         </next-range-selector>
@@ -198,7 +209,7 @@ storiesOf('next-range-selector', module)
             >
             </next-range-selector>
           </div>
-          <div style="margin-left: 200px;">
+          <div style="margin-left: 10%;">
             <p>marks = true, data = ['a', 'b', 'c', 'd', 'e', 'f', 'g'], value = 'c', direction='ttb':</p>
             <next-range-selector
               [(ngModel)]="value4"
@@ -219,7 +230,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
     `,
       props: {
         value: 10,
@@ -229,6 +240,13 @@ storiesOf('next-range-selector', module)
         value4: 'c',
         marks: [0, 10, 40, 50, 100],
         value5: 10,
+        value6: 30,
+        marks2: {
+          30: '😀',
+          60: '😎',
+          80: '👍',
+          100: '💯',
+        },
       },
     }),
     {notes: withDifferentMarksAndData},
@@ -330,7 +348,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
     `,
       props: {
         value: [10, 40, 30],
@@ -399,7 +417,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
     `,
       props: {
         value1: [10, 40, 30],
@@ -452,7 +470,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"  [ngStyle]="disabled ? {'background-color': 'lightgrey'}: {}"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }} </ng-template>
     `,
       props: {
         value1: [15, 30],
@@ -469,7 +487,9 @@ storiesOf('next-range-selector', module)
       template: `
       ${styles}
       <form class="container">
-        <b>Disable</b>
+        <b>Duration and tabIndex</b>
+        <p><i>tabIndex: Try to push Tab for the range-selectors</i></p>
+        <p><i>duration: Try to use keyboard and clicking on the non-dot range-selector area</i></p>
         <p>duration = 0.5 (default), tabIndex = 1 (default):</p>
         <next-range-selector
           [(ngModel)]="value1"
@@ -526,7 +546,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }} </ng-template>
     `,
       props: {
         value1: [10, 50],
@@ -544,16 +564,12 @@ storiesOf('next-range-selector', module)
       <style>
         .slider-dot-rocket \{
           cursor: pointer;
-          font-size: 16px;
-        \}
-        .slider-mark \{
-          font-size: 16px;
         \}
       </style>
       ${styles}
       <form class="container">
         <b>Custom styles</b>
-        <p>To see which styles were used for this example please read Notes</p>
+        <p>To see which styles were used for this example please read the Notes</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -576,9 +592,7 @@ storiesOf('next-range-selector', module)
           </div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">
-        <div class="slider-mark">{{ mark }}</div>
-      </ng-template>
+      <ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
     `,
       props: {
         value: 10,

@@ -2,12 +2,10 @@ export interface Styles {
   [key: string]: any;
 }
 
-export interface MarkOption {
-  label: Value;
-  style?: Styles;
-}
-export interface Mark extends MarkOption {
+export interface Mark {
   value: Value;
+  mark?: Value;
+  style?: Styles;
 }
 export type MarksProp = boolean | Value[];
 

@@ -27,8 +27,13 @@ You can make all range-selector [disable] - then all its dots will be disabled. 
     height: 100%;
     width: 100%;
   }
+  .container {
+    font-size: 16px;
+    font-family: sans-serif;
+    margin: 50px;
+  }
 </style>
-<form class="range-selector-form">
+<form class="container">
   ...
   <next-range-selector
     [(ngModel)]="value2"
@@ -54,7 +59,7 @@ You can make all range-selector [disable] - then all its dots will be disabled. 
     <div class="slider-dot-handle" [ngStyle]="disabled ? {'background-color': 'lightgrey'}: {}"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```
 
 ### And the props looks like the code below

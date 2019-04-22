@@ -2,11 +2,11 @@
 
 You can set different settins for multi-dots renge-selector:
 
-- [enableCross] (default true);
-- [fixed] (default false) - the dots process will be fixed length;
-- [minRange]: number - minimum length of the dots process;
-- [maxRange]: number - maximum length of the dots process;
-- [order] (default true) - shows if the dots are ordered ascending.
+- enableCross (default true);
+- fixed (default false) - the dots process will be fixed length;
+- minRange: number - minimum length of the dots process;
+- maxRange: number - maximum length of the dots process;
+- order (default true) - shows if the dots are ordered ascending.
 
 ### The template for this example looks like the code below
 
@@ -33,8 +33,13 @@ You can set different settins for multi-dots renge-selector:
     height: 100%;
     width: 100%;
   }
+  .container {
+    font-size: 16px;
+    font-family: sans-serif;
+    margin: 50px;
+  }
 </style>
-<form class="range-selector-form">
+<form class="container">
   Base:
   <next-range-selector
     [(ngModel)]="value1"
@@ -80,5 +85,5 @@ You can set different settins for multi-dots renge-selector:
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```

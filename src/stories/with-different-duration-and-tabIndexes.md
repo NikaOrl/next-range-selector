@@ -30,8 +30,13 @@ Also you can set different tabIndexes to the checkboxes
     height: 100%;
     width: 100%;
   }
+  .container {
+    font-size: 16px;
+    font-family: sans-serif;
+    margin: 50px;
+  }
 </style>
-<form class="range-selector-form">
+<form class="container">
   duration 0.5(default), tabIndex 1:
   <next-range-selector
     [(ngModel)]="value1"
@@ -64,5 +69,5 @@ Also you can set different tabIndexes to the checkboxes
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```

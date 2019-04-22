@@ -46,8 +46,13 @@ export class AppComponent {
     height: 100%;
     width: 100%;
   }
+  .container {
+    font-size: 16px;
+    font-family: sans-serif;
+    margin: 50px;
+  }
 </style>
-<form class="range-selector-form">
+<form class="container">
   <next-range-selector
     [(ngModel)]="value"
     name="range-selector1"
@@ -71,5 +76,5 @@ export class AppComponent {
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }} </ng-template>
 ```

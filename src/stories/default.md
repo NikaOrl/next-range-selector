@@ -53,7 +53,7 @@ export class AppModule {
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }} </ng-template>
 ```
 
 ## Basic usage example with Reactive Forms
@@ -111,7 +111,7 @@ import { FormControl, FormGroup } from '@angular/forms';
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```
 
 ## The RangeSelector has:
@@ -122,7 +122,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 - min: number (default 0) - minimum of the range;
 - max: number (default 100) - maximum of the range;
 - useKeyboard: boolean (default true);
-- interval: number (default 1) - interval between values;
+- interval: number (default 1) - step between values;
 - process: boolean (if [borders]=true, then default false, if [borders]=false, then default true) - show process (area between dots);
 - duration: number (default 0.5) - css "transition-duration" - the animation duration of the dot and the process in seconds;
 - tabIndex: number (default 1);
@@ -189,7 +189,7 @@ Only for multi-dots:
     width: 100%;
   }
   .container {
-    font-size: 20px;
+    font-size: 16px;
     font-family: sans-serif;
     margin: 50px;
   }
@@ -211,5 +211,5 @@ Only for multi-dots:
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```
