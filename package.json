@@ -9,7 +9,14 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook -c .storybook -o .out",
+    "deploy-storybook": "storybook-to-ghpages",
+    "build_lib": "ng build next-range-selector",
+    "npm_pack": "cd dist/next-range-selector && npm pack && cd ../..",
+    "package": "npm run build_lib && npm run npm_pack && npm i file:dist/next-range-selector/next-range-selector-0.0.1.tgz --no-save",
+    "postinstall": "npm run package",
+    "test_lib": "ng test next-range-selector",
+    "check_coverage": "ng test next--range-selector --watch=false --code-coverage"
   },
   "private": true,
   "dependencies": {

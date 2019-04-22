@@ -1,32 +1,21 @@
 import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2, TemplateRef} from '@angular/core';
-import {
-  Value,
-  Mark,
-  MarksProp,
-  MarkOption,
-  Styles,
-  DotOption,
-  Dot,
-  Direction,
-  ProcessProp,
-  Border,
-  HandleFunction,
-  IPosObject,
-} from './typings';
+import {Value, Mark, MarksProp, Styles, Dot, Border, HandleFunction, IPosObject} from './typings';
 import Control, {ERROR_TYPE} from './control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 const DEFAULT_SLIDER_SIZE = 4;
 let uniqueId = 0;
 const enum KEY_CODE {
-  PAGE_UP = 33,
-  PAGE_DOWN,
-  END,
-  HOME,
-  LEFT,
+  LEFT = 37,
   UP,
   RIGHT,
   DOWN,
+}
+export enum RangeSelectorDirection {
+  ltr = 'ltr',
+  rtl = 'rtl',
+  ttb = 'ttb',
+  btt = 'btt',
 }
 
 @Component({
@@ -42,27 +31,28 @@ const enum KEY_CODE {
   ],
 })
 export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor {
-  @Input() public dotTpl: TemplateRef<any>;
-  @Input() public markTpl: TemplateRef<any>;
-
-  @Input() public id = `next-range-selector-${++uniqueId}`;
-  @Input() public min = 0;
-  @Input() public max = 100;
-  @Input() public useKeyboard = true;
-  @Input() public interval;
-  @Input() public process?: ProcessProp;
+  @Input() public id: string = `next-range-selector-${++uniqueId}`;
+  @Input() public min: number = 0;
+  @Input() public max: number = 100;
+  @Input() public useKeyboard: boolean = true;
+  @Input() public interval: number;
+  @Input() public process?: boolean;
   @Input() public duration: number = 0.5;
   @Input() public tabIndex: number = 1;
   @Input() public width: number | string;
   @Input() public height: number | string;
   @Input() public dotSize: [number, number] | number = 14;
-  @Input() public direction: Direction = 'ltr';
+  @Input() public direction: string = RangeSelectorDirection.ltr;
   @Input() public borders: Border[];
   @Input() public showBorders: boolean = true;
   @Input() public disabled: boolean = false;
   @Input() public marks?: MarksProp;
   @Input() public data?: Value[];
   @Input() public lazy = false; // true -> value will only be updated when the drag is over
+  @Input() public dotDisabled: boolean | boolean[];
+
+  @Input() public dotTpl: TemplateRef<any>;
+  @Input() public markTpl: TemplateRef<any>;
 
   @Input() public railStyle?: Styles;
   @Input() public processStyle?: Styles;
@@ -72,7 +62,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public borderStyle?: Styles;
   @Input() public bordersColors: string[] = ['#9d9d9d', '#c6c6c6'];
 
-  @Input() public dotOptions: DotOption | DotOption[]; // disabled dots
   // only for multi-dots:
   @Input() public enableCross = true;
   @Input() public fixed = false;
@@ -85,11 +74,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       return this.control.dotsPos.map((pos, index) => ({
         pos,
         index,
-        disabled: (this.dotOptions && this.dotOptions[index].disabled) || this.disabled,
+        disabled: (this.dotDisabled && this.dotDisabled[index]) || this.disabled,
         focus: document.getElementById(`${this.id}-${index}`) === document.activeElement,
         style: {
           ...this.dotBaseStyle,
-          'pointer-events': (this.dotOptions && this.dotOptions[index].disabled) || this.disabled ? 'none' : 'auto',
+          'pointer-events': (this.dotDisabled && this.dotDisabled[index].disabled) || this.disabled ? 'none' : 'auto',
           [this.mainDirection]: `${pos}%`,
           transition: this.dragging ? '0s' : `${this.mainDirection} ${this.animateTime}s`,
           ...this.dotStyle,
@@ -153,7 +142,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       return [];
     }
 
-    const getMarkByValue = (value: Value, mark?: MarkOption): Mark => {
+    const getMarkByValue = (value: Value, mark?: Value): Mark => {
       const pos = this.control.parseValue(value);
       return {
         value,
@@ -163,12 +152,19 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
           [this.mainDirection]: `${pos}%`,
           ...this.markStyle,
         },
-        ...mark,
+        mark: mark ? mark : value,
       };
     };
     if (this.control) {
       if (this.marks === true) {
         return this.control.getValues().map((value) => getMarkByValue(value));
+      } else if (Object.prototype.toString.call(this.marks) === '[object Object]') {
+        return Object.keys(this.marks)
+          .sort((a, b) => +a - +b)
+          .map((value) => {
+            const item = this.marks[value];
+            return getMarkByValue(value, item);
+          });
       } else if (Array.isArray(this.marks)) {
         return this.marks.map((value) => getMarkByValue(value));
       } else {
@@ -231,14 +227,14 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
         transform: `translate(${this.isReverse ? '50%' : '-50%'}, -50%)`,
         WebkitTransform: `translate(${this.isReverse ? '50%' : '-50%'}, -50%)`,
         top: '50%',
-        [this.direction === 'ltr' ? 'left' : 'right']: '0',
+        [this.direction === RangeSelectorDirection.ltr ? 'left' : 'right']: '0',
       };
     } else {
       dotPos = {
         transform: `translate(-50%, ${this.isReverse ? '50%' : '-50%'})`,
         WebkitTransform: `translate(-50%, ${this.isReverse ? '50%' : '-50%'})`,
         left: '50%',
-        [this.direction === 'btt' ? 'bottom' : 'top']: '0',
+        [this.direction === RangeSelectorDirection.btt ? 'bottom' : 'top']: '0',
       };
     }
     return {
@@ -249,11 +245,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private get isHorizontal(): boolean {
-    return this.direction === 'ltr' || this.direction === 'rtl';
+    return this.direction === RangeSelectorDirection.ltr || this.direction === RangeSelectorDirection.rtl;
   }
 
   private get isReverse(): boolean {
-    return this.direction === 'rtl' || this.direction === 'btt';
+    return this.direction === RangeSelectorDirection.rtl || this.direction === RangeSelectorDirection.btt;
   }
 
   private get animateTime(): number {
@@ -262,13 +258,13 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   private get mainDirection(): string {
     switch (this.direction) {
-      case 'ltr':
+      case RangeSelectorDirection.ltr:
         return 'left';
-      case 'rtl':
+      case RangeSelectorDirection.rtl:
         return 'right';
-      case 'btt':
+      case RangeSelectorDirection.btt:
         return 'bottom';
-      case 'ttb':
+      case RangeSelectorDirection.ttb:
         return 'top';
     }
   }
@@ -417,11 +413,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private isDisabledByDotIndex(index: number): boolean {
-    return this.dotOptions && this.dotOptions[index].disabled;
+    return this.dotDisabled && this.dotDisabled[index];
   }
 
   private setValueByPos(pos: number) {
-    const index = this.control.getRecentDot(pos, this.borders, this.dotOptions);
+    const index = this.control.getRecentDot(pos, this.borders, this.dotDisabled);
     if (this.isDisabledByDotIndex(index)) {
       return false;
     }
@@ -467,7 +463,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   private getKeyboardHandleFunc(
     e: KeyboardEvent,
     params: {
-      direction: Direction;
+      direction: string;
       max: number;
       min: number;
     },
