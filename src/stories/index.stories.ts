@@ -32,6 +32,11 @@ const styles = `
       height: 100%;
       width: 100%;
     \}
+    .container \{
+      font-size: 20px;
+      font-family: sans-serif;
+      margin: 50px;
+    \}
   </style>
 `;
 
@@ -46,7 +51,10 @@ storiesOf('next-range-selector', module)
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
+      <form class="container">
+        <b>Form title</b>
+        <p>min: 0, max: 100, value: <input type="text" name="input" size="5" [(ngModel)]="value"/></p>
+        <p>next-range-selector default look:</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -60,7 +68,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
     `,
       props: {
         value: 10,
@@ -73,7 +81,10 @@ storiesOf('next-range-selector', module)
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
+      <form class="container">
+        <b>Direction</b>
+        <p>min: 0, max: 100, value: <input type="text" name="input" size="5" [(ngModel)]="value"/></p>
+        <p>RangeSelectorDirection.ltr - left to right:</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -82,6 +93,7 @@ storiesOf('next-range-selector', module)
           [direction]="RangeSelectorDirection.ltr"
         >
         </next-range-selector>
+        <p>RangeSelectorDirection.rtl - right to left:</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector2"
@@ -90,24 +102,32 @@ storiesOf('next-range-selector', module)
           [direction]="RangeSelectorDirection.rtl"
         >
         </next-range-selector>
-        <next-range-selector
-          [(ngModel)]="value"
-          name="range-selector3"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [direction]="RangeSelectorDirection.ttb"
-          style="display: inline-block; margin: 30px; height: 300px;"
-        >
-        </next-range-selector>
-        <next-range-selector
-          [(ngModel)]="value"
-          name="range-selector4"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [direction]="RangeSelectorDirection.btt"
-          style="display: inline-block; margin: 30px; height: 300px;"
-        >
-        </next-range-selector>
+        <div style="display: flex; margin-top: 30px;">
+          <div>
+            <p>RangeSelectorDirection.ttb - top to bottom:</p>
+            <next-range-selector
+              [(ngModel)]="value"
+              name="range-selector3"
+              [dotTpl]="dotTpl"
+              [markTpl]="markTpl"
+              [direction]="RangeSelectorDirection.ttb"
+              style="display: block; margin: 30px; height: 300px;"
+            >
+            </next-range-selector>
+          </div>
+          <div style="margin-left: 200px;">
+            <p>RangeSelectorDirection.btt - bottom to top:</p>
+            <next-range-selector
+              [(ngModel)]="value"
+              name="range-selector4"
+              [dotTpl]="dotTpl"
+              [markTpl]="markTpl"
+              [direction]="RangeSelectorDirection.btt"
+              style="display: block; margin: 30px; height: 300px;"
+            >
+            </next-range-selector>
+          </div>
+        </div>
       </form>
       <ng-template #dotTpl>
         <div class="slider-dot">
@@ -128,7 +148,9 @@ storiesOf('next-range-selector', module)
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
+      <form class="container">
+        <b>Marks and data</b>
+        <p>marks = true, interval = 10, value = 10:</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -136,8 +158,10 @@ storiesOf('next-range-selector', module)
           [markTpl]="markTpl"
           [interval]="10"
           [marks]="true"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>marks = true, data = ['a', 'b', 'c', 'd', 'e', 'f', 'g'], value = 'b':</p>
         <next-range-selector
           [(ngModel)]="value2"
           [data]="data"
@@ -145,48 +169,57 @@ storiesOf('next-range-selector', module)
           name="range-selector2"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>marks = [0, 10, 40, 50, 100], value = 10:</p>
         <next-range-selector
           [(ngModel)]="value5"
           name="range-selector5"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
           [marks]="marks"
           [interval]="10"
         >
         </next-range-selector>
-        <next-range-selector
-          [(ngModel)]="value3"
-          name="range-selector3"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [direction]="'btt'"
-          [interval]="20"
-          [marks]="true"
-          style="display: inline-block; margin: 30px; height: 300px;"
-        >
-        </next-range-selector>
-        <next-range-selector
-          [(ngModel)]="value4"
-          name="range-selector4"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [direction]="'ttb'"
-          [data]="data"
-          [marks]="true"
-          style="display: inline-block; margin: 30px; height: 300px;"
-        >
-        </next-range-selector>
+        <div style="display: flex; margin-top: 30px;">
+          <div>
+            <p>marks = true, interval=20, value = 40, direction='btt':</p>
+            <next-range-selector
+              [(ngModel)]="value3"
+              name="range-selector3"
+              [dotTpl]="dotTpl"
+              [markTpl]="markTpl"
+              [direction]="'btt'"
+              [interval]="20"
+              [marks]="true"
+              style="display: inline-block; margin: 30px; height: 300px;"
+            >
+            </next-range-selector>
+          </div>
+          <div style="margin-left: 200px;">
+            <p>marks = true, data = ['a', 'b', 'c', 'd', 'e', 'f', 'g'], value = 'c', direction='ttb':</p>
+            <next-range-selector
+              [(ngModel)]="value4"
+              name="range-selector4"
+              [dotTpl]="dotTpl"
+              [markTpl]="markTpl"
+              [direction]="'ttb'"
+              [data]="data"
+              [marks]="true"
+              style="display: inline-block; margin: 30px; height: 300px;"
+            >
+            </next-range-selector>
+          </div>
+        </div>
       </form>
       <ng-template #dotTpl>
         <div class="slider-dot">
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
     `,
       props: {
         value: 10,
@@ -205,7 +238,9 @@ storiesOf('next-range-selector', module)
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
+      <form class="container">
+        <b>Process and borders</b>
+        <p>default view:</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector0"
@@ -213,6 +248,7 @@ storiesOf('next-range-selector', module)
           [markTpl]="markTpl"
         >
         </next-range-selector>
+        <p>borders = [{{ '{' }}max: 30, min: 5{{ '}' }}, {{ '{' }}max: 60, min: 30{{ '}' }}]:</p>
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
@@ -221,9 +257,10 @@ storiesOf('next-range-selector', module)
           [borders]="borders"
           [interval]="10"
           [marks]="true"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>borders = [{{ '{' }}max: 30, min: 5{{ '}' }}, {{ '{' }}max: 60, min: 30{{ '}' }}], process = true:</p>
         <next-range-selector
           [(ngModel)]="value2"
           name="range-selector2"
@@ -233,9 +270,13 @@ storiesOf('next-range-selector', module)
           [interval]="10"
           [process]="true"
           [marks]="true"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>
+          borders = [{{ '{' }}max: 30, min: 5{{ '}' }}, {{ '{' }}max: 60, min: 30{{ '}' }}], process = true,
+          showBorders = false:
+        </p>
         <next-range-selector
           [(ngModel)]="value3"
           name="range-selector3"
@@ -245,9 +286,13 @@ storiesOf('next-range-selector', module)
           [interval]="10"
           [showBorders]="false"
           [marks]="true"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>
+          borders = [{{ '{' }}max: 30, min: 5{{ '}' }}, {{ '{' }}max: 60, min: 30{{ '}' }}], process = false,
+          showBorders = false:
+        </p>
         <next-range-selector
           [(ngModel)]="value4"
           name="range-selector4"
@@ -258,9 +303,15 @@ storiesOf('next-range-selector', module)
           [process]="false"
           [interval]="10"
           [marks]="true"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>
+          borders = [{{ '{' }}max: 30, min: 5{{ '}' }},
+          {{ '{' }}max: 60, min: 30{{ '}' }},
+          {{ '{' }}max: 80, min: 60{{ '}' }}], process = false,
+          bordersColors = ['red', 'green', 'blue']:
+        </p>
         <next-range-selector
           [(ngModel)]="value5"
           name="range-selector5"
@@ -270,7 +321,7 @@ storiesOf('next-range-selector', module)
           [interval]="10"
           [marks]="true"
           [bordersColors]="bordersColors"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
       </form>
@@ -279,7 +330,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
     `,
       props: {
         value: [10, 40, 30],
@@ -300,26 +351,28 @@ storiesOf('next-range-selector', module)
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
-        Base:
+      <form class="container">
+        <b>Multi-dots props</b>
+        <p>default view:</p>
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        enableCross = false:
+        <p>enableCross = false:</p>
         <next-range-selector
           [(ngModel)]="value2"
           name="range-selector2"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
           [enableCross]="false"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        minRange, maxRange:
+        <p>minRange = 10, maxRange = 50:</p>
         <next-range-selector
           [(ngModel)]="value3"
           name="range-selector3"
@@ -327,17 +380,17 @@ storiesOf('next-range-selector', module)
           [markTpl]="markTpl"
           [minRange]="10"
           [maxRange]="50"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        fixed:
+        <p>fixed = true:</p>
         <next-range-selector
           [(ngModel)]="value4"
           name="range-selector4"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
           [fixed]="true"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
       </form>
@@ -346,7 +399,7 @@ storiesOf('next-range-selector', module)
           <div class="slider-dot-handle"></div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
     `,
       props: {
         value1: [10, 40, 30],
@@ -358,34 +411,39 @@ storiesOf('next-range-selector', module)
     {notes: withMultiDots},
   )
   .add(
-    'Disabled',
+    'Disable',
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
+      <form class="container">
+        <b>Disable</b>
+        <p>default view:</p>
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>disabled = true:</p>
         <next-range-selector
           [(ngModel)]="value2"
           name="range-selector2"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
           [disabled]="true"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
+        <p>dotDisabled = [false, true]:</p>
         <next-range-selector
           [(ngModel)]="value3"
           name="range-selector3"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
           [dotDisabled]="dotDisabled"
-          style="display: inline-block; margin-top: 30px; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
       </form>
@@ -410,20 +468,20 @@ storiesOf('next-range-selector', module)
     () => ({
       template: `
       ${styles}
-      <form class="range-selector-form">
-      duration (default) 0.5, tabIndex 1:
+      <form class="container">
+        <b>Disable</b>
+        <p>duration = 0.5 (default), tabIndex = 1 (default):</p>
         <next-range-selector
           [(ngModel)]="value1"
           name="range-selector1"
           [dotTpl]="dotTpl"
           [markTpl]="markTpl"
-
           [interval]="10"
           [marks]="true"
-          style="display: inline-block; margin: 30px 0; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        duration 0, tabIndex 3 (default):
+        <p>duration = 0, tabIndex = 3:</p>
         <next-range-selector
           [(ngModel)]="value2"
           name="range-selector2"
@@ -433,10 +491,10 @@ storiesOf('next-range-selector', module)
           [duration]="0"
           [interval]="10"
           [marks]="true"
-          style="display: inline-block; margin: 30px 0; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        duration 1, tabIndex 4:
+        <p>duration = 1, tabIndex = 4:</p>
         <next-range-selector
           [(ngModel)]="value3"
           name="range-selector3"
@@ -446,10 +504,10 @@ storiesOf('next-range-selector', module)
           [duration]="1"
           [interval]="10"
           [marks]="true"
-          style="display: inline-block; margin: 30px 0; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
-        duration 2, tabIndex 2:
+        <p>duration = 2, tabIndex = 2:</p>
         <next-range-selector
           [(ngModel)]="value4"
           name="range-selector4"
@@ -459,7 +517,7 @@ storiesOf('next-range-selector', module)
           [duration]="2"
           [interval]="10"
           [marks]="true"
-          style="display: inline-block; margin: 30px 0; width: 100%;"
+          style="display: inline-block; margin-bottom: 30px; width: 100%;"
         >
         </next-range-selector>
       </form>
@@ -486,10 +544,16 @@ storiesOf('next-range-selector', module)
       <style>
         .slider-dot-rocket \{
           cursor: pointer;
+          font-size: 16px;
+        \}
+        .slider-mark \{
+          font-size: 16px;
         \}
       </style>
       ${styles}
-      <form class="range-selector-form">
+      <form class="container">
+        <b>Custom styles</b>
+        <p>To see which styles were used for this example please read Notes</p>
         <next-range-selector
           [(ngModel)]="value"
           name="range-selector1"
@@ -512,7 +576,9 @@ storiesOf('next-range-selector', module)
           </div>
         </div>
       </ng-template>
-      <ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+      <ng-template #markTpl let-mark="value">
+        <div class="slider-mark">{{ mark }}</div>
+      </ng-template>
     `,
       props: {
         value: 10,

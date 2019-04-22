@@ -122,9 +122,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 - min: number (default 0) - minimum of the range;
 - max: number (default 100) - maximum of the range;
 - useKeyboard: boolean (default true);
-- interval: number - interval between values;
-- process: boolean - show process (area between dots);
-- duration: number (default 0.5) - transition-duration of the dot and the process in seconds;
+- interval: number (default 1) - interval between values;
+- process: boolean (if [borders]=true, then default false, if [borders]=false, then default true) - show process (area between dots);
+- duration: number (default 0.5) - css "transition-duration" - the animation duration of the dot and the process in seconds;
 - tabIndex: number (default 1);
 - width: number | string;
 - height: number | string;
@@ -133,9 +133,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 - borders: Border[] - array of borders by dot index;
 - showBorders: boolean (default true);
 - disabled: boolean (default false) - disable for a whole selector;
-- marks?: boolean | Marks | Value[] - if boolean: show marks (all possible values), if Marks: marks object, if Value: array of strings|numbers;
-- data?: Value[] - array of strings|numbers - possible values;
-- lazy (default false) - if true: value will only be updated when the drag is over
+- marks: boolean | Marks | Value[] - if boolean: show marks (all possible values), if Marks: marks object, if Value: array of strings|numbers;
+- data: Value[] - array of strings|numbers - possible values;
+- lazy (default false) - if true: value will only be updated when the drag is over;
 - dotDisabled: boolean | boolean[];
 
 Templates:
@@ -145,26 +145,59 @@ Templates:
 
 Styles:
 
-- railStyle?: Styles;
-- processStyle?: Styles;
-- markStyle?: Styles;
-- markStepStyle?: Styles;
+`interface Styles { [key: string]: any; }`
+
+- railStyle: Styles;
+- processStyle: Styles;
+- markStyle: Styles;
+- markStepStyle: Styles;
 - dotStyle: Styles;
-- borderStyle?: Styles;
-- bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
+- borderStyle: Styles;
+- bordersColors: string[] (default ['#9d9d9d', '#c6c6c6']);
 
 Only for multi-dots:
 
-- enableCross (default true)
-- fixed (default false)
-- minRange?: number;
-- maxRange?: number;
-- order (default true)
+- enableCross (default true);
+- fixed (default false) - the dots process will be fixed length;
+- minRange: number - minimum length of the dots process;
+- maxRange: number - maximum length of the dots process;
+- order (default true) - shows if the dots are ordered ascending.
 
 ### The template for this example looks like the code below
 
 ```
-<form>
+<style>
+  .slider-dot {
+    height: 14px;
+    left: 58%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    will-change: transform;
+    z-index: 5;
+  }
+  .slider-dot-handle {
+    -webkit-box-shadow: 0.5px 0.5px 2px 1px rgba(0, 0, 0, 0.32);
+    -webkit-box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0.5px 0.5px 2px 1px rgba(0, 0, 0, 0.32);
+    box-sizing: border-box;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+  }
+  .container {
+    font-size: 20px;
+    font-family: sans-serif;
+    margin: 50px;
+  }
+</style>
+<form class="container">
+  <b>Form title</b>
+  <p>min: 0, max: 100, value: <input type="text" name="input" size="5" [(ngModel)]="value"/></p>
+  <p>next-range-selector default look:</p>
   <next-range-selector
     [(ngModel)]="value"
     name="range-selector1"
@@ -178,5 +211,5 @@ Only for multi-dots:
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="value">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="value">{{ mark }}</ng-template>
 ```

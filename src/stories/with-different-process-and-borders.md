@@ -1,7 +1,7 @@
 ## The range-selector with process shown or not and different borders
 
-You can set process as shown or not: boolean process.
-Also you can set array of borders for dots by dot index. You can add bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
+You can set [process]:boolean to show it if true or hide away.
+Also you can set [borders] - array of borders for dots by dot index. You can add bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
 
 ### The template for this example looks like the code below
 

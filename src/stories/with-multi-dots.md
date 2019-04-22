@@ -1,12 +1,12 @@
 ## The range-selector with different directions
 
-You can set different settins for multi-dots renge-seector:
+You can set different settins for multi-dots renge-selector:
 
-- enableCross (default true)
-- fixed (default false) - the dots process will be fixed length
-- minRange?: number - minimum length of the dots process
-- maxRange?: number - maximum length of the dots process
-- order (default true)
+- [enableCross] (default true);
+- [fixed] (default false) - the dots process will be fixed length;
+- [minRange]: number - minimum length of the dots process;
+- [maxRange]: number - maximum length of the dots process;
+- [order] (default true) - shows if the dots are ordered ascending.
 
 ### The template for this example looks like the code below
 

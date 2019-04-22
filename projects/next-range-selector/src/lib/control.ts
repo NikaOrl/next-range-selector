@@ -207,7 +207,6 @@ export default class Control {
         return 0;
       }
       if (typeof val !== 'number' || val !== val) {
-        // what - I'll understand it in the next branch :)
         this.emitError(ERROR_TYPE.VALUE);
         return 0;
       }

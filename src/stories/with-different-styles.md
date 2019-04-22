@@ -1,16 +1,16 @@
 ## The range-selector with different directions
 
-You can set any styles you'll want for the range-selector. There are following inputs:
+You can set any styles you want for the range-selector. There are following inputs:
 
-- railStyle?: Styles;
-- processStyle?: Styles;
-- markStyle?: Styles;
-- markStepStyle?: Styles;
+- railStyle: Styles;
+- processStyle: Styles;
+- markStyle: Styles;
+- markStepStyle: Styles;
 - dotStyle: Styles;
-- borderStyle?: Styles;
+- borderStyle: Styles;
 - bordersColors: string[] (default ['#9d9d9d', '#c6c6c6'])
 
-You can use transclusion for dots and marks by setting ng-templates in dotTpl and markTpl. The component return pos, index, disabled it or not (boolean disabled) and on focus it or not (boolean focus) for every dot. And value for every mark. So you can add some styles for every state and show whatever and however you want it.
+You can use transclusion for dots and marks by setting ng-templates in [dotTpl] and [markTpl]. The component return pos, index, disabled it or not (boolean disabled) and on focus it or not (boolean focus) for every dot. And value (number or string) for every mark. So you can add some styles for every state and show whatever and however you want it.
 
 ### The template for this example looks like the code below
 

@@ -1,9 +1,9 @@
 ## The range-selector with different directions
 
-You can set duration of the dot and process change animation to the range-selector - it's a number in seconds (default 0.5)
+You can set [duration] of the dot and process change animation to the range-selector - it's a number in seconds (default 0.5)
 Also you can set different tabIndexes to the checkboxes
 
-#### _Try to push Tab for the ckeckboxes_
+#### _Try to push Tab for the range-selectors_
 
 ### The template for this example looks like the code below
 

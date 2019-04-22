@@ -1,6 +1,6 @@
 ## The range-selector with different directions
 
-You can make all range-selector disable - then all its dots will be disabled. Or you can set disable for some dots by using dotDisabled array ([false, true] for example).
+You can make all range-selector [disable] - then all its dots will be disabled. Or you can set disable for some dots by using [dotDisabled] array ([false, true] for example).
 
 ### The template for this example looks like the code below
 

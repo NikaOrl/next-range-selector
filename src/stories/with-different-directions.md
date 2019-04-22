@@ -1,6 +1,6 @@
 ## The range-selector with different directions
 
-You can set different directions to the range-selector.
+You can set different [direction] to the range-selector.
 There are four options in the special enum RangeSelectorDirection:
 
 - 'ltr' (by default) - 'left to right';

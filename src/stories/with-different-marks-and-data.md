@@ -1,7 +1,7 @@
 ## The range-selector with different marks and data
 
-Marks could be boolean then all possible values shows as marks. It might looks not right(?) so you can set marks as object or as array of Value: strings|numbers;
-Also you can set data - array of Value[] - array of strings|numbers - possible values. If marks=true all data will be used as marks.
+If [marks] are "true", all possible values (digits or letters) will be shown as captions. But they might overlap each other, so you can set [marks] as object or as array of Value: strings|numbers;
+Also you can set data by Value[], array of strings or numbers.
 
 ### The template for this example looks like the code below
 
