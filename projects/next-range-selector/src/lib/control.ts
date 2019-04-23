@@ -315,7 +315,7 @@ export default class Control {
 
   // Set the slider position
   private setDotsPos(dotsPos: number[]) {
-    const list = dotsPos;
+    const list = this.order ? [...dotsPos].sort((a, b) => a - b) : dotsPos;
     this.dotsPos = list;
     this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
   }
