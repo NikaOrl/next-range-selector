@@ -140,7 +140,7 @@ export default class Control {
     this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
   }
 
-  public getRecentDot(pos: number, borders: any[], dotDisabled: boolean | boolean[]): number {
+  public getRecentDot(pos: number, borders?: any[], dotDisabled?: boolean | boolean[]): number {
     const arr = this.dotsPos.map((dotPos, bordersIndex) => {
       if (
         (borders &&
@@ -225,6 +225,11 @@ export default class Control {
         return index * this.interval + this.min;
       }).concat([this.max]);
     }
+  }
+
+  public parsePos(pos: number): number | string {
+    const index = Math.round(pos / this.gap);
+    return this.getValueByIndex(index);
   }
 
   private getFixedChangePosArr(changePos: number, index: number): DotsPosChangeArray {
@@ -313,10 +318,5 @@ export default class Control {
     const list = dotsPos;
     this.dotsPos = list;
     this.dotsValue = list.map((dotPos) => this.parsePos(dotPos));
-  }
-
-  private parsePos(pos: number): number | string {
-    const index = Math.round(pos / this.gap);
-    return this.getValueByIndex(index);
   }
 }

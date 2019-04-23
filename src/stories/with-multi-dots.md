@@ -4,9 +4,9 @@ You can set different settins for multi-dots renge-selector:
 
 - enableCross (default true);
 - fixed (default false) - the dots process will be fixed length;
-- minRange: number - minimum length of the dots process;
-- maxRange: number - maximum length of the dots process;
-- order (default true) - shows if the dots are ordered ascending.
+- minRange: number - minimum distance between the dots process;
+- maxRange: number - maximum distance between the dots process;
+- order (default true) - shows if the dots are ordered ascending. For example, when the value is false, [60, 40] will not be automatically sorted to [40, 60]. When the value is false, the parameters minRange, maxRange, fixed, enableCross are invalid.
 
 ### The template for this example looks like the code below
 

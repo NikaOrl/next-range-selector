@@ -277,8 +277,8 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   public value: Value | Value[];
+  public control: Control;
   private scale = 1;
-  private control!: Control;
   private $el: HTMLElement = document.getElementById(this.id);
   private focusDotIndex = 0;
   private dragging = false;

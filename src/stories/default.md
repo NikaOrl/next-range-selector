@@ -159,8 +159,8 @@ Only for multi-dots:
 
 - enableCross (default true);
 - fixed (default false) - the dots process will be fixed length;
-- minRange: number - minimum length of the dots process;
-- maxRange: number - maximum length of the dots process;
+- minRange: number - minimum distance between the dots process;
+- maxRange: number - maximum distance between the dots process;
 - order (default true) - shows if the dots are ordered ascending.
 
 ### The template for this example looks like the code below
