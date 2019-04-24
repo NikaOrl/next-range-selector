@@ -5,11 +5,11 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 const DEFAULT_SLIDER_SIZE = 4;
 let uniqueId = 0;
-const enum KEY_CODE {
-  LEFT = 37,
-  UP,
-  RIGHT,
-  DOWN,
+const enum KEY {
+  LEFT = 'ArrowLeft',
+  UP = 'ArrowUp',
+  RIGHT = 'ArrowRight',
+  DOWN = 'ArrowDown',
 }
 export enum RangeSelectorDirection {
   ltr = 'ltr',
@@ -278,9 +278,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   public value: Value | Value[];
   public control: Control;
+  public focusDotIndex = 0;
+  public $el: HTMLElement = document.getElementById(this.id);
   private scale = 1;
-  private $el: HTMLElement = document.getElementById(this.id);
-  private focusDotIndex = 0;
   private dragging = false;
 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
@@ -468,14 +468,14 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       min: number;
     },
   ): HandleFunction | null {
-    switch (e.keyCode) {
-      case KEY_CODE.UP:
+    switch (e.key) {
+      case KEY.UP:
         return (i) => (params.direction === 'ttb' ? i - 1 : i + 1);
-      case KEY_CODE.RIGHT:
+      case KEY.RIGHT:
         return (i) => (params.direction === 'rtl' ? i - 1 : i + 1);
-      case KEY_CODE.DOWN:
+      case KEY.DOWN:
         return (i) => (params.direction === 'ttb' ? i + 1 : i - 1);
-      case KEY_CODE.LEFT:
+      case KEY.LEFT:
         return (i) => (params.direction === 'rtl' ? i + 1 : i - 1);
 
       default:

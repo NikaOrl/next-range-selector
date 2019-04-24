@@ -1,9 +1,9 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {NextRangeSelectorComponent} from '../public_api';
 import {Component, DebugElement} from '@angular/core';
 import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
+
+import {NextRangeSelectorComponent} from '../public_api';
 
 @Component({
   template: `
@@ -21,7 +21,6 @@ import {By} from '@angular/platform-browser';
           [id]="'next-range-selector-1'"
           [direction]="'btt'"
         ></next-range-selector>
-        <label for="checkbox-1">Some text</label>
       </div>
     </form>
   `,
@@ -182,15 +181,5 @@ describe('Control', () => {
     expect(rangeSelectorInstance.control.total).toEqual(100);
     rangeSelectorInstance.control.interval = 3;
     expect(rangeSelectorInstance.control.total).toEqual(0);
-  });
-
-  it('keydown', () => {
-    const onPointerMoveSpy = spyOn(rangeSelectorInstance, 'onPointerMove');
-    // const closeSpy = spyOn(component.d, 'close');
-    const event = {};
-
-    componentDebug.triggerEventHandler('', event);
-    expect(onPointerMoveSpy).toHaveBeenCalled();
-    // expect(closeSpy).toHaveBeenCalled();
   });
 });
