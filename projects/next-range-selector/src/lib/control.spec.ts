@@ -12,12 +12,9 @@ import {NextRangeSelectorComponent} from '../public_api';
         <next-range-selector
           formControlName="rangeSelectorFormControl"
           [id]="'next-range-selector-0'"
-          [minRange]="20"
         ></next-range-selector>
         <next-range-selector
           formControlName="rangeSelectorFormControl2"
-          [minRange]="20"
-          [order]="false"
           [id]="'next-range-selector-1'"
           [direction]="'btt'"
         ></next-range-selector>
@@ -32,8 +29,7 @@ class RangeSelectorWithReactiveFormsComponent {
   });
 }
 
-describe('Control', () => {
-  let component: RangeSelectorWithReactiveFormsComponent;
+describe('Control for ReactiveForms range-selector', () => {
   let fixture: ComponentFixture<RangeSelectorWithReactiveFormsComponent>;
   let rangeSelectorInstance: NextRangeSelectorComponent;
   let rangeSelectorInstance2: NextRangeSelectorComponent;
@@ -48,18 +44,17 @@ describe('Control', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RangeSelectorWithReactiveFormsComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
     componentDebug = fixture.debugElement.query(By.css('#next-range-selector-0'));
     rangeSelectorInstance = componentDebug.componentInstance;
     rangeSelectorInstance2 = fixture.debugElement.query(By.css('#next-range-selector-1')).componentInstance;
   });
 
-  it('Event: initControl', () => {
+  it('should init control', () => {
     expect(rangeSelectorInstance.control).toBeTruthy();
   });
 
-  it('Method: setDotPos', () => {
+  it('should change dots position with method setDotPos', () => {
     rangeSelectorInstance.control.setDotPos(50, 0);
     expect(rangeSelectorInstance.control.dotsValue[0]).toBe(50);
 
@@ -68,14 +63,9 @@ describe('Control', () => {
 
     rangeSelectorInstance2.control.setDotPos(undefined, 0);
     expect(rangeSelectorInstance2.control.dotsValue[0]).toBe(100);
-
-    rangeSelectorInstance.control.fixed = true;
-    rangeSelectorInstance.control.minRange = 0;
-    rangeSelectorInstance.control.setDotPos(110, 0);
-    expect(rangeSelectorInstance.control.dotsValue[0]).toBe(60);
   });
 
-  it('Method: parseValue', () => {
+  it('should change value with method parseValue', () => {
     let value = rangeSelectorInstance.control.parseValue(50);
     expect(value).toBe(50);
 
@@ -91,11 +81,6 @@ describe('Control', () => {
     rangeSelectorInstance.control.data = [10, 20, 30, 40, 50];
     value = rangeSelectorInstance.control.parseValue(40);
     expect(value).toBe(3);
-  });
-
-  it('Method: parsePos', () => {
-    const value = rangeSelectorInstance.control.parsePos(50);
-    expect(value).toBe(50);
   });
 
   it('Method: setValue & syncDotsPos', () => {
@@ -135,39 +120,6 @@ describe('Control', () => {
     expect(rangeSelectorInstance.control.getIndexByValue(20)).toBe(2);
     rangeSelectorInstance.control.data = [10, 20, 30, 40, 50];
     expect(rangeSelectorInstance.control.getIndexByValue(20)).toBe(1);
-  });
-
-  it('Param: minRange', () => {
-    rangeSelectorInstance.control.setValue([0, 100]);
-    rangeSelectorInstance.control.minRange = 80;
-    rangeSelectorInstance.control.setDotPos(70, 1);
-    expect(rangeSelectorInstance.control.dotsValue[1]).toBe(80);
-  });
-
-  it('Param: maxRange', () => {
-    rangeSelectorInstance.control.setValue([0, 20]);
-    rangeSelectorInstance.control.maxRange = 50;
-    rangeSelectorInstance.control.setDotPos(100, 1);
-    expect(rangeSelectorInstance.control.dotsValue[0]).toBe(80);
-  });
-
-  it('Param: fixed', () => {
-    rangeSelectorInstance.control.setValue([0, 40]);
-    rangeSelectorInstance.control.fixed = true;
-    rangeSelectorInstance.control.setDotPos(30, 0);
-    expect(rangeSelectorInstance.control.dotsValue[1]).toBe(70);
-  });
-
-  it('Param: order', () => {
-    rangeSelectorInstance2.control.setValue([40, 0]);
-    rangeSelectorInstance2.control.setDotPos(80, 0);
-    expect(rangeSelectorInstance2.control.dotsValue).toEqual([80, 0]);
-    expect(rangeSelectorInstance2.control.minRange).toEqual(0);
-
-    rangeSelectorInstance.control.setValue([40, 0]);
-    rangeSelectorInstance.control.setDotPos(80, 0);
-    expect(rangeSelectorInstance.control.dotsValue).toEqual([0, 80]);
-    expect(rangeSelectorInstance.control.minRange).toEqual(20);
   });
 
   it('Getter: processArray', () => {

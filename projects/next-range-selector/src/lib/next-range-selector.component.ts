@@ -62,13 +62,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public borderStyle?: Styles;
   @Input() public bordersColors: string[] = ['#9d9d9d', '#c6c6c6'];
 
-  // only for multi-dots:
-  @Input() public enableCross = true;
-  @Input() public fixed = false;
-  @Input() public minRange?: number;
-  @Input() public maxRange?: number;
-  @Input() public order = true; // false -> fixed and min/maxRange don't work
-
   get dots(): Dot[] {
     if (this.control) {
       return this.control.dotsPos.map((pos, index) => ({
@@ -266,13 +259,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  private get isNotSync() {
-    const values = this.control.dotsValue;
-    return Array.isArray(this.value)
-      ? this.value.length !== values.length || this.value.some((val, index) => val !== values[index])
-      : this.value !== values[0];
-  }
-
   public value: Value | Value[];
   public control: Control;
   public focusDotIndex = 0;
@@ -318,14 +304,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.control = new Control({
       value: this.value,
       data: this.data,
-      enableCross: this.enableCross,
-      fixed: this.fixed,
       max: this.max,
       min: this.min,
       interval: this.interval,
-      minRange: this.minRange,
-      maxRange: this.maxRange,
-      order: this.order,
       marks: this.marks,
       process: this.process,
       onError: this.emitError,
@@ -427,11 +408,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.syncValueByPos();
 
     setTimeout(() => {
-      if (this.isNotSync) {
-        this.control.setValue(this.value);
-      } else {
-        this.control.syncDotsPos();
-      }
+      this.control.syncDotsPos();
     });
   }
 
@@ -526,12 +503,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
 
     setTimeout(() => {
-      if (this.isNotSync) {
-        this.control.setValue(this.value);
-      } else {
-        // Sync slider position
-        this.control.syncDotsPos();
-      }
+      this.control.syncDotsPos();
     });
   }
 }
