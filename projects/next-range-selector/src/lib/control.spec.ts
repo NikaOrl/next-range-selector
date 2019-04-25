@@ -4,6 +4,7 @@ import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 
 import {NextRangeSelectorComponent} from '../public_api';
+import {RangeSelectorDirection} from './next-range-selector.component';
 
 @Component({
   template: `
@@ -16,7 +17,7 @@ import {NextRangeSelectorComponent} from '../public_api';
         <next-range-selector
           formControlName="rangeSelectorFormControl2"
           [id]="'next-range-selector-1'"
-          [direction]="'btt'"
+          [direction]="RangeSelectorDirection.btt"
         ></next-range-selector>
       </div>
     </form>
@@ -27,6 +28,10 @@ class RangeSelectorWithReactiveFormsComponent {
     rangeSelectorFormControl: new FormControl([10, 50]),
     rangeSelectorFormControl2: new FormControl(10),
   });
+
+  public get RangeSelectorDirection() {
+    return RangeSelectorDirection;
+  }
 }
 
 describe('Control for ReactiveForms range-selector', () => {

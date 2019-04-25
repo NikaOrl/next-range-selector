@@ -3,7 +3,7 @@ import {By} from '@angular/platform-browser';
 import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
 import {DebugElement, Component} from '@angular/core';
 
-import {NextRangeSelectorComponent} from './next-range-selector.component';
+import {NextRangeSelectorComponent, RangeSelectorDirection} from './next-range-selector.component';
 import {MarksProp} from './typings';
 
 @Component({
@@ -18,7 +18,7 @@ import {MarksProp} from './typings';
         <next-range-selector
           formControlName="rangeSelectorFormControl2"
           [id]="'next-range-selector-1'"
-          [direction]="'btt'"
+          [direction]="RangeSelectorDirection.btt"
           [interval]="10"
         ></next-range-selector>
       </div>
@@ -30,6 +30,10 @@ class RangeSelectorWithReactiveFormsComponent {
     rangeSelectorFormControl: new FormControl([10, 50]),
     rangeSelectorFormControl2: new FormControl([10, 50]),
   });
+
+  public get RangeSelectorDirection() {
+    return RangeSelectorDirection;
+  }
 }
 
 describe('NextRangeSelectorComponent', () => {
@@ -125,11 +129,10 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
   });
 
   it('Method: clickHandle', () => {
-    rangeSelectorInstance.$el = document.getElementById('next-range-selector-0');
     rangeSelectorInstance.value = [20, 50];
     rangeSelectorInstance.control.dotsValue = [30, 50];
     expect(rangeSelectorInstance.value).toEqual([20, 50]);
-    const x = rangeSelectorInstance.$el.clientWidth / 10;
+    const x = rangeSelectorInstance.el.clientWidth / 10;
     rangeSelectorInstance.clickHandle(
       new MouseEvent('click', {
         clientX: x,
@@ -173,7 +176,7 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
       {style: {'background-color': '#c6c6c6', width: '30%', right: '40%', top: 0, height: '100%'}},
     ]);
 
-    rangeSelectorInstance.direction = 'ttb';
+    rangeSelectorInstance.direction = RangeSelectorDirection.ttb;
     rangeSelectorInstance.borders = [{min: 0, max: 50}, {min: 40, max: 70}];
     expect(rangeSelectorInstance.bordersArray).toEqual([
       {style: {'background-color': '#9d9d9d', height: '50%', left: 0, top: '0%', width: '100%'}},
@@ -243,14 +246,13 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
 
   it('pointer', () => {
     rangeSelectorInstance.borders = [{min: 0, max: 50}, {min: 0, max: 70}];
-    rangeSelectorInstance.$el = document.getElementById('next-range-selector-0');
     rangeSelectorInstance.onPointerDown(1);
     expect(rangeSelectorInstance.focusDotIndex).toBe(1);
 
     rangeSelectorInstance.value = [10, 50];
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
 
-    const x = rangeSelectorInstance.$el.clientWidth / 10;
+    const x = rangeSelectorInstance.el.clientWidth / 10;
     rangeSelectorInstance.onPointerMove(
       new PointerEvent('pointermove', {
         clientX: x,

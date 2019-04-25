@@ -184,44 +184,44 @@ storiesOf('next-range-selector', module)
         </next-range-selector>
         <p>marks = {{ '{' }}30: '😀', 60: '😎', 80: '👍', 100: '💯'{{ '}' }}, interval = 10, value = 10:</p>
         <next-range-selector
-          [(ngModel)]="value6"
-          name="range-selector6"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          style="display: inline-block; margin-bottom: 30px; width: 100%;"
-          [marks]="marks2"
-          [interval]="10"
-        >
-        </next-range-selector>
-        <div style="display: flex; margin-top: 30px;">
-          <div>
-            <p>marks = true, interval=20, value = 40, direction='btt':</p>
-            <next-range-selector
-              [(ngModel)]="value3"
-              name="range-selector3"
-              [dotTpl]="dotTpl"
-              [markTpl]="markTpl"
-              [direction]="'btt'"
-              [interval]="20"
-              [marks]="true"
-              style="display: inline-block; margin: 30px; height: 300px;"
-            >
-            </next-range-selector>
-          </div>
-          <div style="margin-left: 10%;">
-            <p>marks = true, data = ['a', 'b', 'c', 'd', 'e', 'f', 'g'], value = 'c', direction='ttb':</p>
-            <next-range-selector
-              [(ngModel)]="value4"
-              name="range-selector4"
-              [dotTpl]="dotTpl"
-              [markTpl]="markTpl"
-              [direction]="'ttb'"
-              [data]="data"
-              [marks]="true"
-              style="display: inline-block; margin: 30px; height: 300px;"
-            >
-            </next-range-selector>
-          </div>
+        [(ngModel)]="value6"
+        name="range-selector6"
+        [dotTpl]="dotTpl"
+        [markTpl]="markTpl"
+        style="display: inline-block; margin-bottom: 30px; width: 100%;"
+        [marks]="marks2"
+        [interval]="10"
+      >
+      </next-range-selector>
+      <div style="display: flex; margin-top: 30px;">
+        <div>
+          <p>marks = true, interval=20, value = 40, direction='btt':</p>
+          <next-range-selector
+            [(ngModel)]="value3"
+            name="range-selector3"
+            [dotTpl]="dotTpl"
+            [markTpl]="markTpl"
+            [direction]="RangeSelectorDirection.btt"
+            [interval]="20"
+            [marks]="true"
+            style="display: inline-block; margin: 30px; height: 300px;"
+          >
+          </next-range-selector>
+        </div>
+        <div style="margin-left: 10%;">
+          <p>marks = true, data = ['a', 'b', 'c', 'd', 'e', 'f', 'g'], value = 'c', direction='ttb':</p>
+          <next-range-selector
+            [(ngModel)]="value4"
+            name="range-selector4"
+            [dotTpl]="dotTpl"
+            [markTpl]="markTpl"
+            [direction]="RangeSelectorDirection.ttb"
+            [data]="data"
+            [marks]="true"
+            style="display: inline-block; margin: 30px; height: 300px;"
+          >
+          </next-range-selector>
+        </div>
         </div>
       </form>
       <ng-template #dotTpl>
@@ -246,6 +246,7 @@ storiesOf('next-range-selector', module)
           80: '👍',
           100: '💯',
         },
+        RangeSelectorDirection,
       },
     }),
     {notes: withDifferentMarksAndData},

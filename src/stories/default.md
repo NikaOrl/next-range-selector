@@ -155,14 +155,6 @@ Styles:
 - borderStyle: Styles;
 - bordersColors: string[] (default ['#9d9d9d', '#c6c6c6']);
 
-Only for multi-dots:
-
-- enableCross (default true);
-- fixed (default false) - the dots process will be fixed length;
-- minRange: number - minimum distance between the dots process;
-- maxRange: number - maximum distance between the dots process;
-- order (default true) - shows if the dots are ordered ascending.
-
 ### The template for this example looks like the code below
 
 ```

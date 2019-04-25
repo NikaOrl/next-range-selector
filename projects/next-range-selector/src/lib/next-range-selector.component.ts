@@ -1,4 +1,14 @@
-import {Component, OnInit, Input, forwardRef, HostListener, ElementRef, Renderer2, TemplateRef} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  forwardRef,
+  HostListener,
+  ElementRef,
+  Renderer2,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import {Value, Mark, MarksProp, Styles, Dot, Border, HandleFunction, IPosObject} from './typings';
 import Control, {ERROR_TYPE} from './control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -262,7 +272,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   public value: Value | Value[];
   public control: Control;
   public focusDotIndex = 0;
-  public $el: HTMLElement = document.getElementById(this.id);
+  @ViewChild('container')
+  public container: ElementRef;
+  public el: HTMLDivElement;
   private scale = 1;
   private dragging = false;
 
@@ -276,6 +288,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     if (this.process === undefined) {
       this.process = !(this.borders && this.showBorders);
     }
+    this.el = this.container.nativeElement as HTMLDivElement;
   }
 
   @HostListener('document:pointermove', ['$event'])
@@ -318,7 +331,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     if (value) {
       this.value = value;
       this.initControl();
-      this.$el = document.getElementById(this.id);
     }
   }
 
@@ -387,7 +399,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private setScale() {
-    this.scale = Math.floor(this.isHorizontal ? this.$el.offsetWidth : this.$el.offsetHeight) / 100;
+    this.scale = Math.floor(this.isHorizontal ? this.el.offsetWidth : this.el.offsetHeight) / 100;
   }
 
   private isDisabledByDotIndex(index: number): boolean {
@@ -421,16 +433,16 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return typeof value === 'number' ? `${value}px` : value;
   }
 
-  private getPos(e: MouseEvent | TouchEvent, elem: HTMLElement, isReverse: boolean): IPosObject {
+  private getPos(e: MouseEvent | TouchEvent): IPosObject {
     const event = e instanceof MouseEvent ? e : e.targetTouches[0];
-    const rect = elem.getBoundingClientRect();
+    const rect = this.el.getBoundingClientRect();
     const posObj = {
-      x: event.pageX - rect.left,
-      y: event.pageY - rect.top,
+      x: event.pageX - (rect.left + window.scrollX),
+      y: event.pageY - (rect.top + window.scrollY),
     };
     return {
-      x: isReverse ? elem.offsetWidth - posObj.x : posObj.x,
-      y: isReverse ? elem.offsetHeight - posObj.y : posObj.y,
+      x: this.isReverse ? this.el.offsetWidth - posObj.x : posObj.x,
+      y: this.isReverse ? this.el.offsetHeight - posObj.y : posObj.y,
     };
   }
 
@@ -444,13 +456,13 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   ): HandleFunction | null {
     switch (e.key) {
       case KEY.UP:
-        return (i) => (params.direction === 'ttb' ? i - 1 : i + 1);
+        return (i) => (params.direction === RangeSelectorDirection.ttb ? i - 1 : i + 1);
       case KEY.RIGHT:
-        return (i) => (params.direction === 'rtl' ? i - 1 : i + 1);
+        return (i) => (params.direction === RangeSelectorDirection.rtl ? i - 1 : i + 1);
       case KEY.DOWN:
-        return (i) => (params.direction === 'ttb' ? i + 1 : i - 1);
+        return (i) => (params.direction === RangeSelectorDirection.ttb ? i + 1 : i - 1);
       case KEY.LEFT:
-        return (i) => (params.direction === 'rtl' ? i + 1 : i - 1);
+        return (i) => (params.direction === RangeSelectorDirection.rtl ? i + 1 : i - 1);
 
       default:
         return null;
@@ -463,7 +475,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   private getPosByEvent(e: MouseEvent | TouchEvent): number {
-    return this.getPos(e, this.$el, this.isReverse)[this.isHorizontal ? 'x' : 'y'] / this.scale;
+    return this.getPos(e)[this.isHorizontal ? 'x' : 'y'] / this.scale;
   }
 
   private isDiff(value1: Value[], value2: Value[]) {
@@ -487,10 +499,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
 
   private dragMove(e: MouseEvent | TouchEvent) {
     e.preventDefault();
-    const pos = this.getPosByEvent(e);
+    let pos = this.getPosByEvent(e);
     if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
       return false;
     }
+    pos = pos > 0 ? (pos < 100 ? pos : 100) : 0;
     this.control.setDotPos(pos, this.focusDotIndex);
     if (!this.lazy) {
       this.syncValueByPos();

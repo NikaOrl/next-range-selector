@@ -1,10 +1,10 @@
 <div
-  ref="container"
   aria-hidden="true"
   [id]="id"
   (click)="clickHandle($event)"
   [ngStyle]="containerStyles"
   [ngClass]="containerClasses"
+  #container
 >
   <div class="slider-rail" [ngStyle]="railStyles">
     <div
