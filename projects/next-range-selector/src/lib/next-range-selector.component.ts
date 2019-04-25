@@ -92,9 +92,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   get processArray(): Styles[] {
     if (this.control && this.process) {
       return this.control.processArray.map(([start, end, style]) => {
-        if (start > end) {
-          [start, end] = [end, start];
-        }
         const sizeStyleKey = this.isHorizontal ? 'width' : 'height';
         return {
           style: {

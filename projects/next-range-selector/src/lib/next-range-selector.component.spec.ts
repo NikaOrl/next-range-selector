@@ -4,6 +4,7 @@ import {FormGroup, FormControl, ReactiveFormsModule} from '@angular/forms';
 import {DebugElement, Component} from '@angular/core';
 
 import {NextRangeSelectorComponent} from './next-range-selector.component';
+import {MarksProp} from './typings';
 
 @Component({
   template: `
@@ -12,6 +13,7 @@ import {NextRangeSelectorComponent} from './next-range-selector.component';
         <next-range-selector
           formControlName="rangeSelectorFormControl"
           [id]="'next-range-selector-0'"
+          [interval]="10"
         ></next-range-selector>
         <next-range-selector
           formControlName="rangeSelectorFormControl2"
@@ -104,39 +106,82 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
     expect(rangeSelectorInstance.focusDotIndex).toBe(1);
     document.getElementById('next-range-selector-0-1').focus();
     rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    expect(rangeSelectorInstance.value).toEqual([10, 49]);
+    expect(rangeSelectorInstance.value).toEqual([10, 40]);
     rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    expect(rangeSelectorInstance.value).toEqual([10, 48]);
+    expect(rangeSelectorInstance.value).toEqual([10, 30]);
     rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    expect(rangeSelectorInstance.value).toEqual([10, 49]);
+    expect(rangeSelectorInstance.value).toEqual([10, 40]);
     rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
     rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'Tab'}));
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
+
+    rangeSelectorInstance.borders = [{min: 0, max: 100}, {min: 10, max: 50}];
+    expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowUp'}))).toBe(false);
+    expect(rangeSelectorInstance.value).toEqual([10, 50]);
+
+    rangeSelectorInstance.disabled = true;
+    expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'Tab'}))).toBe(false);
   });
 
   it('Method: clickHandle', () => {
     rangeSelectorInstance.$el = document.getElementById('next-range-selector-0');
     rangeSelectorInstance.value = [20, 50];
+    rangeSelectorInstance.control.dotsValue = [30, 50];
     expect(rangeSelectorInstance.value).toEqual([20, 50]);
+    const x = rangeSelectorInstance.$el.clientWidth / 10;
     rangeSelectorInstance.clickHandle(
       new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        clientX: 100,
-        clientY: 100,
+        clientX: x,
+      }),
+    );
+    expect(rangeSelectorInstance.value).toEqual([10, 50]);
+
+    rangeSelectorInstance.borders = [{min: 10, max: 100}, {min: 10, max: 50}];
+    rangeSelectorInstance.clickHandle(
+      new MouseEvent('click', {
+        clientX: 0,
+      }),
+    );
+
+    rangeSelectorInstance.borders = [{min: 0, max: 100}, {min: 0, max: 50}];
+    rangeSelectorInstance.dotDisabled = [true, true];
+    rangeSelectorInstance.clickHandle(
+      new MouseEvent('click', {
+        clientX: 0,
       }),
     );
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
   });
 
-  it('Getter: bordersArray', () => {
+  it('Getter: bordersArray ', () => {
     rangeSelectorInstance2.borders = [{min: 0, max: 50}, {min: 40, max: 70}];
     expect(rangeSelectorInstance2.bordersArray).toEqual([
       {style: {'background-color': '#9d9d9d', width: '100%', left: 0, bottom: '0%', height: '50%'}},
       {style: {'background-color': '#c6c6c6', width: '100%', left: 0, bottom: '40%', height: '30%'}},
     ]);
 
+    rangeSelectorInstance.borders = [{min: 0, max: 50}, {min: 40, max: 70}];
+    expect(rangeSelectorInstance.bordersArray).toEqual([
+      {style: {'background-color': '#9d9d9d', width: '50%', left: '0%', top: 0, height: '100%'}},
+      {style: {'background-color': '#c6c6c6', width: '30%', left: '40%', top: 0, height: '100%'}},
+    ]);
+
+    rangeSelectorInstance.direction = 'rtl';
+    expect(rangeSelectorInstance.bordersArray).toEqual([
+      {style: {'background-color': '#9d9d9d', width: '50%', right: '0%', top: 0, height: '100%'}},
+      {style: {'background-color': '#c6c6c6', width: '30%', right: '40%', top: 0, height: '100%'}},
+    ]);
+
+    rangeSelectorInstance.direction = 'ttb';
+    rangeSelectorInstance.borders = [{min: 0, max: 50}, {min: 40, max: 70}];
+    expect(rangeSelectorInstance.bordersArray).toEqual([
+      {style: {'background-color': '#9d9d9d', height: '50%', left: 0, top: '0%', width: '100%'}},
+      {style: {'background-color': '#c6c6c6', height: '30%', left: 0, top: '40%', width: '100%'}},
+    ]);
+  });
+
+  it('Getter: processArray', () => {
     rangeSelectorInstance.borders = [{min: 0, max: 50}, {min: 40, max: 70}];
     expect(rangeSelectorInstance.bordersArray).toEqual([
       {style: {'background-color': '#9d9d9d', width: '50%', left: '0%', top: 0, height: '100%'}},
@@ -188,6 +233,12 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
       {value: '20', style: {height: '100%', width: '4px', left: '20%'}, mark: '😀'},
       {value: '50', style: {height: '100%', width: '4px', left: '50%'}, mark: '😎'},
     ]);
+
+    rangeSelectorInstance.marks = ('some_error_mark_type' as unknown) as MarksProp;
+    expect(rangeSelectorInstance.markList).toEqual([]);
+
+    rangeSelectorInstance.control = null;
+    expect(rangeSelectorInstance.markList).toEqual([]);
   });
 
   it('pointer', () => {
@@ -198,39 +249,48 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
 
     rangeSelectorInstance.value = [10, 50];
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
+
+    const x = rangeSelectorInstance.$el.clientWidth / 10;
     rangeSelectorInstance.onPointerMove(
       new PointerEvent('pointermove', {
-        clientX: 100,
+        clientX: x,
       }),
     );
     expect(rangeSelectorInstance.value).toEqual([10, 10]);
 
     rangeSelectorInstance.onPointerMove(
       new PointerEvent('pointerup', {
-        clientX: 200,
+        clientX: 2 * x,
+      }),
+    );
+    expect(rangeSelectorInstance.value).toEqual([10, 20]);
+
+    rangeSelectorInstance.borders = [{min: 10, max: 100}, {min: 10, max: 50}];
+    rangeSelectorInstance.onPointerMove(
+      new PointerEvent('pointerup', {
+        clientX: 0,
       }),
     );
     expect(rangeSelectorInstance.value).toEqual([10, 20]);
 
     rangeSelectorInstance.lazy = true;
-
     rangeSelectorInstance.onPointerUp(
       new PointerEvent('pointerup', {
-        clientX: 200,
+        clientX: 2 * x,
       }),
     );
     expect(rangeSelectorInstance.value).toEqual([10, 20]);
 
     rangeSelectorInstance.onPointerUp(
       new PointerEvent('pointerup', {
-        clientX: 300,
+        clientX: 3 * x,
       }),
     );
     expect(rangeSelectorInstance.value).toEqual([10, 20]);
 
     rangeSelectorInstance.onPointerMove(
       new PointerEvent('pointerup', {
-        clientX: 300,
+        clientX: 3 * x,
       }),
     );
     expect(rangeSelectorInstance.value).toEqual([10, 20]);
