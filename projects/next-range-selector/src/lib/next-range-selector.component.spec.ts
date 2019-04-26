@@ -11,6 +11,10 @@ import {MarksProp} from './typings';
     <form [formGroup]="appFormGroup" class="reactive-form">
       <div class="container">
         <next-range-selector
+          formControlName="rangeSelectorFormControl0"
+          [id]="'next-range-selector-00'"
+        ></next-range-selector>
+        <next-range-selector
           formControlName="rangeSelectorFormControl"
           [id]="'next-range-selector-0'"
           [interval]="10"
@@ -27,6 +31,7 @@ import {MarksProp} from './typings';
 })
 class RangeSelectorWithReactiveFormsComponent {
   public appFormGroup = new FormGroup({
+    rangeSelectorFormControl0: new FormControl(10),
     rangeSelectorFormControl: new FormControl([10, 50]),
     rangeSelectorFormControl2: new FormControl([10, 50]),
   });
@@ -65,6 +70,7 @@ describe('NextRangeSelectorComponent', () => {
 describe('NextRangeSelectorComponentWithReactiveForm', () => {
   let component: RangeSelectorWithReactiveFormsComponent;
   let fixture: ComponentFixture<RangeSelectorWithReactiveFormsComponent>;
+  let rangeSelectorInstance0: NextRangeSelectorComponent;
   let rangeSelectorInstance: NextRangeSelectorComponent;
   let rangeSelectorInstance2: NextRangeSelectorComponent;
   let componentDebug: DebugElement;
@@ -83,10 +89,96 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
     componentDebug = fixture.debugElement.query(By.css('#next-range-selector-0'));
     rangeSelectorInstance = componentDebug.componentInstance;
     rangeSelectorInstance2 = fixture.debugElement.query(By.css('#next-range-selector-1')).componentInstance;
+    rangeSelectorInstance0 = fixture.debugElement.query(By.css('#next-range-selector-00')).componentInstance;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should init control', () => {
+    expect(rangeSelectorInstance).toBeTruthy();
+  });
+
+  it('should change dots position with method setDotPos', () => {
+    rangeSelectorInstance.setDotPos(50, 0);
+    expect(rangeSelectorInstance.dotsValue[0]).toBe(50);
+
+    rangeSelectorInstance2.setDotPos(110, 0);
+    expect(rangeSelectorInstance2.dotsValue[0]).toBe(100);
+
+    rangeSelectorInstance2.setDotPos(undefined, 0);
+    expect(rangeSelectorInstance2.dotsValue[0]).toBe(100);
+  });
+
+  it('should change value with method parseValue', () => {
+    let value = rangeSelectorInstance.parseValue(50);
+    expect(value).toBe(50);
+
+    value = rangeSelectorInstance.parseValue(110);
+    expect(value).toBe(0);
+
+    value = rangeSelectorInstance.parseValue(-10);
+    expect(value).toBe(0);
+
+    value = rangeSelectorInstance.parseValue('a');
+    expect(value).toBe(0);
+
+    rangeSelectorInstance0.data = [10, 20, 30, 40, 50];
+    value = rangeSelectorInstance0.parseValue(40);
+    expect(value).toBe(3);
+  });
+
+  it('Method: setValue & syncDotsPos', () => {
+    rangeSelectorInstance.setValue(50);
+    expect(rangeSelectorInstance.dotsPos).toEqual([50]);
+    rangeSelectorInstance.setValue([0, 50]);
+    expect(rangeSelectorInstance.dotsPos).toEqual([0, 50]);
+  });
+
+  it('Method: getRecentDot', () => {
+    rangeSelectorInstance.setValue([0, 100]);
+    expect(rangeSelectorInstance.getRecentDot(20)).toBe(0);
+    expect(rangeSelectorInstance.getRecentDot(90)).toBe(1);
+    expect(rangeSelectorInstance.getRecentDot(20, [{min: 0, max: 10}])).toBe(1);
+  });
+
+  it('Method: getIndexByValue', () => {
+    rangeSelectorInstance.interval = 10;
+    expect(rangeSelectorInstance.getIndexByValue(20)).toBe(2);
+    expect(rangeSelectorInstance.getIndexByValue(100)).toBe(10);
+  });
+
+  it('Method: getValues', () => {
+    rangeSelectorInstance.interval = 10;
+    expect(rangeSelectorInstance.getValues()).toEqual([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
+    rangeSelectorInstance.data = [10, 20, 30, 40, 50];
+    expect(rangeSelectorInstance.getValues()).toEqual([10, 20, 30, 40, 50]);
+  });
+
+  it('Method: getIndexByValue & getValueByIndex', () => {
+    rangeSelectorInstance.interval = 10;
+
+    expect(rangeSelectorInstance.getValueByIndex(2)).toBe(20);
+    expect(rangeSelectorInstance.getValueByIndex(11)).toBe(100);
+    expect(rangeSelectorInstance.getValueByIndex(-1)).toBe(0);
+
+    expect(rangeSelectorInstance.getIndexByValue(20)).toBe(2);
+    rangeSelectorInstance.data = [10, 20, 30, 40, 50];
+    expect(rangeSelectorInstance.getIndexByValue(20)).toBe(1);
+  });
+
+  it('Getter: processArrayDots', () => {
+    expect(rangeSelectorInstance.processArrayDots[0]).toEqual([10, 50]);
+    expect(rangeSelectorInstance0.processArrayDots[0]).toEqual([0, 10]);
+    rangeSelectorInstance0.process = false;
+    expect(rangeSelectorInstance0.processArrayDots).toEqual([]);
+  });
+
+  it('Getter: total', () => {
+    expect(rangeSelectorInstance.total).toEqual(10);
+    rangeSelectorInstance.interval = 3;
+    expect(rangeSelectorInstance.total).toEqual(0);
   });
 
   it('keyboard', () => {
@@ -130,7 +222,7 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
 
   it('Method: clickHandle', () => {
     rangeSelectorInstance.value = [20, 50];
-    rangeSelectorInstance.control.dotsValue = [30, 50];
+    rangeSelectorInstance.dotsValue = [30, 50];
     expect(rangeSelectorInstance.value).toEqual([20, 50]);
     const x = rangeSelectorInstance.el.clientWidth / 10;
     rangeSelectorInstance.clickHandle(
@@ -185,11 +277,20 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
   });
 
   it('Getter: processArray', () => {
-    rangeSelectorInstance.borders = [{min: 0, max: 50}, {min: 40, max: 70}];
-    expect(rangeSelectorInstance.bordersArray).toEqual([
-      {style: {'background-color': '#9d9d9d', width: '50%', left: '0%', top: 0, height: '100%'}},
-      {style: {'background-color': '#c6c6c6', width: '30%', left: '40%', top: 0, height: '100%'}},
+    expect(rangeSelectorInstance.processArray).toEqual([
+      {
+        style: {
+          height: '100%',
+          top: 0,
+          left: '10%',
+          width: '40%',
+          transitionProperty: 'width,left',
+          transitionDuration: '0.5s',
+        },
+      },
     ]);
+    rangeSelectorInstance.process = false;
+    expect(rangeSelectorInstance.processArray).toEqual([]);
   });
 
   it('Getter: markStepStyles', () => {
@@ -238,9 +339,6 @@ describe('NextRangeSelectorComponentWithReactiveForm', () => {
     ]);
 
     rangeSelectorInstance.marks = ('some_error_mark_type' as unknown) as MarksProp;
-    expect(rangeSelectorInstance.markList).toEqual([]);
-
-    rangeSelectorInstance.control = null;
     expect(rangeSelectorInstance.markList).toEqual([]);
   });
 

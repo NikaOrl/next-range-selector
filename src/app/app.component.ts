@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {RangeSelectorDirection} from 'projects/next-range-selector/src/public_api';
 
 @Component({
   selector: 'app-root',
@@ -18,4 +19,8 @@ export class AppComponent {
   public data = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
   public marks = [0, 10, 40, 60, 80, 100];
   public value10 = -10;
+
+  public get RangeSelectorDirection() {
+    return RangeSelectorDirection;
+  }
 }
