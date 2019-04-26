@@ -53,7 +53,7 @@ export class AppModule {
     <div class="slider-dot-handle"></div>
   </div>
 </ng-template>
-<ng-template #markTpl let-mark="mark">{{ mark }} </ng-template>
+<ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
 ```
 
 ## Basic usage example with Reactive Forms
@@ -129,7 +129,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 - width: number | string;
 - height: number | string;
 - dotSize: [number, number] | number (default 14);
-- direction: Direction (enum - string) (default 'ltr' - 'left to right');
+- direction: RangeSelectorDirection (enum - string) (default 'ltr' - 'left to right');
 - borders: Border[] - array of borders by dot index;
 - showBorders: boolean (default true);
 - disabled: boolean (default false) - disable for a whole selector;

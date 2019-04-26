@@ -13,10 +13,12 @@
     "deploy-storybook": "storybook-to-ghpages",
     "build_lib": "ng build next-range-selector",
     "npm_pack": "cd dist/next-range-selector && npm pack && cd ../..",
-    "package": "npm run build_lib && npm run npm_pack && npm i file:dist/next-range-selector/next-range-selector-0.0.1.tgz --no-save",
-    "postinstall": "npm run package",
+    "npm_package": "npm run build_lib && npm run npm_pack && npm i file:dist/next-range-selector/next-range-selector-0.0.1.tgz --no-save",
+    "postinstall": "npm run npm_package",
     "test_lib": "ng test next-range-selector",
-    "check_coverage": "ng test next-range-selector --watch=false --code-coverage"
+    "check_coverage": "ng test next-range-selector --watch=false --code-coverage",
+    "bump": "cd projects/next-range-selector && yarn version --patch",
+    "package": "yarn bump && yarn build_lib && yarn npm_pack"
   },
   "private": true,
   "dependencies": {

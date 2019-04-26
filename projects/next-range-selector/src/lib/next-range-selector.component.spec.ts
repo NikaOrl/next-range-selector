@@ -179,7 +179,8 @@ describe('NextRangeSelectorComponent with FormsModule', () => {
     rangeSelectorInstance.setValue([0, 100]);
     expect(rangeSelectorInstance.getRecentDot(20)).toBe(0);
     expect(rangeSelectorInstance.getRecentDot(90)).toBe(1);
-    expect(rangeSelectorInstance.getRecentDot(20, [{min: 0, max: 10}])).toBe(1);
+    rangeSelectorInstance.borders = [{min: 0, max: 10}];
+    expect(rangeSelectorInstance.getRecentDot(20)).toBe(1);
   });
 
   it('should return index of the dot by its value with method getIndexByValue', () => {
@@ -257,11 +258,11 @@ describe('NextRangeSelectorComponent with FormsModule', () => {
       expect(rangeSelectorInstance.value).toEqual([10, 50]);
 
       rangeSelectorInstance.borders = [{min: 0, max: 100}, {min: 10, max: 50}];
-      expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowUp'}))).toBe(false);
+      expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowUp'}))).toBeUndefined();
       expect(rangeSelectorInstance.value).toEqual([10, 50]);
 
       rangeSelectorInstance.disabled = true;
-      expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'Tab'}))).toBe(false);
+      expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'Tab'}))).toBeUndefined();
     });
   });
 
@@ -310,7 +311,7 @@ describe('NextRangeSelectorComponent with FormsModule', () => {
       {style: {'background-color': '#c6c6c6', width: '30%', left: '40%', top: 0, height: '100%'}},
     ]);
 
-    rangeSelectorInstance.direction = 'rtl';
+    rangeSelectorInstance.direction = RangeSelectorDirection.rtl;
     expect(rangeSelectorInstance.bordersArray).toEqual([
       {style: {'background-color': '#9d9d9d', width: '50%', right: '0%', top: 0, height: '100%'}},
       {style: {'background-color': '#c6c6c6', width: '30%', right: '40%', top: 0, height: '100%'}},
@@ -522,7 +523,8 @@ describe('NextRangeSelectorComponent with ReactiveForm', () => {
     rangeSelectorInstance.setValue([0, 100]);
     expect(rangeSelectorInstance.getRecentDot(20)).toBe(0);
     expect(rangeSelectorInstance.getRecentDot(90)).toBe(1);
-    expect(rangeSelectorInstance.getRecentDot(20, [{min: 0, max: 10}])).toBe(1);
+    rangeSelectorInstance.borders = [{min: 0, max: 10}];
+    expect(rangeSelectorInstance.getRecentDot(20)).toBe(1);
   });
 
   it('should return index of the dot by its value with method getIndexByValue', () => {
@@ -593,11 +595,11 @@ describe('NextRangeSelectorComponent with ReactiveForm', () => {
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
 
     rangeSelectorInstance.borders = [{min: 0, max: 100}, {min: 10, max: 50}];
-    expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowUp'}))).toBe(false);
+    expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'ArrowUp'}))).toBeUndefined();
     expect(rangeSelectorInstance.value).toEqual([10, 50]);
 
     rangeSelectorInstance.disabled = true;
-    expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'Tab'}))).toBe(false);
+    expect(rangeSelectorInstance.keydownHandle(new KeyboardEvent('keydown', {key: 'Tab'}))).toBeUndefined();
   });
 
   it('should change value with clickHandle', () => {
@@ -642,7 +644,7 @@ describe('NextRangeSelectorComponent with ReactiveForm', () => {
       {style: {'background-color': '#c6c6c6', width: '30%', left: '40%', top: 0, height: '100%'}},
     ]);
 
-    rangeSelectorInstance.direction = 'rtl';
+    rangeSelectorInstance.direction = RangeSelectorDirection.rtl;
     expect(rangeSelectorInstance.bordersArray).toEqual([
       {style: {'background-color': '#9d9d9d', width: '50%', right: '0%', top: 0, height: '100%'}},
       {style: {'background-color': '#c6c6c6', width: '30%', right: '40%', top: 0, height: '100%'}},
