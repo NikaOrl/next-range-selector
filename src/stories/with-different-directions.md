@@ -8,6 +8,8 @@ There are four options in the special enum RangeSelectorDirection:
 - 'ttb' - 'top to bottom';
 - 'btt' - 'bottom to top'.
 
+When the value is ltr or rtl, it is horizontal, and when it is ttb or bbt, it is vertical.
+
 ## To use this enum import it into the component:
 
 ```

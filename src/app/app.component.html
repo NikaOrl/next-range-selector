@@ -1,27 +1,4 @@
 <form>
-  <!-- <next-range-selector
-    [(ngModel)]="value2"
-    name="range-selector2"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    [duration]="0"
-    [borders]="borders"
-    [disabled]="true"
-    [marks]="true"
-    [interval]="10"
-  >
-  </next-range-selector>
-  <next-range-selector
-    [(ngModel)]="value3"
-    name="range-selector20"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    [duration]="0"
-    [borders]="borders"
-    [process]="true"
-    [dotOptions]="dotOptions"
-  >
-  </next-range-selector> -->
   <next-range-selector
     [(ngModel)]="value4"
     name="range-selector21"
@@ -36,7 +13,7 @@
   >
   </next-range-selector>
   <next-range-selector
-    [(ngModel)]="value4"
+    [(ngModel)]="value45"
     name="range-selector23"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
@@ -47,42 +24,15 @@
     style="display: inline-block; margin: 30px; width: 700px;"
   >
   </next-range-selector>
-  <!-- <next-range-selector
-    [(ngModel)]="value5"
-    name="range-selector22"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    [duration]="0"
-    [borders]="borders"
-    [process]="false"
-    [showBorders]="false"
-  >
-  </next-range-selector>
-
-  <next-range-selector
-    [(ngModel)]="value"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    name="range-selector31"
-  ></next-range-selector>
-  <next-range-selector
-    [(ngModel)]="value"
-    [dotTpl]="dotTpl"
-    [markTpl]="markTpl"
-    [direction]="'rtl'"
-    name="range-selector32"
-  ></next-range-selector> -->
   <next-range-selector
     [(ngModel)]="value2"
-    [direction]="'btt'"
+    [direction]="RangeSelectorDirection.btt"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
     [height]="300"
     [tabIndex]="2"
-    [enableCross]="false"
     style="display: inline-block; margin: 30px;"
     name="range-selector33"
-    [fixed]="true"
   ></next-range-selector>
   <next-range-selector
     [marks]="true"
@@ -90,7 +40,7 @@
     [dotTpl]="dotTpl"
     [data]="data"
     [markTpl]="markTpl"
-    [direction]="'ttb'"
+    [direction]="RangeSelectorDirection.ttb"
     name="range-selector34"
     style="display: inline-block; margin: 30px; height: 300px;"
   ></next-range-selector>
@@ -99,11 +49,18 @@
     [(ngModel)]="value3"
     [dotTpl]="dotTpl"
     [markTpl]="markTpl"
-    [direction]="'ttb'"
-    [minRange]="20"
-    [maxRange]="50"
+    [direction]="RangeSelectorDirection.ttb"
     name="range-selector35"
     style="display: inline-block; margin: 30px; height: 300px;"
+  ></next-range-selector>
+  <next-range-selector
+    [(ngModel)]="value10"
+    [id]="'next-range-selector-23'"
+    name="range-selector120"
+    [dotTpl]="dotTpl"
+    [markTpl]="markTpl"
+    [interval]="10"
+    [min]="-20"
   ></next-range-selector>
 </form>
 

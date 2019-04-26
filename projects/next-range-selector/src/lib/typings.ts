@@ -2,12 +2,16 @@ export interface Styles {
   [key: string]: any;
 }
 
+export interface Marks {
+  [key: string]: any;
+}
+
 export interface Mark {
   value: Value;
   mark?: Value;
   style?: Styles;
 }
-export type MarksProp = boolean | Value[];
+export type MarksProp = boolean | Value[] | Marks;
 
 export type Value = number | string;
 

@@ -4,7 +4,6 @@ import defaultText from './default.md';
 import withDifferentDirections from './with-different-directions.md';
 import withDifferentMarksAndData from './with-different-marks-and-data.md';
 import withDifferentProcessAndBorders from './with-different-process-and-borders.md';
-import withMultiDots from './with-multi-dots.md';
 import withDisable from './with-disable.md';
 import withDifferentDurationAndTabIndexes from './with-different-duration-and-tabIndexes.md';
 import withDifferentStyles from './with-different-styles.md';
@@ -202,7 +201,7 @@ storiesOf('next-range-selector', module)
               name="range-selector3"
               [dotTpl]="dotTpl"
               [markTpl]="markTpl"
-              [direction]="'btt'"
+              [direction]="RangeSelectorDirection.btt"
               [interval]="20"
               [marks]="true"
               style="display: inline-block; margin: 30px; height: 300px;"
@@ -216,7 +215,7 @@ storiesOf('next-range-selector', module)
               name="range-selector4"
               [dotTpl]="dotTpl"
               [markTpl]="markTpl"
-              [direction]="'ttb'"
+              [direction]="RangeSelectorDirection.ttb"
               [data]="data"
               [marks]="true"
               style="display: inline-block; margin: 30px; height: 300px;"
@@ -247,6 +246,7 @@ storiesOf('next-range-selector', module)
           80: '👍',
           100: '💯',
         },
+        RangeSelectorDirection,
       },
     }),
     {notes: withDifferentMarksAndData},
@@ -363,70 +363,6 @@ storiesOf('next-range-selector', module)
       },
     }),
     {notes: withDifferentProcessAndBorders},
-  )
-  .add(
-    'Multi-dots',
-    () => ({
-      template: `
-      ${styles}
-      <form class="container">
-        <b>Multi-dots props</b>
-        <p>default view:</p>
-        <next-range-selector
-          [(ngModel)]="value1"
-          name="range-selector1"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          style="display: inline-block; margin-bottom: 30px; width: 100%;"
-        >
-        </next-range-selector>
-        <p>enableCross = false:</p>
-        <next-range-selector
-          [(ngModel)]="value2"
-          name="range-selector2"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [enableCross]="false"
-          style="display: inline-block; margin-bottom: 30px; width: 100%;"
-        >
-        </next-range-selector>
-        <p>minRange = 10, maxRange = 50:</p>
-        <next-range-selector
-          [(ngModel)]="value3"
-          name="range-selector3"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [minRange]="10"
-          [maxRange]="50"
-          style="display: inline-block; margin-bottom: 30px; width: 100%;"
-        >
-        </next-range-selector>
-        <p>fixed = true:</p>
-        <next-range-selector
-          [(ngModel)]="value4"
-          name="range-selector4"
-          [dotTpl]="dotTpl"
-          [markTpl]="markTpl"
-          [fixed]="true"
-          style="display: inline-block; margin-bottom: 30px; width: 100%;"
-        >
-        </next-range-selector>
-      </form>
-      <ng-template #dotTpl>
-        <div class="slider-dot">
-          <div class="slider-dot-handle"></div>
-        </div>
-      </ng-template>
-      <ng-template #markTpl let-mark="mark">{{ mark }}</ng-template>
-    `,
-      props: {
-        value1: [10, 40, 30],
-        value2: [10, 30, 40],
-        value3: [15, 30],
-        value4: [15, 30],
-      },
-    }),
-    {notes: withMultiDots},
   )
   .add(
     'Disable',
