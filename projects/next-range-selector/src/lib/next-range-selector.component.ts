@@ -10,7 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {Value, Mark, MarksProp, Styles, Dot, Border, HandleFunction, IPosObject} from './typings';
-import Control, {ERROR_TYPE} from './control';
+import Control from './control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 const DEFAULT_SLIDER_SIZE = 4;
@@ -322,7 +322,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       interval: this.interval,
       marks: this.marks,
       process: this.process,
-      onError: this.emitError,
     });
   }
 
@@ -467,11 +466,6 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       default:
         return null;
     }
-  }
-
-  private emitError(type: ERROR_TYPE, message: string) {
-    // tslint:disable-next-line:no-console
-    console.log('error', type, message);
   }
 
   private getPosByEvent(e: MouseEvent | TouchEvent): number {

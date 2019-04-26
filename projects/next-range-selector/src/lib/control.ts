@@ -3,21 +3,6 @@ import {Value, MarksProp, ProcessOption} from './typings';
 // The distance each slider changes
 type DotsPosChangeArray = number[];
 
-export const enum ERROR_TYPE {
-  VALUE = 1,
-  INTERVAL,
-  MIN,
-  MAX,
-}
-
-type ERROR_MESSAGE = {[key in ERROR_TYPE]: string};
-export const ERROR_MSG: ERROR_MESSAGE = {
-  [ERROR_TYPE.VALUE]: 'The type of the "value" is illegal',
-  [ERROR_TYPE.INTERVAL]: 'The prop "interval" is invalid, "(max - min)" cannot be divisible by "interval"',
-  [ERROR_TYPE.MIN]: 'The "value" cannot be less than the minimum.',
-  [ERROR_TYPE.MAX]: 'The "value" cannot be greater than the maximum.',
-};
-
 export default class Control {
   get processArray(): ProcessOption {
     if (this.process) {
@@ -35,7 +20,6 @@ export default class Control {
     let total = 0;
     total = (this.max - this.min) / this.interval;
     if (total - Math.floor(total) !== 0) {
-      this.emitError(ERROR_TYPE.INTERVAL);
       return 0;
     }
     return total;
@@ -55,7 +39,6 @@ export default class Control {
   public interval: number;
   public marks?: MarksProp;
   public process?: boolean;
-  public onError?: (type: ERROR_TYPE, message: string) => void;
 
   constructor(options: {
     data?: Value[];
@@ -65,14 +48,12 @@ export default class Control {
     interval: number;
     marks?: MarksProp;
     process?: boolean;
-    onError?: (type: ERROR_TYPE, message: string) => void;
   }) {
     this.data = options.data;
     this.max = options.max;
     this.min = options.min;
     this.interval = options.interval;
     this.process = options.process;
-    this.onError = options.onError;
     this.setValue(options.value);
   }
 
@@ -137,16 +118,7 @@ export default class Control {
       val = this.data.indexOf(val);
     } else if (typeof val === 'number' || typeof val === 'string') {
       val = +val;
-      if (val < this.min) {
-        this.emitError(ERROR_TYPE.MIN);
-        return 0;
-      }
-      if (val > this.max) {
-        this.emitError(ERROR_TYPE.MAX);
-        return 0;
-      }
-      if (typeof val !== 'number' || val !== val) {
-        this.emitError(ERROR_TYPE.VALUE);
+      if (val < this.min || val > this.max || typeof val !== 'number' || val !== val) {
         return 0;
       }
       val = (val - this.min) / this.interval;
@@ -169,12 +141,6 @@ export default class Control {
   public parsePos(pos: number): number | string {
     const index = Math.round(pos / this.gap);
     return this.getValueByIndex(index);
-  }
-
-  private emitError(type: ERROR_TYPE) {
-    if (this.onError) {
-      this.onError(type, ERROR_MSG[type]);
-    }
   }
 
   // Set the slider position
