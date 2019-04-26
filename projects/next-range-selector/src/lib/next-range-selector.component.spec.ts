@@ -93,11 +93,11 @@ describe('NextRangeSelectorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create an instance', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Methods onChangeCallback and onTouchedCallback default null', () => {
+  it('should be null by default with methods onChangeCallback and onTouchedCallback', () => {
     expect(component.onChangeCallback()).toBeNull();
     expect(component.onTouchedCallback()).toBeNull();
   });
@@ -132,7 +132,7 @@ describe('NextRangeSelectorComponent with FormsModule', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should init', () => {
+  it('should create an instance', () => {
     expect(rangeSelectorInstance).toBeTruthy();
   });
 
@@ -205,7 +205,7 @@ describe('NextRangeSelectorComponent with FormsModule', () => {
     expect(rangeSelectorInstance.getValueByIndex(-1)).toBe(0);
   });
 
-  it('should return process array dots with getter processArrayDots', () => {
+  it('should return array of processes dots with getter processArrayDots', () => {
     fixture.whenStable().then(() => {
       expect(rangeSelectorInstance.processArrayDots[0]).toEqual([10, 50]);
       expect(rangeSelectorInstance0.processArrayDots[0]).toEqual([0, 10]);
@@ -357,7 +357,7 @@ describe('NextRangeSelectorComponent with FormsModule', () => {
     expect(rangeSelectorInstance2.railStyles).toEqual({'background-color': 'red'});
   });
 
-  it('should return mark list with getter markList', () => {
+  it('should return list of marks with getter markList', () => {
     rangeSelectorInstance2.marks = true;
     expect(rangeSelectorInstance2.markList).toEqual([
       {value: 0, style: {width: '100%', height: '4px', bottom: '0%'}, mark: 0},
@@ -478,7 +478,7 @@ describe('NextRangeSelectorComponent with ReactiveForm', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should init', () => {
+  it('should create an instance', () => {
     expect(rangeSelectorInstance).toBeTruthy();
   });
 
@@ -548,7 +548,7 @@ describe('NextRangeSelectorComponent with ReactiveForm', () => {
     expect(rangeSelectorInstance.getValueByIndex(-1)).toBe(0);
   });
 
-  it('should return process array dots with getter processArrayDots', () => {
+  it('should return array of processes dots with getter processArrayDots', () => {
     expect(rangeSelectorInstance.processArrayDots[0]).toEqual([10, 50]);
     expect(rangeSelectorInstance0.processArrayDots[0]).toEqual([0, 10]);
     rangeSelectorInstance0.process = false;
@@ -687,7 +687,7 @@ describe('NextRangeSelectorComponent with ReactiveForm', () => {
     expect(rangeSelectorInstance2.railStyles).toEqual({'background-color': 'red'});
   });
 
-  it('should return mark list with getter markList', () => {
+  it('should return list of marks with getter markList', () => {
     rangeSelectorInstance2.marks = true;
     expect(rangeSelectorInstance2.markList).toEqual([
       {value: 0, style: {width: '100%', height: '4px', bottom: '0%'}, mark: 0},
