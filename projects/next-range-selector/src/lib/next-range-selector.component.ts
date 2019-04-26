@@ -53,7 +53,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   @Input() public width: number | string;
   @Input() public height: number | string;
   @Input() public dotSize: [number, number] | number = 14;
-  @Input() public direction: string = RangeSelectorDirection.ltr;
+  @Input() public direction: RangeSelectorDirection = RangeSelectorDirection.ltr;
   @Input() public borders: Border[];
   @Input() public showBorders: boolean = true;
   @Input() public disabled: boolean = false;
@@ -81,7 +81,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       focus: document.getElementById(`${this.id}-${index}`) === document.activeElement,
       style: {
         ...this.dotBaseStyle,
-        'pointer-events': (this.dotDisabled && this.dotDisabled[index].disabled) || this.disabled ? 'none' : 'auto',
+        'pointer-events': this.isDisabledByDotIndex(index) || this.disabled ? 'none' : 'auto',
         [this.mainDirection]: `${pos}%`,
         transition: this.dragging ? '0s' : `${this.mainDirection} ${this.animateTime}s`,
         ...this.dotStyle,
@@ -168,7 +168,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  get containerStyles() {
+  get containerStyles(): Styles {
     const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
     const containerWidth = this.width
       ? this.getSize(this.width)
@@ -188,7 +188,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     };
   }
 
-  get railStyles() {
+  get railStyles(): Styles {
     if (this.railStyle) {
       return this.railStyle;
     } else {
@@ -198,7 +198,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  get markStepStyles() {
+  get markStepStyles(): Styles {
     if (this.markStepStyle) {
       return this.markStepStyle;
     } else {
@@ -208,11 +208,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  get containerClasses() {
+  get containerClasses(): string[] {
     return ['slider', `slider-${this.direction}`];
   }
 
-  get dotBaseStyle() {
+  get dotBaseStyle(): Styles {
     const [dotWidth, dotHeight] = Array.isArray(this.dotSize) ? this.dotSize : [this.dotSize, this.dotSize];
     let dotPos: {[key: string]: string};
     if (this.isHorizontal) {
@@ -343,16 +343,16 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   // From ControlValueAccessor interface
-  public registerOnChange(fn: (val?: any) => void) {
+  public registerOnChange(fn: (val?: any) => void): void {
     this.onChangeCallback = fn;
   }
 
   // From ControlValueAccessor interface
-  public registerOnTouched(fn: (val?: any) => void) {
+  public registerOnTouched(fn: (val?: any) => void): void {
     this.onTouchedCallback = fn;
   }
 
-  public tabHandle() {
+  public tabHandle(): void {
     this.focusDotIndex++;
     if (this.focusDotIndex >= this.dots.length) {
       this.focusDotIndex = 0;
@@ -364,9 +364,9 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     this.dragStart(dotIndex);
   }
 
-  public keydownHandle(e: KeyboardEvent) {
-    if (!this.useKeyboard || this.disabled) {
-      return false;
+  public keydownHandle(e: KeyboardEvent): void {
+    if (!this.useKeyboard || this.disabled || this.isDisabledByDotIndex(this.focusDotIndex)) {
+      return;
     }
 
     const handleFunc = this.getKeyboardHandleFunc(e, {
@@ -383,14 +383,14 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
       const newIndex = handleFunc(index);
       const pos = this.parseValue(this.getValueByIndex(newIndex));
       if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
-        return false;
+        return;
       }
       this.setDotPos(pos, this.focusDotIndex);
       this.syncValueByPos();
     }
   }
 
-  public clickHandle(e: MouseEvent | TouchEvent) {
+  public clickHandle(e: MouseEvent | TouchEvent): void {
     this.setScale();
 
     const pos = this.getPosByEvent(e);
@@ -398,32 +398,31 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     document.getElementById(`${this.id}-${this.focusDotIndex}`).focus();
   }
 
-  public getDotId(id, i) {
+  public getDotId(id: string, i: number): string {
     return `${id}-${i}`;
   }
 
-  public trackByFn(index: any, item: any) {
+  public trackByFn(index: any, item: any): any {
     return index;
   }
 
-  public setValue(value: Value | Value[]) {
+  public setValue(value: Value | Value[]): void {
     this.dotsValue = Array.isArray(value) ? [...value] : [value];
     this.syncDotsPos();
   }
 
   // Sync slider position
-  public syncDotsPos() {
+  public syncDotsPos(): void {
     this.dotsPos = this.dotsValue.map((v) => this.parseValue(v));
   }
 
-  public getRecentDot(pos: number, borders?: any[], dotDisabled?: boolean | boolean[]): number {
+  public getRecentDot(pos: number): number {
     const arr = this.dotsPos.map((dotPos, bordersIndex) => {
       if (
-        (borders &&
-          borders[bordersIndex] &&
-          ((borders[bordersIndex].max && borders[bordersIndex].max <= pos) ||
-            (borders[bordersIndex].min && borders[bordersIndex].min >= pos))) ||
-        (dotDisabled && dotDisabled[bordersIndex])
+        this.borders &&
+        this.borders[bordersIndex] &&
+        ((this.borders[bordersIndex].max && this.borders[bordersIndex].max <= pos) ||
+          (this.borders[bordersIndex].min && this.borders[bordersIndex].min >= pos))
       ) {
         return this.max + 1;
       } else {
@@ -449,7 +448,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return this.data ? this.data[index] : index * this.interval + this.min;
   }
 
-  public setDotPos(pos: number, index: number) {
+  public setDotPos(pos: number, index: number): void {
     const changePos = pos - this.dotsPos[index];
 
     if (!changePos) {
@@ -492,21 +491,21 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return this.getValueByIndex(index);
   }
 
-  private setScale() {
+  private setScale(): void {
     this.scale = Math.floor(this.isHorizontal ? this.el.offsetWidth : this.el.offsetHeight) / 100;
   }
 
   private isDisabledByDotIndex(index: number): boolean {
-    return this.dotDisabled && this.dotDisabled[index];
+    return Array.isArray(this.value) ? this.dotDisabled && this.dotDisabled[index] : this.dotDisabled;
   }
 
-  private setValueByPos(pos: number) {
-    const index = this.getRecentDot(pos, this.borders, this.dotDisabled);
+  private setValueByPos(pos: number): void {
+    const index = this.getRecentDot(pos);
     if (this.isDisabledByDotIndex(index)) {
-      return false;
+      return;
     }
     if (this.borders && this.isPosNotInValueBorders(index, pos)) {
-      return false;
+      return;
     }
 
     this.focusDotIndex = index;
@@ -518,7 +517,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     });
   }
 
-  private dragStart(index: number) {
+  private dragStart(index: number): void {
     this.focusDotIndex = index;
     this.setScale();
   }
@@ -543,7 +542,7 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   private getKeyboardHandleFunc(
     e: KeyboardEvent,
     params: {
-      direction: string;
+      direction: RangeSelectorDirection;
       max: number;
       min: number;
     },
@@ -567,11 +566,11 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     return this.getPos(e)[this.isHorizontal ? 'x' : 'y'] / this.scale;
   }
 
-  private isDiff(value1: Value[], value2: Value[]) {
+  private isDiff(value1: Value[], value2: Value[]): boolean {
     return value1.length !== value2.length || value1.some((val, index) => val !== value2[index]);
   }
 
-  private syncValueByPos() {
+  private syncValueByPos(): void {
     const values = this.dotsValue;
     if (this.isDiff(values, Array.isArray(this.value) ? this.value : [this.value])) {
       this.onChangeCallback(values.length === 1 ? values[0] : [...values]);
@@ -579,18 +578,21 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  private isPosNotInValueBorders(index, pos): boolean {
+  private isPosNotInValueBorders(index: number, pos: number): boolean {
     return (
       (this.borders[index] && this.borders[index].max && this.borders[index].max < pos) ||
       (this.borders[index] && this.borders[index].min && this.borders[index].min > pos)
     );
   }
 
-  private dragMove(e: MouseEvent | TouchEvent) {
+  private dragMove(e: MouseEvent | TouchEvent): void {
     e.preventDefault();
     let pos = this.getPosByEvent(e);
-    if (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos)) {
-      return false;
+    if (
+      this.isDisabledByDotIndex(this.focusDotIndex) ||
+      (this.borders && this.isPosNotInValueBorders(this.focusDotIndex, pos))
+    ) {
+      return;
     }
     pos = pos > 0 ? (pos < 100 ? pos : 100) : 0;
     this.setDotPos(pos, this.focusDotIndex);
@@ -600,12 +602,12 @@ export class NextRangeSelectorComponent implements OnInit, ControlValueAccessor 
   }
 
   // Set the slider position
-  private setDotsPos(dotsPos: number[]) {
+  private setDotsPos(dotsPos: number[]): void {
     this.dotsPos = dotsPos;
     this.dotsValue = dotsPos.map((dotPos) => this.parsePos(dotPos));
   }
 
-  private dragEnd() {
+  private dragEnd(): void {
     if (this.lazy) {
       this.syncValueByPos();
     }
