@@ -1,11 +1,15 @@
 import {TestBed, async} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AppComponent} from './app.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+
+import {NextRangeSelectorModule} from '../../projects/next-range-selector/src/public_api';
+import {RangeSelectorDirection} from 'projects/next-range-selector/src/public_api';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, NextRangeSelectorModule, FormsModule, ReactiveFormsModule],
       declarations: [AppComponent],
     }).compileComponents();
   }));
@@ -16,16 +20,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'next-range-selector-project'`, () => {
+  it('should return RangeSelectorDirection', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('next-range-selector-project');
-  });
-
-  it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to next-range-selector-project!');
+    expect(app.RangeSelectorDirection).toBe(RangeSelectorDirection);
   });
 });
